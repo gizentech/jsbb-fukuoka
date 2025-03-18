@@ -1,0 +1,128 @@
+/* styles/NewsDetail.module.css */
+.container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main {
+  width: 100%;
+  margin: 0 auto;
+  padding: 100px 0 0;
+  flex: 1;
+}
+
+.pageHeader {
+  position: relative;
+  max-width: 1080px;
+  margin: 0 auto;
+  height: 200px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/images/top2.webp');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  margin-bottom: 32px;
+  border-radius: 16px
+}
+
+.pageHeader h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.pageHeader span {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.article {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 32px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.articleHeader {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.articleDate {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.articleCategory {
+  padding: 0.25rem 1rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  background: #f0f0f0;
+}
+
+.articleTitle {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  line-height: 1.4;
+}
+
+.articleContent {
+  line-height: 1.8;
+}
+
+.articleContent pre {
+  white-space: pre-wrap;
+  font-family: inherit;
+  margin: 0;
+  line-height: 1.8;
+}
+
+@media (max-width: 960px) {
+  .pageHeader {
+    height: 160px;
+  }
+
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+
+  .article {
+    margin: 0 16px;
+  }
+}
+
+@media (max-width: 640px) {
+  .pageHeader {
+    height: 120px;
+    margin-bottom: 24px;
+  }
+
+  .pageHeader h1 {
+    font-size: 20px;
+  }
+
+  .article {
+    padding: 20px;
+  }
+
+  .articleTitle {
+    font-size: 1.5rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .articleHeader {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+}
