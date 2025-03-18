@@ -1,0 +1,281 @@
+// src/pages/admin/tournament-entry.js
+import { useState, useEffect } from 'react';
+import { db, storage } from '../../lib/firebase';
+import { collection, addDoc, query, getDocs, orderBy } from 'firebase/firestore';
+import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import AdminLayout from '../../components/AdminLayout/AdminLayout';
+import styles from '../../styles/admin/TournamentEntry.module.css';
+
+const classNames = {
+  'elementary': '学童',
+  'junior': '少年',
+  'adult-a': '一般A級',
+  'adult-b': '一般B級',
+  'adult-c': '一般C級',
+};
+
+const EntryList = ({ entries }) => {
+  return (
+    <div className={styles.entryList}>
+      <h2>申込書一覧</h2>
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>大会名</th>
+              <th>年度</th>
+              <th>回数</th>
+              <th>ファイル</th>
+              <th>登録日</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                <td>
+                  {entry.title1}<br />
+                  {entry.title2}
+                </td>
+                <td>{entry.year}</td>
+                <td>第{entry.count}回</td>
+                <td>
+                  <a 
+                    href={entry.fileUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className={styles.downloadLink}
+                  >
+                    表示
+                  </a>
+                </td>
+                <td>
+                  {new Date(entry.createdAt).toLocaleDateString('ja-JP')}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+};
+
+export default function TournamentEntry() {
+  const [tournaments, setTournaments] = useState([]);
+  const [entries, setEntries] = useState([]);
+  const [selectedClass, setSelectedClass] = useState('');
+  const [selectedTournament, setSelectedTournament] = useState(null);
+  const [formData, setFormData] = useState({
+    year: new Date().getFullYear(),
+    count: '',
+    content: '',
+    file: null,
+    createNews: false
+  });
+
+  useEffect(() => {
+    fetchTournaments();
+    fetchEntries();
+  }, []);
+
+  const fetchTournaments = async () => {
+    try {
+      const q = query(collection(db, 'tournaments'), orderBy('tournamentId'));
+      const querySnapshot = await getDocs(q);
+      const tournamentsData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setTournaments(tournamentsData);
+    } catch (error) {
+      console.error('Error fetching tournaments:', error);
+    }
+  };
+
+  const fetchEntries = async () => {
+    try {
+      const q = query(collection(db, 'tournament-entries'), orderBy('createdAt', 'desc'));
+      const querySnapshot = await getDocs(q);
+      const entriesData = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setEntries(entriesData);
+    } catch (error) {
+      console.error('Error fetching entries:', error);
+    }
+  };
+
+  const handleTournamentSelect = (tournamentId) => {
+    const tournament = tournaments.find(t => t.id === tournamentId);
+    setSelectedTournament(tournament);
+  };
+
+  const handleFileUpload = async (file) => {
+    const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
+    const fileName = `tournament-entries/${timestamp}_${file.name}`;
+    const storageRef = ref(storage, fileName);
+    await uploadBytes(storageRef, file);
+    return await getDownloadURL(storageRef);
+  };
+
+  const createNewsPost = async (title1, title2) => {
+    try {
+      await addDoc(collection(db, 'news'), {
+        title: `${title1}${title2}申込書掲載`,
+        content: `${title1}${title2}の申込書を掲載しました。申込書は大会情報からご確認ください。`,
+        category: '大会申込',
+        createdAt: new Date().toISOString()
+      });
+    } catch (error) {
+      console.error('Error creating news:', error);
+      throw error;
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!selectedTournament) {
+      alert('大会を選択してください');
+      return;
+    }
+
+    try {
+      let fileUrl = '';
+      if (formData.file) {
+        fileUrl = await handleFileUpload(formData.file);
+      }
+
+      await addDoc(collection(db, 'tournament-entries'), {
+        tournamentId: selectedTournament.id,
+        title1: selectedTournament.title1,
+        title2: selectedTournament.title2,
+        year: formData.year,
+        count: formData.count,
+        content: formData.content,
+        class: selectedTournament.class,
+        fileUrl: fileUrl,
+        createdAt: new Date().toISOString()
+      });
+
+      if (formData.createNews) {
+        await createNewsPost(selectedTournament.title1, selectedTournament.title2);
+      }
+
+      setFormData({
+        year: new Date().getFullYear(),
+        count: '',
+        content: '',
+        file: null,
+        createNews: false
+      });
+
+      await fetchEntries();
+      alert('申込書が登録されました');
+    } catch (error) {
+      console.error('Error adding entry:', error);
+      alert('申込書の登録に失敗しました');
+    }
+  };
+
+  return (
+    <AdminLayout>
+      <div className={styles.container}>
+        <h1>大会申込書登録</h1>
+
+        <div className={styles.tournamentSelect}>
+          <div className={styles.filterGroup}>
+            <select
+              className={styles.classFilter}
+              onChange={(e) => setSelectedClass(e.target.value)}
+              value={selectedClass}
+            >
+              <option value="">全クラス</option>
+              {Object.entries(classNames).map(([key, value]) => (
+                <option key={key} value={key}>
+                  {value}
+                </option>
+              ))}
+            </select>
+            <select
+              className={styles.tournamentDropdown}
+              onChange={(e) => handleTournamentSelect(e.target.value)}
+              value={selectedTournament?.id || ''}
+            >
+              <option value="">大会を選択してください</option>
+              {tournaments
+                .filter(tournament => !selectedClass || tournament.class.includes(selectedClass))
+                .map((tournament) => (
+                  <option key={tournament.id} value={tournament.id}>
+                    {tournament.title1} {tournament.title2}
+                  </option>
+                ))}
+            </select>
+          </div>
+        </div>
+
+        {selectedTournament && (
+          <form onSubmit={handleSubmit} className={styles.entryForm}>
+            <div className={styles.formGroup}>
+              <label>年度</label>
+              <input
+                type="number"
+                value={formData.year}
+                onChange={(e) => setFormData({ ...formData, year: parseInt(e.target.value) })}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>回数</label>
+              <input
+                type="text"
+                value={formData.count}
+                onChange={(e) => setFormData({ ...formData, count: e.target.value })}
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>内容</label>
+              <textarea
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                rows={5}
+                placeholder="申込書に関する説明を入力"
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label>申込書ファイル</label>
+              <input
+                type="file"
+                onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                required
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label className={styles.checkbox}>
+                <input
+                  type="checkbox"
+                  checked={formData.createNews}
+                  onChange={(e) => setFormData({ ...formData, createNews: e.target.checked })}
+                />
+                お知らせにも投稿する
+              </label>
+            </div>
+
+            <button type="submit" className={styles.submitButton}>
+              登録する
+            </button>
+          </form>
+        )}
+
+        <EntryList entries={entries} />
+      </div>
+    </AdminLayout>
+  );
+}

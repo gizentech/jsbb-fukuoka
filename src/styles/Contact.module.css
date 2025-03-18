@@ -1,0 +1,122 @@
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    padding-top: 110px;
+    width: 100%;
+  }
+  
+  .title {
+    font-size: 2.5rem;
+    font-weight: bold;
+    margin-bottom: 40px;
+    text-align: center;
+  }
+  
+  .formContainer {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 40px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  
+  .formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  
+  .formGroup label {
+    font-weight: 500;
+    color: #333;
+  }
+  
+  .required {
+    color: #e53e3e;
+    margin-left: 4px;
+  }
+  
+  .formGroup input,
+  .formGroup textarea {
+    padding: 12px;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  .formGroup input:focus,
+  .formGroup textarea:focus {
+    outline: none;
+    border-color: #4299e1;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.15);
+  }
+  
+  .submitButton {
+    background-color: #4299e1;
+    color: white;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .submitButton:hover {
+    background-color: #3182ce;
+  }
+  
+  .submitButton:disabled {
+    background-color: #a0aec0;
+    cursor: not-allowed;
+  }
+  
+  .successMessage {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #c6f6d5;
+    color: #2f855a;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  .errorMessage {
+    margin-top: 16px;
+    padding: 12px;
+    background-color: #fed7d7;
+    color: #c53030;
+    border-radius: 6px;
+    text-align: center;
+  }
+  
+  @media (max-width: 768px) {
+    .main {
+      padding: 10px;
+      padding-top: 90px;
+    }
+  
+    .title {
+      font-size: 2rem;
+      margin-bottom: 30px;
+    }
+  
+    .formContainer {
+      padding: 20px;
+    }
+  }
