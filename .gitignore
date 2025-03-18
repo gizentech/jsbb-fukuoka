@@ -30,20 +30,9 @@ yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-<<<<<<< HEAD
-=======
-# env files (can opt-in for committing if needed)
-.env*
-
->>>>>>> 5a9efad845f5256f52acd1ee0d0725f19828afb9
 # vercel
 .vercel
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
-<<<<<<< HEAD
-=======
-# env files
-.env*.local
->>>>>>> 5a9efad845f5256f52acd1ee0d0725f19828afb9
