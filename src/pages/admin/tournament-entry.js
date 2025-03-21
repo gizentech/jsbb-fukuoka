@@ -1,8 +1,9 @@
 // src/pages/admin/tournament-entry.js
 import { useState, useEffect } from 'react';
-import { db, storage } from '../../lib/firebase';
-import { collection, addDoc, query, getDocs, orderBy } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, storage, auth } from '../../lib/firebase';
+import { collection, addDoc, query, getDocs, orderBy, deleteDoc, doc } from 'firebase/firestore';
+import { ref, deleteObject } from 'firebase/storage';
+import { onAuthStateChanged } from 'firebase/auth';
 import AdminLayout from '../../components/AdminLayout/AdminLayout';
 import styles from '../../styles/admin/TournamentEntry.module.css';
 
@@ -14,7 +15,7 @@ const classNames = {
   'adult-c': '一般C級',
 };
 
-const EntryList = ({ entries }) => {
+const EntryList = ({ entries, onDelete }) => {
   return (
     <div className={styles.entryList}>
       <h2>申込書一覧</h2>
@@ -27,6 +28,7 @@ const EntryList = ({ entries }) => {
               <th>回数</th>
               <th>ファイル</th>
               <th>登録日</th>
+              <th>操作</th>
             </tr>
           </thead>
           <tbody>
@@ -39,17 +41,31 @@ const EntryList = ({ entries }) => {
                 <td>{entry.year}</td>
                 <td>第{entry.count}回</td>
                 <td>
-                  <a 
-                    href={entry.fileUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className={styles.downloadLink}
-                  >
-                    表示
-                  </a>
+                  {entry.fileUrl ? (
+                    <a 
+                      href={entry.fileUrl} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.downloadLink}
+                    >
+                      表示
+                    </a>
+                  ) : (
+                    <span className={styles.pendingUpload}>
+                      {entry.fileName ? `${entry.fileName} (未アップロード)` : "なし"}
+                    </span>
+                  )}
                 </td>
                 <td>
                   {new Date(entry.createdAt).toLocaleDateString('ja-JP')}
+                </td>
+                <td>
+                  <button 
+                    onClick={() => onDelete(entry)} 
+                    className={styles.deleteButton}
+                  >
+                    削除
+                  </button>
                 </td>
               </tr>
             ))}
@@ -72,10 +88,24 @@ export default function TournamentEntry() {
     file: null,
     createNews: false
   });
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     fetchTournaments();
     fetchEntries();
+    
+    // 認証状態を確認
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log('認証ユーザー:', user.uid);
+        setIsAuthenticated(true);
+      } else {
+        console.log('未認証状態');
+        setIsAuthenticated(false);
+      }
+    });
+    
+    return () => unsubscribe();
   }, []);
 
   const fetchTournaments = async () => {
@@ -111,14 +141,6 @@ export default function TournamentEntry() {
     setSelectedTournament(tournament);
   };
 
-  const handleFileUpload = async (file) => {
-    const timestamp = new Date().toISOString().replace(/[-:.]/g, '');
-    const fileName = `tournament-entries/${timestamp}_${file.name}`;
-    const storageRef = ref(storage, fileName);
-    await uploadBytes(storageRef, file);
-    return await getDownloadURL(storageRef);
-  };
-
   const createNewsPost = async (title1, title2) => {
     try {
       await addDoc(collection(db, 'news'), {
@@ -142,12 +164,10 @@ export default function TournamentEntry() {
     }
 
     try {
-      let fileUrl = '';
-      if (formData.file) {
-        fileUrl = await handleFileUpload(formData.file);
-      }
-
-      await addDoc(collection(db, 'tournament-entries'), {
+      console.log('フォーム送信開始', { selectedTournament, formData });
+      
+      // Firestoreにデータを保存
+      const entryData = {
         tournamentId: selectedTournament.id,
         title1: selectedTournament.title1,
         title2: selectedTournament.title2,
@@ -155,14 +175,29 @@ export default function TournamentEntry() {
         count: formData.count,
         content: formData.content,
         class: selectedTournament.class,
-        fileUrl: fileUrl,
+        fileUrl: '',  // 空のURLとして保存
+        fileName: formData.file ? formData.file.name : '',  // ファイル名だけ保存
+        pendingUpload: formData.file ? true : false,  // アップロード保留フラグ
         createdAt: new Date().toISOString()
-      });
+      };
+      
+      console.log('Firestoreに保存するデータ:', entryData);
+      
+      // Firestoreにデータを保存
+      const docRef = await addDoc(collection(db, 'tournament-entries'), entryData);
+      console.log('Firestoreにデータ保存成功 - ID:', docRef.id);
 
       if (formData.createNews) {
-        await createNewsPost(selectedTournament.title1, selectedTournament.title2);
+        try {
+          console.log('お知らせ作成開始');
+          await createNewsPost(selectedTournament.title1, selectedTournament.title2);
+          console.log('お知らせ作成完了');
+        } catch (newsError) {
+          console.error('お知らせ作成エラー:', newsError);
+        }
       }
 
+      // フォームをリセット
       setFormData({
         year: new Date().getFullYear(),
         count: '',
@@ -171,11 +206,56 @@ export default function TournamentEntry() {
         createNews: false
       });
 
+      // 一覧を更新
       await fetchEntries();
-      alert('申込書が登録されました');
+      
+      // ファイルが選択されていた場合は特別なメッセージを表示
+      if (formData.file) {
+        alert('申込書情報が登録されました。\n※ファイルアップロード機能は現在メンテナンス中のため、ファイル名のみ保存されています。');
+      } else {
+        alert('申込書情報が登録されました');
+      }
     } catch (error) {
-      console.error('Error adding entry:', error);
-      alert('申込書の登録に失敗しました');
+      console.error('申込書登録エラー:', error);
+      alert(`申込書の登録に失敗しました: ${error.message}`);
+    }
+  };
+
+  const handleDelete = async (entry) => {
+    if (!confirm(`「${entry.title1} ${entry.title2}」の申込書を削除してもよろしいですか？`)) {
+      return;
+    }
+
+    try {
+      // Firestoreからドキュメントを削除
+      await deleteDoc(doc(db, 'tournament-entries', entry.id));
+      console.log('ドキュメント削除成功:', entry.id);
+
+      // ファイルURLがある場合はStorageからファイルも削除を試みる
+      if (entry.fileUrl) {
+        try {
+          // ファイルURLからStorageのパスを抽出
+          const fileUrl = new URL(entry.fileUrl);
+          const pathWithQuery = fileUrl.pathname.split('/o/')[1];
+          if (pathWithQuery) {
+            const path = decodeURIComponent(pathWithQuery.split('?')[0]);
+            const fileRef = ref(storage, path);
+            
+            await deleteObject(fileRef);
+            console.log('ファイル削除成功:', path);
+          }
+        } catch (fileError) {
+          console.error('ファイル削除エラー:', fileError);
+          // ファイル削除失敗でもドキュメント削除は成功しているのでエラーをスローしない
+        }
+      }
+
+      // 一覧を更新
+      await fetchEntries();
+      alert('申込書を削除しました');
+    } catch (error) {
+      console.error('削除エラー:', error);
+      alert(`削除に失敗しました: ${error.message}`);
     }
   };
 
@@ -183,6 +263,12 @@ export default function TournamentEntry() {
     <AdminLayout>
       <div className={styles.container}>
         <h1>大会申込書登録</h1>
+        
+        {!isAuthenticated && (
+          <div className={styles.warning}>
+            ログインしていないか、認証が有効ではありません。一部機能が制限される場合があります。
+          </div>
+        )}
 
         <div className={styles.tournamentSelect}>
           <div className={styles.filterGroup}>
@@ -217,6 +303,10 @@ export default function TournamentEntry() {
 
         {selectedTournament && (
           <form onSubmit={handleSubmit} className={styles.entryForm}>
+            <div className={styles.notice}>
+              ※ファイルアップロード機能は現在メンテナンス中です。ファイル情報のみが保存されます。
+            </div>
+            
             <div className={styles.formGroup}>
               <label>年度</label>
               <input
@@ -248,7 +338,7 @@ export default function TournamentEntry() {
             </div>
 
             <div className={styles.formGroup}>
-              <label>申込書ファイル</label>
+              <label>申込書ファイル (現在ファイル名のみ保存)</label>
               <input
                 type="file"
                 onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
@@ -274,7 +364,7 @@ export default function TournamentEntry() {
           </form>
         )}
 
-        <EntryList entries={entries} />
+        <EntryList entries={entries} onDelete={handleDelete} />
       </div>
     </AdminLayout>
   );

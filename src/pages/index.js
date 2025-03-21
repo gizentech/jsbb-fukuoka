@@ -1,5 +1,5 @@
 // pages/index.js
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import styles from '../styles/Home.module.css'
 import { db } from '../lib/firebase'
 import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
@@ -9,42 +9,46 @@ import TopicSection from '../components/TopicSection/TopicSection'
 import HeroSlider from '../components/HeroSlider/HeroSlider'
 import Link from 'next/link'
 
-export default function Home() {
-  const [news, setNews] = useState([]);
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const q = query(
-          collection(db, 'news'),
-          orderBy('createdAt', 'desc'),
-          limit(5)
-        );
-        
-        const querySnapshot = await getDocs(q);
-        const newsData = querySnapshot.docs.map(doc => {
-          const data = doc.data();
-          return {
-            id: doc.id,
-            ...data,
-            createdAt: data.createdAt?.toDate?.().toISOString() || null
-          };
-        });
-        
-        setNews(newsData);
-      } catch (error) {
-        console.error('Error fetching news:', error);
-        setError('ニュースの読み込みに失敗しました');
-      } finally {
-        setLoading(false);
-      }
+export async function getStaticProps() {
+  try {
+    const q = query(
+      collection(db, 'news'),
+      orderBy('createdAt', 'desc'),
+      limit(5)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const newsData = querySnapshot.docs.map(doc => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        ...data,
+        createdAt: data.createdAt?.toDate?.() 
+          ? data.createdAt.toDate().toISOString() 
+          : new Date().toISOString()
+      };
+    });
+    
+    return {
+      props: {
+        news: newsData,
+        error: null
+      },
+      revalidate: 300 // 5分ごとに再生成
     };
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    return {
+      props: {
+        news: [],
+        error: 'ニュースの読み込みに失敗しました'
+      },
+      revalidate: 60 // エラー時は1分後に再試行
+    };
+  }
+}
 
-    fetchNews();
-  }, []);
-
+export default function Home({ news, error }) {
   const tournamentCategories = [
     { id: 'elementary', title: '学童' },
     { id: 'junior', title: '少年' },
@@ -86,10 +90,10 @@ export default function Home() {
                 <span>INFORMATION</span>
               </div>
               <div className={styles.newsList}>
-                {loading ? (
-                  <p>読み込み中...</p>
-                ) : error ? (
+                {error ? (
                   <p className={styles.errorMessage}>{error}</p>
+                ) : news.length === 0 ? (
+                  <p>お知らせはありません</p>
                 ) : (
                   news.map((item) => (
                     <Link 

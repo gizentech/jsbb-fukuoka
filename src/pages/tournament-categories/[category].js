@@ -61,12 +61,14 @@ export const getStaticProps = async ({ params }) => {
         tournaments,
         category: params.category,
         categoryName: categories[params.category]
-      }
+      },
+      revalidate: 3600 // 1時間ごとに再生成（秒単位）
     };
   } catch (error) {
     console.error('Error fetching tournaments:', error);
     return {
-      notFound: true
+      notFound: true,
+      revalidate: 60 // エラー時は60秒後に再試行
     };
   }
 };

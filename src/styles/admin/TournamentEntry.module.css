@@ -190,3 +190,54 @@
       padding: 0.75rem;
     }
   }
+  .deleteButton {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .deleteButton:hover {
+    background-color: #c0392b;
+  }
+  .pendingUpload {
+    color: #888;
+    font-style: italic;
+  }
+  
+  .notice {
+    background-color: #fff3cd;
+    color: #856404;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border-left: 4px solid #ffeeba;
+  }
+  
+  .warning {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    border-left: 4px solid #f5c6cb;
+  }
+  
+  .deleteButton {
+    background-color: #e74c3c;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .deleteButton:hover {
+    background-color: #c0392b;
+  }

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -15,51 +15,62 @@ const classNames = {
   'adult-c': '一般C級',
 };
 
-export default function EntryDetail() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [entry, setEntry] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const getStaticPaths = async () => {
+  // 初期ビルド時に生成するパスを空にする
+  return {
+    paths: [],
+    fallback: 'blocking' // ページが存在しなければビルド時に生成
+  };
+};
 
-  useEffect(() => {
-    if (!id) return;
+export const getStaticProps = async ({ params }) => {
+  try {
+    const docRef = doc(db, 'tournament-entries', params.id);
+    const docSnap = await getDoc(docRef);
+    
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const entry = {
+        id: docSnap.id,
+        title1: data.title1 || '',
+        title2: data.title2 || '',
+        content: data.content || '',
+        fileUrl: data.fileUrl || '',
+        class: data.class || [],
+        count: data.count || '',
+        year: data.year || '',
+        createdAt: data.createdAt 
+          ? (typeof data.createdAt.toDate === 'function' 
+             ? data.createdAt.toDate().toISOString() 
+             : data.createdAt)
+          : new Date().toISOString()
+      };
 
-    const fetchEntry = async () => {
-      try {
-        const docRef = doc(db, 'tournament-entries', id);
-        const docSnap = await getDoc(docRef);
-        
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setEntry({
-            id: docSnap.id,
-            title1: data.title1 || '',
-            title2: data.title2 || '',
-            content: data.content || '',
-            fileUrl: data.fileUrl || '',
-            class: data.class || [],
-            count: data.count || '',
-            year: data.year || '',
-            createdAt: data.createdAt?.toDate?.() 
-              ? data.createdAt.toDate().toISOString()
-              : new Date().toISOString()
-          });
-        } else {
-          setError('申込情報が見つかりませんでした');
-        }
-      } catch (error) {
-        console.error('Error fetching entry:', error);
-        setError('申込情報の取得に失敗しました');
-      } finally {
-        setLoading(false);
-      }
+      return {
+        props: { entry },
+        revalidate: 3600 // 1時間ごとに再生成
+      };
+    } else {
+      return {
+        notFound: true,
+        revalidate: 60
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching entry:', error);
+    return {
+      notFound: true,
+      revalidate: 60
     };
+  }
+};
 
-    fetchEntry();
-  }, [id]);
-
-  if (loading) {
+export default function EntryDetail({ entry }) {
+  const router = useRouter();
+  
+  // fallbackが'blocking'の場合は不要ですが、
+  // fallbackを'true'に変更する場合に必要になります
+  if (router.isFallback) {
     return (
       <div className={styles.container}>
         <Header />
@@ -69,11 +80,11 @@ export default function EntryDetail() {
     );
   }
 
-  if (error || !entry) {
+  if (!entry) {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.error}>{error || '申込情報が見つかりませんでした'}</div>
+        <div className={styles.error}>申込情報が見つかりませんでした</div>
         <Footer />
       </div>
     );

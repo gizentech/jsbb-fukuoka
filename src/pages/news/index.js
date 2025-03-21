@@ -1,5 +1,5 @@
 // pages/news/index.js
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { db } from '../../lib/firebase'
 import { collection, query, orderBy, getDocs } from 'firebase/firestore'
 import styles from '../../styles/News.module.css'
@@ -17,10 +17,48 @@ const formatDate = (date) => {
   });
 };
 
-export default function News() {
-  const [news, setNews] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+export async function getStaticProps() {
+  try {
+    const q = query(
+      collection(db, 'news'),
+      orderBy('createdAt', 'desc')
+    )
+    const querySnapshot = await getDocs(q)
+    const newsData = querySnapshot.docs.map(doc => {
+      const data = doc.data()
+      return {
+        id: doc.id,
+        title: data.title || '',
+        category: data.category || '',
+        createdAt: data.createdAt 
+          ? (typeof data.createdAt.toDate === 'function' 
+              ? data.createdAt.toDate().toISOString() 
+              : new Date(data.createdAt).toISOString())
+          : new Date().toISOString()
+      }
+    })
+
+    return {
+      props: {
+        news: newsData
+      },
+      revalidate: 60 // 1分ごとに再生成
+    }
+  } catch (error) {
+    console.error('Error fetching news:', error)
+    return {
+      props: {
+        news: [],
+        error: 'お知らせの読み込みに失敗しました。ページを更新してください。'
+      },
+      revalidate: 30 // エラー時は30秒後に再試行
+    }
+  }
+}
+
+export default function News({ news: initialNews, error: initialError }) {
+  const [news] = useState(initialNews || [])
+  const [error] = useState(initialError || null)
   const [selectedCategory, setSelectedCategory] = useState('all')
 
   const categories = [
@@ -32,43 +70,6 @@ export default function News() {
     { id: '一般B級', name: '一般B級' },
     { id: '一般C級', name: '一般C級' }
   ]
-
-  useEffect(() => {
-    const fetchNews = async () => {
-      setLoading(true)
-      setError(null)
-      
-      try {
-        const q = query(
-          collection(db, 'news'),
-          orderBy('createdAt', 'desc')
-        )
-        const querySnapshot = await getDocs(q)
-        const newsData = querySnapshot.docs.map(doc => {
-          const data = doc.data()
-          return {
-            id: doc.id,
-            ...data,
-            title: data.title || '',
-            category: data.category || '',
-            createdAt: data.createdAt 
-              ? (typeof data.createdAt.toDate === 'function' 
-                  ? data.createdAt.toDate() 
-                  : new Date(data.createdAt))
-              : new Date()
-          }
-        })
-        setNews(newsData)
-      } catch (error) {
-        console.error('Error fetching news:', error)
-        setError('お知らせの読み込みに失敗しました。ページを更新してください。')
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchNews()
-  }, [])
 
   const filteredNews = selectedCategory === 'all'
     ? news
@@ -88,6 +89,12 @@ export default function News() {
         </div>
 
         <div className={styles.categoryFilter}>
+          <button
+            className={`${styles.categoryBtn} ${selectedCategory === 'all' ? styles.active : ''}`}
+            onClick={() => setSelectedCategory('all')}
+          >
+            すべて
+          </button>
           {categories.map((category) => (
             <button
               key={category.id}
@@ -110,10 +117,6 @@ export default function News() {
                 再読み込み
               </button>
             </p>
-          </div>
-        ) : loading ? (
-          <div className={styles.loading}>
-            <p className={styles.loadingText}>読み込み中...</p>
           </div>
         ) : (
           <div className={styles.list}>

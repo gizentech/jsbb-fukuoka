@@ -1,3 +1,4 @@
+// lib/firebase.js に修正を加える
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
@@ -21,8 +22,9 @@ if (!getApps().length) {
   app = getApps()[0];
 }
 
-// Firestore のインスタンスを取得する（アプリインスタンスを渡す）
-export const db = getFirestore(app); // ← 修正：appを引数として渡す
+// Firestore のインスタンスを取得する
+export const db = getFirestore(app);
 
 export const auth = getAuth(app);
-export const storage = getStorage(app);
+// 明示的にバケット名を指定して Storage を初期化
+export const storage = getStorage(app, `gs://${process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET}`);

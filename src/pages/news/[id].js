@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { db } from '../../lib/firebase';
 import { doc, getDoc } from 'firebase/firestore';
@@ -7,47 +7,56 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Meta from '../../components/Meta/Meta';
 
-export default function NewsDetail() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [news, setNews] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+export const getStaticPaths = async () => {
+  // 初期ビルド時に生成するパスを空にする
+  return {
+    paths: [],
+    fallback: 'blocking' // ページが存在しなければビルド時に生成
+  };
+};
 
-  useEffect(() => {
-    if (!id) return;
+export const getStaticProps = async ({ params }) => {
+  try {
+    const newsRef = doc(db, 'news', params.id);
+    const docSnap = await getDoc(newsRef);
 
-    const fetchNews = async () => {
-      try {
-        const newsRef = doc(db, 'news', id);
-        const docSnap = await getDoc(newsRef);
+    if (docSnap.exists()) {
+      const data = docSnap.data();
+      const news = {
+        id: docSnap.id,
+        title: data.title || '',
+        content: data.content ? data.content.replace(/\|\|n\|\|/g, '\n') : '',
+        category: data.category || '',
+        createdAt: data.createdAt?.toDate?.() 
+          ? data.createdAt.toDate().toISOString()
+          : new Date().toISOString(),
+      };
 
-        if (docSnap.exists()) {
-          const data = docSnap.data();
-          setNews({
-            id: docSnap.id,
-            title: data.title || '',
-            content: data.content ? data.content.replace(/\|\|n\|\|/g, '\n') : '',
-            category: data.category || '',
-            createdAt: data.createdAt?.toDate?.() 
-              ? data.createdAt.toDate().toISOString()
-              : new Date().toISOString(),
-          });
-        } else {
-          setError('ニュースが見つかりませんでした');
-        }
-      } catch (error) {
-        console.error('Error fetching news:', error);
-        setError('ニュースの取得に失敗しました');
-      } finally {
-        setLoading(false);
-      }
+      return {
+        props: { news },
+        revalidate: 3600 // 1時間ごとに再生成
+      };
+    } else {
+      return {
+        notFound: true,
+        revalidate: 60 // 1分後に再検証
+      };
+    }
+  } catch (error) {
+    console.error('Error fetching news:', error);
+    return {
+      notFound: true,
+      revalidate: 60
     };
+  }
+};
 
-    fetchNews();
-  }, [id]);
+export default function NewsDetail({ news }) {
+  const router = useRouter();
 
-  if (loading) {
+  // fallbackが'blocking'の場合は不要ですが、
+  // fallbackを'true'に変更する場合に必要になります
+  if (router.isFallback) {
     return (
       <div className={styles.container}>
         <Header />
@@ -57,11 +66,11 @@ export default function NewsDetail() {
     );
   }
 
-  if (error || !news) {
+  if (!news) {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.error}>{error || 'ニュースが見つかりませんでした'}</div>
+        <div className={styles.error}>ニュースが見つかりませんでした</div>
         <Footer />
       </div>
     );
