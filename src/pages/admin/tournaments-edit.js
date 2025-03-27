@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { db, storage } from '../../lib/firebase';
 import { collection, query, getDocs, updateDoc, doc, orderBy } from 'firebase/firestore';
-import { ref, uploadBytes, getDownloadURL, deleteObject } from 'firebase/storage';
+import { ref, deleteObject } from 'firebase/storage';
 import AdminLayout from '../../components/AdminLayout/AdminLayout';
 import styles from '../../styles/admin/TournamentEdit.module.css';
 
@@ -12,6 +12,19 @@ const classNames = {
  'adult-b': '一般B級',
  'adult-c': '一般C級',
 };
+
+// Firebase Storage URLを修正するヘルパー関数
+function fixStorageUrl(url) {
+  if (!url) return url;
+  // 古いURLパターンを新しいパターンに変換
+  return url.replace('jsbb-kurume.appspot.com', 'jsbb-kurume.firebasestorage.app');
+}
+
+// プロキシURLを取得する関数
+function getProxiedUrl(url) {
+  if (!url) return '';
+  return `/api/file-proxy?url=${encodeURIComponent(url)}`;
+}
 
 export default function TournamentEdit() {
  const [tournaments, setTournaments] = useState([]);
@@ -48,18 +61,43 @@ export default function TournamentEdit() {
    }
  };
 
+ // サーバーサイドAPIを使用するファイルアップロード
  const handleFileUpload = async (file, tournamentId) => {
    if (!file) return '';
+   
    const timestamp = Date.now().toString();
    const fileName = `tournaments/${tournamentId}/files/${timestamp}_${file.name}`;
-   const storageRef = ref(storage, fileName);
-   await uploadBytes(storageRef, file);
-   return await getDownloadURL(storageRef);
+   
+   // FormDataを作成
+   const formData = new FormData();
+   formData.append('file', file);
+   formData.append('path', fileName);
+   
+   try {
+     // サーバーサイドAPIを呼び出し
+     const response = await fetch('/api/upload-file', {
+       method: 'POST',
+       body: formData,
+     });
+     
+     if (!response.ok) {
+       throw new Error('ファイルアップロードに失敗しました');
+     }
+     
+     const data = await response.json();
+     return data.fileUrl;
+   } catch (error) {
+     console.error('File upload error:', error);
+     alert('ファイルアップロードに失敗しました: ' + error.message);
+     return '';
+   }
  };
 
  const getFilePathFromUrl = (url) => {
    try {
-     const decodedUrl = decodeURIComponent(url);
+     // URLを修正してから処理
+     const fixedUrl = fixStorageUrl(url);
+     const decodedUrl = decodeURIComponent(fixedUrl);
      const startIndex = decodedUrl.indexOf('/o/') + 3;
      const endIndex = decodedUrl.indexOf('?');
      return decodedUrl.substring(startIndex, endIndex);
@@ -76,9 +114,19 @@ export default function TournamentEdit() {
 
    try {
      if (update.fileUrl) {
-       const fileRef = ref(storage, getFilePathFromUrl(update.fileUrl));
        try {
-         await deleteObject(fileRef);
+         // サーバーサイドでファイルを削除
+         const response = await fetch('/api/delete-file', {
+           method: 'POST',
+           headers: {
+             'Content-Type': 'application/json',
+           },
+           body: JSON.stringify({ path: getFilePathFromUrl(update.fileUrl) }),
+         });
+         
+         if (!response.ok) {
+           console.error('ファイル削除APIエラー');
+         }
        } catch (error) {
          console.error('Error deleting file:', error);
        }
@@ -111,8 +159,13 @@ export default function TournamentEdit() {
 
    try {
      let fileUrl = formData.fileUrl;
+     
      if (formData.file) {
        fileUrl = await handleFileUpload(formData.file, selectedTournament.tournamentId);
+       if (!fileUrl) {
+         // アップロード失敗時は処理を中断
+         return;
+       }
      }
 
      const now = new Date().toISOString();
@@ -305,7 +358,7 @@ export default function TournamentEdit() {
                        <button
                          type="button"
                          className={styles.fileButton}
-                         onClick={() => window.open(formData.fileUrl, '_blank')}
+                         onClick={() => window.open(getProxiedUrl(formData.fileUrl), '_blank')}
                        >
                          表示
                        </button>

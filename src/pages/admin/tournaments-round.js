@@ -1,11 +1,11 @@
-// tournaments-round.jsを修正
-
+// tournaments-round.js
 import { useState, useEffect } from 'react';
 import { db, storage } from '../../lib/firebase';
 import { collection, query, getDocs, updateDoc, doc, orderBy } from 'firebase/firestore';
 import { ref, uploadBytes, getDownloadURL } from 'firebase/storage';
 import AdminLayout from '../../components/AdminLayout/AdminLayout';
 import styles from '../../styles/admin/tournaments-round.module.css';
+import { getProxiedUrl } from '@/lib/storage-helpers';
 
 const classNames = {
   'elementary': '学童',
@@ -14,6 +14,13 @@ const classNames = {
   'adult-b': '一般B級',
   'adult-c': '一般C級',
 };
+
+// Firebase Storage URLを修正するヘルパー関数
+function fixStorageUrl(url) {
+  if (!url) return url;
+  // 古いURLパターンを新しいパターンに変換
+  return url.replace('jsbb-kurume.appspot.com', 'jsbb-kurume.firebasestorage.app');
+}
 
 export default function TournamentRound() {
   const [tournaments, setTournaments] = useState([]);
@@ -61,7 +68,9 @@ export default function TournamentRound() {
       if (formData.file) {
         const fileRef = ref(storage, `tournaments/${selectedTournament.tournamentId}/files/${Date.now()}_${formData.file.name}`);
         await uploadBytes(fileRef, formData.file);
-        fileUrl = await getDownloadURL(fileRef);
+        const downloadURL = await getDownloadURL(fileRef);
+        // URLを修正して保存
+        fileUrl = fixStorageUrl(downloadURL);
       }
 
       const now = new Date().toISOString();
@@ -104,84 +113,84 @@ export default function TournamentRound() {
         <div className={styles.tournamentSelect}>
           <div className={styles.filterGroup}>
             <select
-              className={styles.classFilter}
-              onChange={(e) => setSelectedClass(e.target.value)}
-              value={selectedClass}
-            >
-              <option value="">全クラス</option>
-              {Object.entries(classNames).map(([key, value]) => (
-                <option key={key} value={key}>
-                  {value}
-                </option>
-              ))}
-            </select>
-            <select
-              className={styles.tournamentDropdown}
-              onChange={(e) => {
-                const tournament = tournaments.find(t => t.id === e.target.value);
-                setSelectedTournament(tournament);
-              }}
-              value={selectedTournament?.id || ''}
-            >
-              <option value="">大会を選択してください</option>
-              {tournaments
-                .filter(tournament => !selectedClass || tournament.class.includes(selectedClass))
-                .map((tournament) => (
-                  <option key={tournament.id} value={tournament.id}>
-                    {tournament.title1} {tournament.title2}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
+className={styles.classFilter}
+onChange={(e) => setSelectedClass(e.target.value)}
+value={selectedClass}
+>
+<option value="">全クラス</option>
+{Object.entries(classNames).map(([key, value]) => (
+  <option key={key} value={key}>
+    {value}
+  </option>
+))}
+</select>
+<select
+className={styles.tournamentDropdown}
+onChange={(e) => {
+  const tournament = tournaments.find(t => t.id === e.target.value);
+  setSelectedTournament(tournament);
+}}
+value={selectedTournament?.id || ''}
+>
+<option value="">大会を選択してください</option>
+{tournaments
+  .filter(tournament => !selectedClass || tournament.class.includes(selectedClass))
+  .map((tournament) => (
+    <option key={tournament.id} value={tournament.id}>
+      {tournament.title1} {tournament.title2}
+    </option>
+  ))}
+</select>
+</div>
+</div>
 
-        {selectedTournament && (
-          <form onSubmit={handleSubmit} className={styles.roundForm}>
-            <div className={styles.formGroup}>
-              <label>年度</label>
-              <input
-                type="number"
-                value={formData.year}
-                onChange={(e) => setFormData({ ...formData, year: e.target.value })}
-                required
-              />
-            </div>
-            <div className={styles.formGroup}>
-              <label>回数</label>
-              <input
-                type="text"
-                value={formData.count}
-                onChange={(e) => setFormData({ ...formData, count: e.target.value })}
-                required
-                placeholder="例: 1"
-              />
-            </div>
+{selectedTournament && (
+<form onSubmit={handleSubmit} className={styles.roundForm}>
+<div className={styles.formGroup}>
+<label>年度</label>
+<input
+  type="number"
+  value={formData.year}
+  onChange={(e) => setFormData({ ...formData, year: e.target.value })}
+  required
+/>
+</div>
+<div className={styles.formGroup}>
+<label>回数</label>
+<input
+  type="text"
+  value={formData.count}
+  onChange={(e) => setFormData({ ...formData, count: e.target.value })}
+  required
+  placeholder="例: 1"
+/>
+</div>
 
-            <div className={styles.formGroup}>
-              <label>内容</label>
-              <textarea
-                value={formData.body}
-                onChange={(e) => setFormData({ ...formData, body: e.target.value })}
-                rows={5}
-                placeholder="大会の詳細情報を入力"
-              />
-            </div>
+<div className={styles.formGroup}>
+<label>内容</label>
+<textarea
+  value={formData.body}
+  onChange={(e) => setFormData({ ...formData, body: e.target.value })}
+  rows={5}
+  placeholder="大会の詳細情報を入力"
+/>
+</div>
 
-            <div className={styles.formGroup}>
-              <label>関連ファイル</label>
-              <input
-                type="file"
-                onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
-              />
-            </div>
+<div className={styles.formGroup}>
+<label>関連ファイル</label>
+<input
+  type="file"
+  onChange={(e) => setFormData({ ...formData, file: e.target.files[0] })}
+  accept=".pdf,.doc,.docx,.xls,.xlsx"
+/>
+</div>
 
-            <button type="submit" className={styles.submitButton}>
-              追加する
-            </button>
-          </form>
-        )}
-      </div>
-    </AdminLayout>
-  );
+<button type="submit" className={styles.submitButton}>
+追加する
+</button>
+</form>
+)}
+</div>
+</AdminLayout>
+);
 }
