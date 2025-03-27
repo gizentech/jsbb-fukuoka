@@ -1,161 +1,228 @@
-import { useState, useEffect } from 'react';
+// ファイル: /pages/tournaments/[id].js
+import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/router';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Meta from '../../components/Meta/Meta';
 import styles from '../../styles/TournamentDetail.module.css';
 import Image from 'next/image';
-import { FaBars, FaTimes } from 'react-icons/fa';
+import { pdfjs } from 'react-pdf';
 
-export default function TournamentDetail() {
-  const router = useRouter();
-  const { id } = router.query;
-  const [tournament, setTournament] = useState(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [selectedUpdate, setSelectedUpdate] = useState('');
-  const [fontSize, setFontSize] = useState({ title1: 2.5, title2: 1.8 });
+// PDF.js workerの設定
+pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
+
+// PDFサムネイルコンポーネント - 修正版
+const PdfThumbnail = ({ pdfUrl }) => {
+  const [thumbnailSrc, setThumbnailSrc] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (!id) return;
+    if (!pdfUrl) return;
 
-    const fetchTournament = async () => {
+    const renderPdf = async () => {
       try {
-        // Newt CMS API設定
-        const SPACE_UID = 'jsbb-kurume';
-        const TOKEN = 'vdfn4Mdxq2GaU2YMDW1dTIBB7fdgKGLV-pQZfufNZbs';
-        const APP_UID = 'tournament';
+        setLoading(true);
+        const loadingTask = pdfjs.getDocument(pdfUrl);
+        const pdf = await loadingTask.promise;
+        const page = await pdf.getPage(1); // 最初のページを取得
         
-        const headers = {
-          'Authorization': `Bearer ${TOKEN}`,
-          'Content-Type': 'application/json'
+        const canvas = document.createElement('canvas');
+        const viewport = page.getViewport({ scale: 1.0 }); // スケール調整
+        
+        canvas.height = viewport.height;
+        canvas.width = viewport.width;
+        
+        const renderContext = {
+          canvasContext: canvas.getContext('2d'),
+          viewport: viewport
         };
         
-        // tour-createからIDに基づき大会マスター情報を取得
-        const masterUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tour-create?id=${id}`;
-        console.log('Fetching master data:', masterUrl);
+        await page.render(renderContext).promise;
         
-        const masterResponse = await fetch(masterUrl, { headers });
-        
-        if (!masterResponse.ok) {
-          console.error(`Master API Error: ${masterResponse.status} ${masterResponse.statusText}`);
-          throw new Error(`API request failed with status ${masterResponse.status}`);
-        }
-        
-        const masterData = await masterResponse.json();
-        
-        if (!masterData.items || masterData.items.length === 0) {
-          setError('大会情報が見つかりませんでした');
-          setLoading(false);
-          return;
-        }
-        
-        const masterInfo = masterData.items[0];
-        console.log('Master info:', masterInfo);
-        
-        // 正しいクエリパラメータを使用：tournamentは参照フィールド名
-        const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tournament?tournament=${masterInfo._id}&depth=1`;
-        console.log('Fetching tournament data:', tournamentUrl);
-        
-        const tournamentResponse = await fetch(tournamentUrl, { headers });
-        
-        if (!tournamentResponse.ok) {
-          console.error(`Tournament API Error: ${tournamentResponse.status} ${tournamentResponse.statusText}`);
-          throw new Error(`Tournament API request failed with status ${tournamentResponse.status}`);
-        }
-        
-        const tournamentData = await tournamentResponse.json();
-        const tournamentItems = tournamentData.items || [];
-        console.log('Tournament items:', tournamentItems);
-        
-        // マスター情報だけで表示できるように準備
-        let tournamentInfo = {
-          id: masterInfo._id,
-          title1: masterInfo['tournament-name'] || '',
-          title2: '', // サブタイトルから回数を除去
-          thumbnail: masterInfo['cover-img']?.src || '/images/top0.webp',
-          description: masterInfo['tournament-info'] || '',  // 大会の説明文を追加
-          updates: []
-        };
-        
-        // 更新情報を構築
-        if (tournamentItems.length > 0) {
-          const updates = tournamentItems.map(item => {
-            console.log('Processing tournament item:', item);
-            
-            // 日付をフォーマット
-            const formatDate = (dateString) => {
-              if (!dateString) return '';
-              const date = new Date(dateString);
-              return date.toLocaleDateString('ja-JP', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              });
-            };
-            
-            const startDate = formatDate(item.startdate);
-            const endDate = formatDate(item['end-date']);
-            
-            return {
-              count: item['tournament-no'] ? String(item['tournament-no']) : '1',
-              year: item.year || new Date().getFullYear(),
-              updatedAt: item._sys.updatedAt || new Date().toISOString(),
-              body: item.infomation || '',  // 大会詳細情報
-              startDate: startDate,         // 開始日
-              endDate: endDate,             // 終了日
-              fileUrl: item.file?.src || null,
-              fileName: item.file?.fileName || 'トーナメント表.pdf',
-              meta: item.meta || ''         // メタ情報も追加
-            };
-          });
-          
-          // 更新情報を回数の降順でソート（数値として比較）
-          updates.sort((a, b) => parseInt(b.count) - parseInt(a.count));
-          
-          // 最新の大会情報を取得（回数はサブタイトルから除外）
-          tournamentInfo = {
-            id: masterInfo._id,
-            title1: masterInfo['tournament-name'] || '',
-            title2: '', // サブタイトルから回数を除去
-            thumbnail: masterInfo['cover-img']?.src || '/images/top0.webp',
-            description: masterInfo['tournament-info'] || '',  // 大会の説明文
-            updates: updates
-          };
-          
-          // 最も大きい回数（最新）を初期選択
-          if (updates.length > 0) {
-            // updates配列はすでに回数の降順でソート済みなので、最初の要素が最新
-            setSelectedUpdate(updates[0].count);
-          }
-        } else {
-          // トーナメントデータが取得できない場合は、マスター情報だけで表示
-          tournamentInfo.updates = [{
-            count: '-',
-            year: new Date().getFullYear(),
-            updatedAt: masterInfo._sys.updatedAt,
-            body: masterInfo['tournament-info'] || '大会の詳細情報はまもなく公開されます。',
-            startDate: '',
-            endDate: '',
-            fileUrl: null,
-            fileName: null,
-            meta: masterInfo.meta || ''
-          }];
-          setSelectedUpdate('1');
-        }
-        
-        setTournament(tournamentInfo);
-      } catch (error) {
-        console.error('Error fetching tournament:', error);
-        setError('大会情報の取得に失敗しました: ' + error.message);
-      } finally {
+        // キャンバスの内容をBase64画像に変換
+        const thumbnailDataUrl = canvas.toDataURL('image/png');
+        setThumbnailSrc(thumbnailDataUrl);
+        setLoading(false);
+      } catch (err) {
+        console.error('Error rendering PDF:', err);
+        setError(err);
         setLoading(false);
       }
     };
+    
+    renderPdf();
+  }, [pdfUrl]);
 
-    fetchTournament();
-  }, [id]);
+  if (loading) return <div className={styles.thumbnailLoading}>サムネイル読み込み中...</div>;
+  if (error) return <div className={styles.thumbnailError}>プレビューを表示できません</div>;
+  
+  return (
+    <div className={styles.pdfPreviewContainer}>
+      {thumbnailSrc && (
+        <img 
+          src={thumbnailSrc} 
+          alt="PDFサムネイル" 
+          className={styles.pdfCanvas}
+        />
+      )}
+    </div>
+  );
+};
+
+export async function getStaticPaths() {
+  try {
+    // Newt CMS API設定
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'tournament';
+    
+    const headers = {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+
+    // 大会マスター情報を取得
+    const masterUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tour-create`;
+    
+    const masterResponse = await fetch(masterUrl, { headers });
+    
+    if (!masterResponse.ok) {
+      console.error('Failed to fetch tournament paths');
+      return { paths: [], fallback: false };
+    }
+    
+    const masterData = await masterResponse.json();
+    
+    // パスの生成
+    const paths = masterData.items.map((tournament) => ({
+      params: { id: tournament.id || tournament._id }
+    }));
+
+    return { paths, fallback: 'blocking' }; // blocking に変更してISRをサポート
+  } catch (error) {
+    console.error('Error generating tournament paths:', error);
+    return { paths: [], fallback: 'blocking' }; // blocking に変更
+  }
+}
+
+export async function getStaticProps({ params }) {
+  try {
+    // Newt CMS API設定
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'tournament';
+    
+    const headers = {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+    
+    // tour-createからIDに基づき大会マスター情報を取得
+    const masterUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tour-create?id=${params.id}`;
+    
+    const masterResponse = await fetch(masterUrl, { headers });
+    
+    if (!masterResponse.ok) {
+      return { notFound: true, revalidate: 60 };
+    }
+    
+    const masterData = await masterResponse.json();
+    
+    if (!masterData.items || masterData.items.length === 0) {
+      return { notFound: true, revalidate: 60 };
+    }
+    
+    const masterInfo = masterData.items[0];
+    
+    // 正しいクエリパラメータを使用：tournamentは参照フィールド名
+    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tournament?tournament=${masterInfo._id}&depth=1`;
+    
+    const tournamentResponse = await fetch(tournamentUrl, { headers });
+    
+    if (!tournamentResponse.ok) {
+      return { notFound: true, revalidate: 60 };
+    }
+    
+    const tournamentData = await tournamentResponse.json();
+    const tournamentItems = tournamentData.items || [];
+    
+    // マスター情報だけで表示できるように準備
+    let tournamentInfo = {
+      id: masterInfo._id,
+      title1: masterInfo['tournament-name'] || '',
+      title2: '', 
+      thumbnail: masterInfo['cover-img']?.src || '/images/top0.webp',
+      description: masterInfo['tournament-info'] || '',
+      updates: []
+    };
+    
+    // 更新情報を構築
+    if (tournamentItems.length > 0) {
+      const updates = tournamentItems.map(item => {
+        const formatDate = (dateString) => {
+          if (!dateString) return '';
+          const date = new Date(dateString);
+          return date.toLocaleDateString('ja-JP', { 
+            year: 'numeric', 
+            month: 'long', 
+            day: 'numeric' 
+          });
+        };
+        
+        const startDate = formatDate(item.startdate);
+        const endDate = formatDate(item['end-date']);
+        
+        return {
+          count: item['tournament-no'] ? String(item['tournament-no']) : '1',
+          year: item.year || new Date().getFullYear(),
+          updatedAt: item._sys.updatedAt || new Date().toISOString(),
+          body: item.infomation || '',
+          startDate: startDate,
+          endDate: endDate,
+          fileUrl: item.file?.src || null,
+          fileName: item.file?.fileName || 'トーナメント表.pdf',
+          meta: item.meta || ''
+        };
+      });
+      
+      updates.sort((a, b) => parseInt(b.count) - parseInt(a.count));
+      
+      tournamentInfo = {
+        ...tournamentInfo,
+        updates: updates
+      };
+    } else {
+      tournamentInfo.updates = [{
+        count: '-',
+        year: new Date().getFullYear(),
+        updatedAt: masterInfo._sys.updatedAt,
+        body: masterInfo['tournament-info'] || '大会の詳細情報はまもなく公開されます。',
+        startDate: '',
+        endDate: '',
+        fileUrl: null,
+        fileName: null,
+        meta: masterInfo.meta || ''
+      }];
+    }
+    
+    return {
+      props: {
+        tournament: tournamentInfo
+      },
+      revalidate: 60 // 60秒ごとに再検証
+    };
+  } catch (error) {
+    console.error('Error fetching tournament:', error);
+    return { 
+      notFound: true,
+      revalidate: 60
+    };
+  }
+}
+
+export default function TournamentDetail({ tournament }) {
+  const [fontSize, setFontSize] = useState({ title1: 2.5, title2: 1.8 });
 
   useEffect(() => {
     const adjustFontSize = () => {
@@ -182,7 +249,7 @@ export default function TournamentDetail() {
 
       setFontSize({
         title1: currentSize,
-        title2: currentSize * 0.72 // title2 は title1 の 72% のサイズ
+        title2: currentSize * 0.72
       });
     };
 
@@ -191,41 +258,15 @@ export default function TournamentDetail() {
     return () => window.removeEventListener('resize', adjustFontSize);
   }, [tournament]);
 
-  const handleUpdateSelect = (count) => {
-    setSelectedUpdate(count);
-    setIsMenuOpen(false);
-  };
-
-  // 選択された回数の更新情報を取得
-  const getSelectedUpdate = () => {
-    if (!tournament || !tournament.updates || !selectedUpdate) return null;
-    return tournament.updates.find(update => update.count === selectedUpdate);
-  };
-
-  if (loading) {
+  if (!tournament) {
     return (
       <div className={styles.wrapper}>
         <Header />
-        <div className={styles.loadingContainer}>
-          <div className={styles.loadingSpinner}></div>
-          <p>読み込み中...</p>
-        </div>
+        <div className={styles.error}>大会情報が見つかりませんでした</div>
         <Footer />
       </div>
     );
   }
-
-  if (error || !tournament) {
-    return (
-      <div className={styles.wrapper}>
-        <Header />
-        <div className={styles.error}>{error || '大会情報が見つかりませんでした'}</div>
-        <Footer />
-      </div>
-    );
-  }
-
-  const selectedUpdateData = getSelectedUpdate();
 
   return (
     <div className={styles.wrapper}>
@@ -266,27 +307,9 @@ export default function TournamentDetail() {
               </h2>
             )}
           </div>
-          
-          {tournament.updates && tournament.updates.length > 0 && (
-            <div className={styles.pcSelect}>
-              <select 
-                value={selectedUpdate}
-                onChange={(e) => handleUpdateSelect(e.target.value)}
-                className={styles.updateSelect}
-              >
-                <option value="">回数を選択</option>
-                {tournament.updates.map((update, index) => (
-                  <option key={index} value={update.count}>
-                    第{update.count}回 {update.year && `(${update.year}年)`}
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
         </div>
       </div>
 
-      {/* 大会概要エリア */}
       {tournament.description && (
         <div className={styles.tournamentDescription}>
           <h3 className={styles.descriptionTitle}>大会概要</h3>
@@ -297,82 +320,60 @@ export default function TournamentDetail() {
         </div>
       )}
 
-      {tournament.updates && tournament.updates.length > 0 && (
-        <div className={styles.spMenu}>
-          <button 
-            className={styles.menuButton}
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-            aria-label="メニューを開く"
-          >
-            {isMenuOpen ? <FaTimes /> : <FaBars />}
-          </button>
-          {isMenuOpen && (
-            <div className={styles.mobileMenu}>
-              {tournament.updates.map((update, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleUpdateSelect(update.count)}
-                  className={styles.mobileMenuItem}
-                >
-                  第{update.count}回 {update.year && `(${update.year}年)`}
-                </button>
-              ))}
-            </div>
-          )}
-        </div>
-      )}
-
       <main className={styles.main}>
-        {selectedUpdateData ? (
-          <div className={styles.selectedUpdateContainer}>
-            <div className={styles.updateHeader}>
-              <h2 className={styles.updateTitle}>
-                第{selectedUpdateData.count}回 {selectedUpdateData.year && `(${selectedUpdateData.year}年)`}
-              </h2>
-            </div>
-              
-            {/* 期間情報 */}
-            {(selectedUpdateData.startDate || selectedUpdateData.endDate) && (
-              <div className={styles.tournamentPeriod}>
-                <p className={styles.periodTitle}>開催期間:</p>
-                <p className={styles.periodDate}>
-                  {selectedUpdateData.startDate}
-                  {selectedUpdateData.endDate && selectedUpdateData.startDate !== selectedUpdateData.endDate && ` 〜 ${selectedUpdateData.endDate}`}
+        {tournament.updates && tournament.updates.length > 0 ? (
+          <div className={styles.allUpdatesContainer}>
+            {tournament.updates.map((update, index) => (
+              <div key={index} className={styles.updateItem}>
+                <div className={styles.updateHeader}>
+                  <h2 className={styles.updateTitle}>
+                    第{update.count}回 {update.year && `(${update.year}年)`}
+                  </h2>
+                </div>
+                
+                {(update.startDate || update.endDate) && (
+                  <div className={styles.tournamentPeriod}>
+                    <p className={styles.periodTitle}>開催期間:</p>
+                    <p className={styles.periodDate}>
+                      {update.startDate}
+                      {update.endDate && update.startDate !== update.endDate && ` 〜 ${update.endDate}`}
+                    </p>
+                  </div>
+                )}
+                
+                <p className={styles.updateDate}>
+                  更新日: {new Date(update.updatedAt).toLocaleString('ja-JP')}
                 </p>
+                
+                {update.fileUrl && (
+                  <>
+                    <PdfThumbnail pdfUrl={update.fileUrl} />
+                    <a 
+                      href={update.fileUrl}
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className={styles.pdfLink}
+                    >
+                      トーナメント表を開く
+                    </a>
+                  </>
+                )}
+                
+                {update.body && (
+                  <div className={styles.detailContent}>
+                    <h3 className={styles.detailTitle}>大会詳細</h3>
+                    <div dangerouslySetInnerHTML={{ __html: update.body }} />
+                  </div>
+                )}
+                
+                {update.meta && (
+                  <div className={styles.metaInfo}>
+                    <h3 className={styles.metaTitle}>備考</h3>
+                    <p>{update.meta}</p>
+                  </div>
+                )}
               </div>
-            )}
-            
-            <p className={styles.updateDate}>
-              更新日: {new Date(selectedUpdateData.updatedAt).toLocaleString('ja-JP')}
-            </p>
-            
-            {/* PDFリンク */}
-            {selectedUpdateData.fileUrl && (
-              <a 
-                href={selectedUpdateData.fileUrl}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className={styles.pdfLink}
-              >
-              トーナメント表を開く
-              </a>
-            )}
-            
-            {/* 大会詳細情報を直接表示 */}
-            {selectedUpdateData.body && (
-              <div className={styles.detailContent}>
-                <h3 className={styles.detailTitle}>大会詳細</h3>
-                <div dangerouslySetInnerHTML={{ __html: selectedUpdateData.body }} />
-              </div>
-            )}
-            
-            {/* メタ情報があれば表示 */}
-            {selectedUpdateData.meta && (
-              <div className={styles.metaInfo}>
-                <h3 className={styles.metaTitle}>備考</h3>
-                <p>{selectedUpdateData.meta}</p>
-              </div>
-            )}
+            ))}
           </div>
         ) : (
           <div className={styles.noUpdates}>

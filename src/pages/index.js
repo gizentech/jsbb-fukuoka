@@ -1,8 +1,6 @@
 // pages/index.js
-import { useState } from 'react'
+import React from 'react'
 import styles from '../styles/Home.module.css'
-import { db } from '../lib/firebase'
-import { collection, query, orderBy, limit, getDocs } from 'firebase/firestore'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import TopicSection from '../components/TopicSection/TopicSection'
@@ -11,34 +9,40 @@ import Link from 'next/link'
 
 export async function getStaticProps() {
   try {
-    // Firebaseからのニュース取得
-    const q = query(
-      collection(db, 'news'),
-      orderBy('createdAt', 'desc'),
-      limit(5)
-    );
-    
-    const querySnapshot = await getDocs(q);
-    const newsData = querySnapshot.docs.map(doc => {
-      const data = doc.data();
-      return {
-        id: doc.id,
-        ...data,
-        createdAt: data.createdAt?.toDate?.() 
-          ? data.createdAt.toDate().toISOString() 
-          : new Date().toISOString()
-      };
-    });
-
-    // Newt CMS API設定
-    const SPACE_UID = 'jsbb-kurume';
-    const TOKEN = 'vdfn4Mdxq2GaU2YMDW1dTIBB7fdgKGLV-pQZfufNZbs';
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
     const APP_UID = 'tournament';
     
     const headers = {
       'Authorization': `Bearer ${TOKEN}`,
       'Content-Type': 'application/json'
     };
+
+    // Newt CMSからニュース取得
+    const newtNewsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/information/post?limit=5&order=-_sys.createdAt`;
+    let newsData = [];
+    
+    try {
+      const newsResponse = await fetch(newtNewsUrl, { headers });
+      
+      if (newsResponse.ok) {
+        const newsResult = await newsResponse.json();
+        
+        if (newsResult.items && newsResult.items.length > 0) {
+          newsData = newsResult.items.map(item => ({
+            id: item._id,
+            type: 'news',
+            title: item.title || '',
+            createdAt: item._sys?.createdAt || new Date().toISOString()
+          }));
+        }
+      } else {
+        console.error(`News API Error: ${newsResponse.status}`);
+      }
+    } catch (newsError) {
+      console.error('Error processing news:', newsError);
+    }
 
     // 申込書データを取得（最新6件）
     const applicationUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/applicationform?limit=6`;
@@ -66,7 +70,7 @@ export async function getStaticProps() {
                 if (tourResponse.ok) {
                   const tourData = await tourResponse.json();
                   tournamentName = tourData['tournament-name'] || '';
-                  tournamentId = tourData.id || '';
+                  tournamentId = tourData._id || '';
                 }
               } catch (e) {
                 console.error('Error fetching tournament info:', e);
@@ -75,18 +79,17 @@ export async function getStaticProps() {
             
             return {
               id: app._id,
+              type: 'application',
               title: app['application-title'] || '大会申込書',
               fileUrl: app.file && app.file.length > 0 ? app.file[0].src : null,
               fileName: app.file && app.file.length > 0 ? app.file[0].fileName : '申込書.pdf',
               uploadDate: app['upload-date'] || app._sys.updatedAt,
+              createdAt: app['upload-date'] || app._sys.updatedAt,
               info: app['application-info'] || '',
               tournamentId: tournamentId,
               tournamentName: tournamentName
             };
           }));
-          
-          // アップロード日でソート
-          applications.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
         }
       } else {
         console.error(`Application API Error: ${applicationResponse.status}`);
@@ -95,28 +98,39 @@ export async function getStaticProps() {
       console.error('Error processing applications:', appError);
     }
     
+    // ニュースと申込書を統合して日付でソート
+    const combinedItems = [...newsData, ...applications].sort((a, b) => 
+      new Date(b.createdAt) - new Date(a.createdAt)
+    );
+    
+    // 最新の5件のみ取得
+    const latestItems = combinedItems.slice(0, 5);
+    
     return {
-      props: {
+      props: { 
         news: newsData,
         applications: applications,
+        latestItems: latestItems,
         error: null
       },
-      revalidate: 300 // 5分ごとに再生成
+      revalidate: 60 // 60秒ごとに再検証
     };
+
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       props: {
         news: [],
         applications: [],
+        latestItems: [],
         error: 'データの読み込みに失敗しました: ' + error.message
       },
-      revalidate: 60 // エラー時は1分後に再試行
+      revalidate: 60 // エラー時も再検証
     };
   }
 }
 
-export default function Home({ news, applications = [], error }) {
+export default function Home({ news = [], applications = [], latestItems = [], error = null }) {
   // カテゴリー情報を更新（古いIDと新しいIDのマッピング）
   const tournamentCategories = [
     { id: 'es-class', title: '学童' },
@@ -155,22 +169,27 @@ export default function Home({ news, applications = [], error }) {
 
             <div className={styles.card}>
               <div className={styles.cardHeader}>
-                <h2>お知らせ</h2>
-                <span>INFORMATION</span>
+                <h2>最新情報</h2>
+                <span>LATEST INFORMATION</span>
               </div>
               <div className={styles.newsList}>
                 {error ? (
                   <p className={styles.errorMessage}>{error}</p>
-                ) : news.length === 0 ? (
+                ) : latestItems.length === 0 ? (
                   <p>お知らせはありません</p>
                 ) : (
-                  news.map((item) => (
+                  latestItems.map((item) => (
                     <Link 
-                      key={item.id}
-                      href={`/news/${item.id}`}
+                      key={`${item.type}-${item.id}`}
+                      href={item.type === 'news' ? `/news/${item.id}` : `/application/${item.id}`}
                       className={styles.newsItem}
                     >
-                      <span className={styles.newsTitle}>{item.title}</span>
+                      <div className={styles.itemContent}>
+                        <span className={styles.itemDate}>
+                          {new Date(item.createdAt).toLocaleDateString('ja-JP')}
+                        </span>
+                        <span className={styles.itemTitle}>{item.title}</span>
+                      </div>
                       <span className={styles.arrow}>→</span>
                     </Link>
                   ))
@@ -179,57 +198,6 @@ export default function Home({ news, applications = [], error }) {
             </div>
           </div>
         </section>
-
-        {/* 申込書セクション */}
-        {applications && applications.length > 0 && (
-          <section className={styles.applicationSection}>
-            <div className={styles.sectionHeader}>
-              <h2>大会申込書</h2>
-              <span>APPLICATIONS</span>
-            </div>
-            <div className={styles.applicationList}>
-              {applications.map((app) => (
-                <div key={app.id} className={styles.applicationCard}>
-                  <div className={styles.applicationInfo}>
-                    <h3 className={styles.applicationTitle}>
-                      <Link href={`/application/${app.id}`}>
-                        {app.title}
-                      </Link>
-                    </h3>
-                    {app.tournamentName && (
-                      <p className={styles.tournamentName}>
-                        {app.tournamentId ? (
-                          <Link href={`/tournaments/${app.tournamentId}`}>
-                            {app.tournamentName}
-                          </Link>
-                        ) : (
-                          app.tournamentName
-                        )}
-                      </p>
-                    )}
-                    <p className={styles.uploadDate}>
-                      アップロード日: {new Date(app.uploadDate).toLocaleDateString('ja-JP')}
-                    </p>
-                  </div>
-                  {app.fileUrl && (
-                    <a 
-                      href={app.fileUrl}
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className={styles.downloadButton}
-                    >
-                      ダウンロード
-                    </a>
-                  )}
-                </div>
-              ))}
-            </div>
-            <Link href="/application" className={styles.moreLink}>
-              すべての申込書を見る
-              <span className={styles.arrow}>→</span>
-            </Link>
-          </section>
-        )}
 
         <section className={styles.topicContainer}>
           <h2>特別協賛社</h2>

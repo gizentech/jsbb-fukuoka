@@ -1,7 +1,5 @@
 // pages/news/index.js
-import { useState } from 'react'
-import { db } from '../../lib/firebase'
-import { collection, query, orderBy, getDocs } from 'firebase/firestore'
+import { useState, useEffect } from 'react'
 import styles from '../../styles/News.module.css'
 import Header from '../../components/Header/Header'
 import Footer from '../../components/Footer/Footer'
@@ -17,63 +15,115 @@ const formatDate = (date) => {
   });
 };
 
+// カテゴリーIDとラベルのマッピング
+const categoryLabels = {
+  'infomation': 'お知らせ',
+  'a-class': 'A級',
+  'b-class': 'B級',
+  'c-class': 'C級',
+  'es-class': '学童',
+  'jhs-class': '少年'
+};
+
 export async function getStaticProps() {
   try {
-    const q = query(
-      collection(db, 'news'),
-      orderBy('createdAt', 'desc')
-    )
-    const querySnapshot = await getDocs(q)
-    const newsData = querySnapshot.docs.map(doc => {
-      const data = doc.data()
-      return {
-        id: doc.id,
-        title: data.title || '',
-        category: data.category || '',
-        createdAt: data.createdAt 
-          ? (typeof data.createdAt.toDate === 'function' 
-              ? data.createdAt.toDate().toISOString() 
-              : new Date(data.createdAt).toISOString())
-          : new Date().toISOString()
-      }
-    })
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const APP_UID = 'information';
+    const MODEL_UID = 'post';
+    const API_TOKEN = process.env.NEWT_API_TOKEN;
 
-    return {
-      props: {
-        news: newsData
-      },
-      revalidate: 60 // 1分ごとに再生成
+    // クエリパラメータの構築
+    const params = new URLSearchParams({
+      select: '_id,title,category,_sys,important',
+      order: '-_sys.createdAt'
+    });
+
+    // Newt CMSから直接データを取得
+    const url = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/${MODEL_UID}?${params.toString()}`;
+    console.log('Fetching news from URL:', url);
+    
+    const res = await fetch(url, {
+      headers: {
+        'Authorization': `Bearer ${API_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!res.ok) {
+      const errorText = await res.text();
+      console.error(`API Error: ${res.status} ${res.statusText}`, errorText);
+      throw new Error(`API error: ${res.status} ${res.statusText}`);
     }
+
+    const data = await res.json();
+    console.log('API Response preview:', JSON.stringify(data).substring(0, 300) + '...');
+    
+    const items = data.items || [];
+
+    // レスポンスをマッピング
+    const newsData = items.map(item => ({
+      id: item._id,
+      title: item.title || '',
+      category: Array.isArray(item.category) && item.category.length > 0 
+        ? item.category[0] 
+        : (typeof item.category === 'string' ? item.category : ''),
+      createdAt: item._sys?.createdAt || new Date().toISOString(),
+      important: item.important || false
+    }));
+    
+    return {
+      props: { 
+        news: newsData,
+        error: null
+      },
+      revalidate: 60 // 60秒ごとに再検証
+    };
+
   } catch (error) {
-    console.error('Error fetching news:', error)
+    console.error('Error fetching news:', error);
     return {
       props: {
         news: [],
         error: 'お知らせの読み込みに失敗しました。ページを更新してください。'
       },
-      revalidate: 30 // エラー時は30秒後に再試行
-    }
+      revalidate: 60 // エラー時も60秒ごとに再検証
+    };
   }
 }
 
 export default function News({ news: initialNews, error: initialError }) {
-  const [news] = useState(initialNews || [])
-  const [error] = useState(initialError || null)
-  const [selectedCategory, setSelectedCategory] = useState('all')
+  const [news] = useState(initialNews || []);
+  const [error] = useState(initialError || null);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [filteredNews, setFilteredNews] = useState([]);
 
+  // カテゴリー定義
   const categories = [
-    { id: 'entry', name: '大会申込' },
-    { id: 'news', name: 'お知らせ' },
-    { id: '学童', name: '学童' },
-    { id: '少年', name: '少年' },
-    { id: '一般A級', name: '一般A級' },
-    { id: '一般B級', name: '一般B級' },
-    { id: '一般C級', name: '一般C級' }
-  ]
+    { id: 'infomation', name: 'お知らせ' },
+    { id: 'es-class', name: '学童' },
+    { id: 'jhs-class', name: '少年' },
+    { id: 'a-class', name: 'A級' },
+    { id: 'b-class', name: 'B級' },
+    { id: 'c-class', name: 'C級' }
+  ];
 
-  const filteredNews = selectedCategory === 'all'
-    ? news
-    : news.filter(item => item.category === selectedCategory)
+  // カテゴリーフィルタリングの適用
+  useEffect(() => {
+    if (selectedCategory === 'all') {
+      setFilteredNews(news);
+    } else {
+      const filtered = news.filter(item => 
+        item.category === selectedCategory
+      );
+      setFilteredNews(filtered);
+    }
+  }, [selectedCategory, news]);
+
+  // 初期表示時にすべてのニュースを表示
+  useEffect(() => {
+    setFilteredNews(news);
+  }, [news]);
 
   return (
     <div className={styles.container}>
@@ -133,10 +183,11 @@ export default function News({ news: initialNews, error: initialError }) {
                         {formatDate(item.createdAt)}
                       </time>
                       <span className={styles.newsCategory}>
-                        {item.category}
+                        {categoryLabels[item.category] || item.category}
                       </span>
                     </div>
                     <h3 className={styles.newsTitle}>
+                      {item.important && <span className={styles.importantBadge}>重要</span>}
                       {item.title}
                     </h3>
                   </div>

@@ -1,52 +1,129 @@
-import { useState } from 'react';
+// pages/news/[id].js
+import React from 'react';
 import { useRouter } from 'next/router';
-import { db } from '../../lib/firebase';
-import { doc, getDoc } from 'firebase/firestore';
 import styles from '../../styles/NewsDetail.module.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Meta from '../../components/Meta/Meta';
 
+// カテゴリーIDとラベルのマッピング
+const categoryLabels = {
+  'infomation': 'お知らせ',
+  'a-class': 'A級',
+  'b-class': 'B級',
+  'c-class': 'C級',
+  'es-class': '学童',
+  'jhs-class': '少年'
+};
+
 export const getStaticPaths = async () => {
-  // 初期ビルド時に生成するパスを空にする
-  return {
-    paths: [],
-    fallback: 'blocking' // ページが存在しなければビルド時に生成
-  };
+  try {
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'information';
+    const MODEL_UID = 'post';
+    
+    const headers = {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+
+    // ニュース一覧データを取得
+    const newsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/${MODEL_UID}`;
+    
+    const newsResponse = await fetch(newsUrl, { headers });
+    
+    if (!newsResponse.ok) {
+      console.error(`News API Error: ${newsResponse.status}`);
+      return { paths: [], fallback: 'blocking' };
+    }
+    
+    const newsData = await newsResponse.json();
+    
+    // パスの生成
+    const paths = newsData.items.map((news) => ({
+      params: { id: news._id }
+    }));
+
+    return { 
+      paths, 
+      fallback: 'blocking' // blocking に変更
+    };
+  } catch (error) {
+    console.error('Error generating paths:', error);
+    return { paths: [], fallback: 'blocking' }; // blocking に変更
+  }
 };
 
 export const getStaticProps = async ({ params }) => {
   try {
-    const newsRef = doc(db, 'news', params.id);
-    const docSnap = await getDoc(newsRef);
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'information';
+    const MODEL_UID = 'post';
+    
+    const headers = {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    };
 
-    if (docSnap.exists()) {
-      const data = docSnap.data();
+    // クエリパラメータの構築
+    const queryParams = new URLSearchParams({
+      select: '_id,title,info-body,category,_sys,important,info-file'
+    });
+    
+    // whereパラメータを追加
+    const whereCondition = JSON.stringify({ '_id': params.id });
+    queryParams.append('where', whereCondition);
+
+    // Newt CMSからデータを取得
+    const url = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/${MODEL_UID}?${queryParams.toString()}`;
+    
+    const res = await fetch(url, { headers });
+
+    if (!res.ok) {
+      console.error(`API Error: ${res.status} ${res.statusText}`);
+      return { 
+        notFound: true,
+        revalidate: 60 // 60秒ごとに再検証
+      };
+    }
+
+    const data = await res.json();
+    const items = data.items || [];
+
+    if (items.length > 0) {
+      const item = items[0];
+      
       const news = {
-        id: docSnap.id,
-        title: data.title || '',
-        content: data.content ? data.content.replace(/\|\|n\|\|/g, '\n') : '',
-        category: data.category || '',
-        createdAt: data.createdAt?.toDate?.() 
-          ? data.createdAt.toDate().toISOString()
-          : new Date().toISOString(),
+        id: item._id,
+        title: item.title || '',
+        content: item['info-body'] || '',
+        category: Array.isArray(item.category) && item.category.length > 0 
+          ? item.category[0] 
+          : (typeof item.category === 'string' ? item.category : ''),
+        createdAt: item._sys?.createdAt || new Date().toISOString(),
+        important: item.important || false,
+        files: item['info-file'] || []
       };
 
       return {
         props: { news },
-        revalidate: 3600 // 1時間ごとに再生成
+        revalidate: 60 // 60秒ごとに再検証
       };
     } else {
-      return {
+      return { 
         notFound: true,
-        revalidate: 60 // 1分後に再検証
+        revalidate: 60 // 60秒ごとに再検証
       };
     }
   } catch (error) {
-    console.error('Error fetching news:', error);
-    return {
+    console.error('Error fetching news detail:', error);
+    return { 
       notFound: true,
-      revalidate: 60
+      revalidate: 60 // エラー時も60秒ごとに再検証
     };
   }
 };
@@ -54,8 +131,6 @@ export const getStaticProps = async ({ params }) => {
 export default function NewsDetail({ news }) {
   const router = useRouter();
 
-  // fallbackが'blocking'の場合は不要ですが、
-  // fallbackを'true'に変更する場合に必要になります
   if (router.isFallback) {
     return (
       <div className={styles.container}>
@@ -70,7 +145,7 @@ export default function NewsDetail({ news }) {
     return (
       <div className={styles.container}>
         <Header />
-        <div className={styles.error}>ニュースが見つかりませんでした</div>
+        <div className={styles.error}>データが見つかりませんでした</div>
         <Footer />
       </div>
     );
@@ -95,13 +170,32 @@ export default function NewsDetail({ news }) {
               {new Date(news.createdAt).toLocaleDateString('ja-JP')}
             </time>
             <span className={styles.articleCategory}>
-              {news.category}
+              {categoryLabels[news.category] || news.category}
             </span>
+            {news.important && (
+              <span className={styles.importantBadge}>重要</span>
+            )}
           </div>
           <h2 className={styles.articleTitle}>{news.title}</h2>
-          <div className={styles.articleContent}>
-            <pre>{news.content}</pre>
-          </div>
+          <div 
+            className={styles.articleContent}
+            dangerouslySetInnerHTML={{ __html: news.content }}
+          />
+          
+          {news.files && news.files.length > 0 && (
+            <div className={styles.fileAttachments}>
+              <h3>添付ファイル</h3>
+              <ul>
+                {news.files.map(file => (
+                  <li key={file._id}>
+                    <a href={file.src} target="_blank" rel="noopener noreferrer">
+                      {file.fileName} ({Math.round(file.fileSize / 1024)} KB)
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </article>
       </main>
       <Footer />

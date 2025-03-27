@@ -1,6 +1,6 @@
 // pages/application/index.js
-import { useState } from 'react';
-import styles from '../../styles/Application.module.css'; // 修正: Applications → Application
+import { useState, useEffect } from 'react';
+import styles from '../../styles/Application.module.css';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import Link from 'next/link';
@@ -15,12 +15,22 @@ const formatDate = (date) => {
   });
 };
 
+// クラスIDとラベルのマッピング
+const classLabels = {
+  'es-class': '学童',
+  'a-class': 'A級',
+  'b-class': 'B級',
+  'c-class': 'C級',
+  'jhs-class': '少年'
+};
+
 export async function getStaticProps() {
   try {
     // Newt CMS API設定
-    const SPACE_UID = 'jsbb-kurume';
-    const TOKEN = 'vdfn4Mdxq2GaU2YMDW1dTIBB7fdgKGLV-pQZfufNZbs';
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
     const APP_UID = 'tournament';
+    const MODEL_UID = 'applicationform';
     
     const headers = {
       'Authorization': `Bearer ${TOKEN}`,
@@ -28,7 +38,7 @@ export async function getStaticProps() {
     };
 
     // 申込書データを取得
-    const applicationUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/applicationform`;
+    const applicationUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/${MODEL_UID}`;
     console.log('Fetching applications:', applicationUrl);
     
     const applicationResponse = await fetch(applicationUrl, { headers });
@@ -44,6 +54,7 @@ export async function getStaticProps() {
     const applicationsWithTournament = await Promise.all(applications.map(async (app) => {
       let tournamentName = '';
       let tournamentId = '';
+      let tournamentClass = '';
       
       // 関連する大会情報を取得
       if (app['application-tournament']) {
@@ -55,7 +66,16 @@ export async function getStaticProps() {
           if (tourResponse.ok) {
             const tourData = await tourResponse.json();
             tournamentName = tourData['tournament-name'] || '';
-            tournamentId = tourData.id || '';
+            tournamentId = tourData._id || '';
+            
+            // クラス情報の取得
+            if (Array.isArray(tourData.class) && tourData.class.length > 0) {
+              // 配列の場合は最初の要素を使用
+              tournamentClass = tourData.class[0];
+            } else if (typeof tourData.class === 'string') {
+              // 文字列の場合はそのまま使用
+              tournamentClass = tourData.class;
+            }
           }
         } catch (e) {
           console.error('Error fetching tournament info:', e);
@@ -70,7 +90,8 @@ export async function getStaticProps() {
         uploadDate: app['upload-date'] || app._sys.updatedAt,
         info: app['application-info'] || '',
         tournamentId: tournamentId,
-        tournamentName: tournamentName
+        tournamentName: tournamentName,
+        tournamentClass: tournamentClass
       };
     }));
     
@@ -78,11 +99,13 @@ export async function getStaticProps() {
     applicationsWithTournament.sort((a, b) => new Date(b.uploadDate) - new Date(a.uploadDate));
     
     return {
-      props: {
-        applications: applicationsWithTournament
+      props: { 
+        applications: applicationsWithTournament,
+        error: null
       },
-      revalidate: 60 // 1分ごとに再生成
+      revalidate: 60 // 60秒ごとに再検証
     };
+
   } catch (error) {
     console.error('Error fetching applications:', error);
     return {
@@ -90,7 +113,7 @@ export async function getStaticProps() {
         applications: [],
         error: '申込書データの読み込みに失敗しました。ページを更新してください。'
       },
-      revalidate: 30 // エラー時は30秒後に再試行
+      revalidate: 60 // エラー時も60秒ごとに再検証
     };
   }
 }
@@ -141,6 +164,11 @@ export default function Applications({ applications: initialApplications, error:
                       {app.tournamentName && (
                         <span className={styles.tournamentName}>
                           {app.tournamentName}
+                        </span>
+                      )}
+                      {app.tournamentClass && (
+                        <span className={styles.tournamentClass}>
+                          {classLabels[app.tournamentClass] || app.tournamentClass}
                         </span>
                       )}
                     </div>

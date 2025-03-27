@@ -1,6 +1,5 @@
 // ファイル: /pages/tournaments/class/[category].js
-
-import { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import Header from '../../../components/Header/Header';
 import Footer from '../../../components/Footer/Footer';
@@ -18,20 +17,31 @@ const categoryNames = {
   'c-class': '一般C級',
 };
 
-export async function getServerSideProps({ params }) {
+export async function getStaticPaths() {
+  // 事前に生成するパスを定義
+  return {
+    paths: Object.keys(categoryNames).map(category => ({
+      params: { category }
+    })),
+    fallback: 'blocking' // ISRのためにblockingを使用
+  };
+}
+
+export async function getStaticProps({ params }) {
   try {
     const classValue = params.category;
     
     if (!categoryNames[classValue]) {
       return {
-        notFound: true
+        notFound: true,
+        revalidate: 60
       };
     }
 
     // Newt CMS API設定
-    const SPACE_UID = 'jsbb-kurume';
-    const TOKEN = 'vdfn4Mdxq2GaU2YMDW1dTIBB7fdgKGLV-pQZfufNZbs';
-    const APP_UID = 'tournament'; // アプリUID
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'tournament';
     
     const headers = {
       'Authorization': `Bearer ${TOKEN}`,
@@ -40,26 +50,18 @@ export async function getServerSideProps({ params }) {
     
     // 大会マスター情報を取得（tour-create）
     const masterUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tour-create`;
-    console.log(`Fetching master data: ${masterUrl}`);
     
     const masterResponse = await fetch(masterUrl, { headers });
     
     if (!masterResponse.ok) {
-      console.error(`Master API Error: ${masterResponse.status} ${masterResponse.statusText}`);
       return {
-        props: {
-          error: `マスターデータ取得エラー: ${masterResponse.status} ${masterResponse.statusText}`,
-          tournaments: [],
-          category: classValue,
-          categoryName: categoryNames[classValue]
-        }
+        notFound: true,
+        revalidate: 60
       };
     }
     
     const masterData = await masterResponse.json();
     const allMasters = masterData.items || [];
-    
-    console.log(`取得したマスター数: ${allMasters.length}`);
     
     // クラスでフィルタリング
     const filteredMasters = allMasters.filter(master => {
@@ -74,8 +76,6 @@ export async function getServerSideProps({ params }) {
       
       return master.class === classValue;
     });
-    
-    console.log(`フィルタリング後のマスター数: ${filteredMasters.length}`);
     
     // 大会情報を取得
     const tournamentPromises = filteredMasters.map(async (master) => {
@@ -115,7 +115,6 @@ export async function getServerSideProps({ params }) {
           latestTournament: latestTour
         };
       } catch (e) {
-        console.error(`Error fetching tournament for master ${master._id}:`, e);
         return {
           id: master._id,
           tournamentId: master.id || '',
@@ -131,7 +130,7 @@ export async function getServerSideProps({ params }) {
     
     const tournaments = await Promise.all(tournamentPromises);
     
-    // 更新日でソート
+    // 更新日でソート（最新順）
     tournaments.sort((a, b) => new Date(b.updatedAt) - new Date(a.updatedAt));
 
     return {
@@ -140,28 +139,29 @@ export async function getServerSideProps({ params }) {
         category: classValue,
         categoryName: categoryNames[classValue],
         error: null
-      }
+      },
+      revalidate: 60 // 60秒ごとに再検証
     };
   } catch (error) {
-    console.error('Error fetching tournaments:', error);
     return {
-      props: {
-        error: `データ取得エラー: ${error.message}`,
-        tournaments: [],
-        category: params.category,
-        categoryName: categoryNames[params.category] || '大会'
-      }
+      notFound: true,
+      revalidate: 60
     };
   }
 }
 
 export default function TournamentList({ tournaments, category, categoryName, error }) {
-  const [imageLoadError, setImageLoadError] = useState({});
   const router = useRouter();
 
-  const handleImageError = (id) => {
-    setImageLoadError(prev => ({ ...prev, [id]: true }));
-  };
+  if (router.isFallback) {
+    return (
+      <div className={styles.container}>
+        <Header />
+        <div className={styles.loading}>読み込み中...</div>
+        <Footer />
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
@@ -193,12 +193,11 @@ export default function TournamentList({ tournaments, category, categoryName, er
               >
                 <div className={styles.imageWrapper}>
                   <Image
-                    src={imageLoadError[tournament.id] ? '/images/top0.webp' : tournament.thumbnail}
+                    src={tournament.thumbnail || '/images/tournament-bg.webp'}
                     alt={`${tournament.title1} ${tournament.title2}`}
                     width={480}
                     height={270}
                     className={styles.image}
-                    onError={() => handleImageError(tournament.id)}
                     loading="lazy"
                     sizes="(max-width: 640px) 100vw, (max-width: 960px) 50vw, 33vw"
                   />
@@ -208,6 +207,9 @@ export default function TournamentList({ tournaments, category, categoryName, er
                     <span className={styles.titleLine1}>{tournament.title1}</span>
                     <span className={styles.titleLine2}>{tournament.title2}</span>
                   </div>
+                  <span className={styles.tournamentDate}>
+                    {new Date(tournament.updatedAt).toLocaleDateString('ja-JP')}
+                  </span>
                 </div>
               </Link>
             ))

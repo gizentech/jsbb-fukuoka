@@ -1,5 +1,5 @@
 // pages/application/[id].js
-import { useState } from 'react';
+import React from 'react';
 import { useRouter } from 'next/router';
 import styles from '../../styles/ApplicationDetail.module.css';
 import Header from '../../components/Header/Header';
@@ -7,19 +7,59 @@ import Footer from '../../components/Footer/Footer';
 import Meta from '../../components/Meta/Meta';
 import Link from 'next/link';
 
+// クラスIDとラベルのマッピング
+const classLabels = {
+  'es-class': '学童',
+  'a-class': 'A級',
+  'b-class': 'B級',
+  'c-class': 'C級',
+  'jhs-class': '少年'
+};
+
 export const getStaticPaths = async () => {
-  // 初期ビルド時に生成するパスを空にする
-  return {
-    paths: [],
-    fallback: 'blocking' // ページが存在しなければビルド時に生成
-  };
+  try {
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
+    const APP_UID = 'tournament';
+    
+    const headers = {
+      'Authorization': `Bearer ${TOKEN}`,
+      'Content-Type': 'application/json'
+    };
+
+    // 申込書データを取得
+    const applicationUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/applicationform`;
+    
+    const applicationResponse = await fetch(applicationUrl, { headers });
+    
+    if (!applicationResponse.ok) {
+      console.error(`Applications API Error: ${applicationResponse.status}`);
+      return { paths: [], fallback: 'blocking' };
+    }
+    
+    const applicationData = await applicationResponse.json();
+    
+    // パスの生成
+    const paths = applicationData.items.map((app) => ({
+      params: { id: app._id }
+    }));
+
+    return { 
+      paths, 
+      fallback: 'blocking' // blocking に変更
+    };
+  } catch (error) {
+    console.error('Error generating paths:', error);
+    return { paths: [], fallback: 'blocking' }; // blocking に変更
+  }
 };
 
 export const getStaticProps = async ({ params }) => {
   try {
-    // Newt CMS API設定
-    const SPACE_UID = 'jsbb-kurume';
-    const TOKEN = 'vdfn4Mdxq2GaU2YMDW1dTIBB7fdgKGLV-pQZfufNZbs';
+    // 環境変数からNewt CMS API設定を取得
+    const SPACE_UID = process.env.NEWT_SPACE_UID;
+    const TOKEN = process.env.NEWT_API_TOKEN;
     const APP_UID = 'tournament';
     
     const headers = {
@@ -37,7 +77,7 @@ export const getStaticProps = async ({ params }) => {
       console.error(`Application detail API Error: ${applicationResponse.status}`);
       return {
         notFound: true,
-        revalidate: 60 // 1分後に再検証
+        revalidate: 60 // 60秒ごとに再検証
       };
     }
     
@@ -46,6 +86,7 @@ export const getStaticProps = async ({ params }) => {
     // 関連する大会情報を取得
     let tournamentName = '';
     let tournamentId = '';
+    let tournamentClass = [];
     let tournamentData = null;
     
     if (app['application-tournament']) {
@@ -58,6 +99,7 @@ export const getStaticProps = async ({ params }) => {
           tournamentData = await tourResponse.json();
           tournamentName = tournamentData['tournament-name'] || '';
           tournamentId = tournamentData.id || '';
+          tournamentClass = tournamentData.class || [];
         }
       } catch (e) {
         console.error('Error fetching tournament info:', e);
@@ -69,22 +111,25 @@ export const getStaticProps = async ({ params }) => {
       title: app['application-title'] || '大会申込書',
       fileUrl: app.file && app.file.length > 0 ? app.file[0].src : null,
       fileName: app.file && app.file.length > 0 ? app.file[0].fileName : '申込書.pdf',
+      fileSize: app.file && app.file.length > 0 ? app.file[0].fileSize : 0,
       uploadDate: app['upload-date'] || app._sys.updatedAt,
       info: app['application-info'] || '',
       tournamentId: tournamentId,
       tournamentName: tournamentName,
+      tournamentClass: tournamentClass,
       tournamentData: tournamentData
     };
 
     return {
       props: { application: applicationDetail },
-      revalidate: 3600 // 1時間ごとに再生成
+      revalidate: 60 // 60秒ごとに再検証
     };
   } catch (error) {
     console.error('Error fetching application detail:', error);
+    
     return {
       notFound: true,
-      revalidate: 60
+      revalidate: 60 // エラー時も60秒ごとに再検証
     };
   }
 };
@@ -126,8 +171,6 @@ export default function ApplicationDetail({ application }) {
         </div>
         
         <article className={styles.article}>
-          <h2 className={styles.articleTitle}>{application.title}</h2>
-          
           <div className={styles.articleHeader}>
             <time className={styles.articleDate}>
               {new Date(application.uploadDate).toLocaleDateString('ja-JP')}
@@ -143,7 +186,18 @@ export default function ApplicationDetail({ application }) {
                 )}
               </span>
             )}
+            {Array.isArray(application.tournamentClass) && application.tournamentClass.length > 0 && (
+              <div className={styles.classLabels}>
+                {application.tournamentClass.map(cls => (
+                  <span key={cls} className={styles.tournamentClass}>
+                    {classLabels[cls] || cls}
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
+          
+          <h2 className={styles.articleTitle}>{application.title}</h2>
           
           {application.info && (
             <div 
@@ -153,16 +207,20 @@ export default function ApplicationDetail({ application }) {
           )}
           
           {application.fileUrl && (
-            <div className={styles.downloadSection}>
-              <a 
-                href={application.fileUrl}
-                target="_blank" 
-                rel="noopener noreferrer"
-                className={styles.downloadButton}
-              >
-                申込書をダウンロード
-              </a>
-              <p className={styles.fileName}>{application.fileName}</p>
+            <div className={styles.fileAttachments}>
+              <h3>申込書ダウンロード</h3>
+              <ul>
+                <li>
+                  <a 
+                    href={application.fileUrl}
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    download={application.fileName}
+                  >
+                    {application.fileName} ({Math.round(application.fileSize / 1024)} KB)
+                  </a>
+                </li>
+              </ul>
             </div>
           )}
         </article>
