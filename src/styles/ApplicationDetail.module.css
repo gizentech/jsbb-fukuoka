@@ -1,0 +1,186 @@
+/* styles/ApplicationDetail.module.css */
+.container {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .main {
+    width: 100%;
+    margin: 0 auto;
+    padding: 100px 0 0;
+    flex: 1;
+  }
+  
+  .pageHeader {
+    position: relative;
+    max-width: 1080px;
+    margin: 0 auto;
+    height: 200px;
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+      url('/images/top2.webp');
+    background-size: cover;
+    background-position: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    color: #fff;
+    margin-bottom: 32px;
+    border-radius: 16px;
+  }
+  
+  .pageHeader h1 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+  
+  .pageHeader span {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  
+  .article {
+    max-width: 1080px;
+    margin: 0 auto;
+    padding: 32px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .articleHeader {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+  
+  .articleDate {
+    color: #666;
+    font-size: 0.9rem;
+  }
+  
+  .articleCategory {
+    padding: 0.25rem 1rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    background: #f0f0f0;
+  }
+  
+  .articleCategory a {
+    color: inherit;
+    text-decoration: none;
+  }
+  
+  .articleCategory a:hover {
+    text-decoration: underline;
+  }
+  
+  .articleTitle {
+    font-size: 1.8rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    line-height: 1.4;
+  }
+  
+  .articleContent {
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+  
+  .downloadSection {
+    margin-top: 2rem;
+    text-align: center;
+  }
+  
+  .downloadButton {
+    display: inline-block;
+    padding: 12px 24px;
+    background: #2c5282;
+    color: white;
+    text-decoration: none;
+    border-radius: 4px;
+    font-weight: bold;
+    transition: background-color 0.3s;
+  }
+  
+  .downloadButton:hover {
+    background: #1c3d5a;
+  }
+  
+  .fileName {
+    margin-top: 8px;
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .backLink {
+    text-align: center;
+    margin: 32px auto;
+    max-width: 1080px;
+  }
+  
+  .backLink a {
+    color: #333;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    font-weight: 500;
+  }
+  
+  .backLink a:hover {
+    text-decoration: underline;
+  }
+  
+  .loading, .error {
+    text-align: center;
+    padding: 150px 0;
+    font-size: 1.2rem;
+    color: #666;
+  }
+  
+  .error {
+    color: #d32f2f;
+  }
+  
+  @media (max-width: 960px) {
+    .pageHeader {
+      height: 160px;
+    }
+  
+    .pageHeader h1 {
+      font-size: 24px;
+    }
+  
+    .article {
+      margin: 0 16px;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .pageHeader {
+      height: 120px;
+      margin-bottom: 24px;
+    }
+  
+    .pageHeader h1 {
+      font-size: 20px;
+    }
+  
+    .article {
+      padding: 20px;
+    }
+  
+    .articleTitle {
+      font-size: 1.5rem;
+      margin-bottom: 1.5rem;
+    }
+  
+    .articleHeader {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+    }
+  }

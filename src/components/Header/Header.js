@@ -55,9 +55,6 @@ export default function Header() {
               <Link href="/news" onClick={handleLinkClick}>お知らせ</Link>
             </li>
             <li>
-              <Link href="/tournaments" onClick={handleLinkClick}>大会情報</Link>
-            </li>
-            <li>
               <Link href="/forms" onClick={handleLinkClick}>申請様式</Link>
             </li>
             <li>

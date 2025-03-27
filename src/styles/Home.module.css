@@ -203,3 +203,25 @@
     margin-bottom: 24px;
   }
 }
+/* styles/Home.module.css に追加 */
+
+/* 申込書セクション用のスタイル */
+.applicationSection {
+  max-width: 1080px;
+  margin: 48px auto 0;
+  padding: 0 16px;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.sectionHeader h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}

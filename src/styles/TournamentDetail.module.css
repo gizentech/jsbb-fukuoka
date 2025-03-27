@@ -1,396 +1,453 @@
 .wrapper {
- display: flex;
- flex-direction: column;
- min-height: 100vh;
- background: #f5f5f5;
- width: 100%;
- overflow-x: hidden;
-}
-
-.titleSection {
- position: relative;
- width: 100vw;
- background: #1a1a1a;
- box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
- margin-bottom: 4rem;
- height: 300px;
- overflow: hidden;
- left: 50%;
- right: 50%;
- margin-left: -50vw;
- margin-right: -50vw;
-}
-
-.titleBackground {
- position: absolute;
- top: 0;
- left: 0;
- width: 100%;
- height: 100%;
- z-index: 1;
- overflow: hidden;
-}
-
-.titleBackgroundImage {
- object-fit: cover;
- filter: blur(5px) brightness(0.6);
- transform: scale(1.05);
- width: 100%;
- height: 100%;
-}
-
-.titleContainer {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  height: 120%;
-  z-index: 2;
-  padding: 0 4rem; /* 左右のパディングを追加 */
-}
-
-.titleWrapper {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
+  min-height: 100vh;
+  background: #f5f5f5;
+  width: 100%;
+  overflow-x: hidden;
+ }
  
-}
-
-.title1 {
- font-size: 2rem;
- font-weight: bold;
- color: white;
- margin: 0;
- text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
- word-break: break-word;
- overflow-wrap: break-word;
- max-width: 100%;
- padding: 0 20px;
-}
-
-.title2 {
- font-size: 2rem;
- font-weight: bold;
- color: rgba(255, 255, 255, 0.9);
- margin: 0;
- text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
- word-break: break-word;
- overflow-wrap: break-word;
- max-width: 100%;
- padding: 0 20px;
-}
-
-.main {
- flex: 1;
- width: 100%;
- max-width: 1400px;
- margin: 0 auto;
- padding: 4rem 1rem;
- box-sizing: border-box;
-}
-
-.pcSelect {
-  width: 230px;
-  margin-right: auto; /* 左寄せのために変更 */
-  margin-left: 8rem; /* 左側の余白を追加 */
-}
-
-.updateSelect {
- width: 100%;
- padding: 0.75rem;
- font-size: 0.95rem;
- border: 1px solid rgba(255, 255, 255, 0.3);
- border-radius: 4px;
- background: rgba(0, 0, 0, 0.3);
- cursor: pointer;
- color: white;
-}
-
-.updateSelect:focus {
- outline: none;
- border-color: #4a4a4a;
- box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.2);
-}
-
-.cardGrid {
- display: grid;
- grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
- gap: 2rem;
- width: 100%;
- margin: 0 auto;
-}
-
-.updateCard {
- position: relative;
- background: white;
- overflow: hidden;
- box-shadow: 0 2px 15px rgba(0, 0, 0, 0.08);
- transition: all 0.3s ease;
- display: flex;
- flex-direction: column;
-}
-
-.updateCard:hover {
- transform: translateY(-5px);
- box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
-}
-
-.cardContent {
- position: relative;
- flex: 1;
- display: flex;
- flex-direction: column;
- min-height: 280px;
-}
-
-.updateBadge {
- background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
- color: white;
- padding: 1rem;
- font-weight: bold;
- font-size: 1.5rem;
- text-align: left;
- width: 100%;
-}
-
-.updateInfo {
- padding: 1.5rem;
- flex: 1;
- display: flex;
- flex-direction: column;
-}
-
-.updateDate {
- color: #666;
- font-size: 0.9rem;
- margin: 0 0 1rem;
-}
-
-.updateBody {
- color: #333;
- line-height: 1.6;
- margin: 0;
- flex: 1;
- white-space: pre-wrap;
- word-break: break-word;
-}
-
-.pdfLink {
-  display: inline-block;
-  width: fit-content; /* 100%から変更 */
-  min-width: 250px; /* 最小幅を設定 */
-  padding: 1rem 2rem; /* 左右のパディングを追加 */
-  margin: 1.5rem auto 0; /* 中央寄せに変更 */
+ .titleSection {
+  position: relative;
+  width: 100vw;
+  background: #1a1a1a;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  margin-bottom: 2rem;
+  height: 300px;
+  overflow: hidden;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+ }
+ 
+ .titleBackground {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  overflow: hidden;
+ }
+ 
+ .titleBackgroundImage {
+  object-fit: cover;
+  filter: blur(5px) brightness(0.6);
+  transform: scale(1.05);
+  width: 100%;
+  height: 100%;
+ }
+ 
+ .titleContainer {
+   position: relative;
+   display: flex;
+   justify-content: space-between;
+   align-items: center;
+   width: 100%;
+   height: 120%;
+   z-index: 2;
+   padding: 0 4rem;
+ }
+ 
+ .titleWrapper {
+   display: flex;
+   flex-direction: column;
+   gap: 0.5rem;
+ }
+ 
+ .title1 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  padding: 0 20px;
+ }
+ 
+ .title2 {
+  font-size: 2rem;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  word-break: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+  padding: 0 20px;
+ }
+ 
+ .main {
+  flex: 1;
+  width: 100%;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1rem 4rem;
+ }
+ 
+ .pcSelect {
+   width: 230px;
+   margin-right: auto;
+   margin-left: 8rem;
+ }
+ 
+ .updateSelect {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 4px;
+  background: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  color: white;
+ }
+ 
+ .updateSelect:focus {
+  outline: none;
+  border-color: #4a4a4a;
+  box-shadow: 0 0 0 2px rgba(74, 74, 74, 0.2);
+ }
+ 
+ /* 選択された回数の表示コンテナ */
+ .selectedUpdateContainer {
+  width: 100%;
+  margin: 0 auto;
+ }
+ 
+ .updateHeader {
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 0.5rem;
+ }
+ 
+ .updateTitle {
+  font-size: 1.8rem;
+  color: #333;
+  margin: 0;
+ }
+ 
+ .updateDate {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 1rem 0;
+ }
+ 
+ .pdfLink {
+   display: inline-block;
+   width: fit-content;
+   min-width: 250px;
+   padding: 1rem 2rem;
+   margin: 1.5rem 0;
+   background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
+   color: white;
+   text-decoration: none;
+   text-align: center;
+   font-weight: 500;
+   transition: all 0.3s ease;
+   border-radius: 8px;
+ }
+ 
+ .pdfLink:hover {
+  background: linear-gradient(135deg, #3a3a3a, #1a1a1a);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+ }
+ 
+ .spMenu {
+  display: none;
+ }
+ 
+ .menuButton {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 1000;
   background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
   color: white;
-  text-decoration: none;
-  text-align: center;
-  font-weight: 500;
-  transition: all 0.3s ease;
-  border-radius: 8px;
+  border: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
  }
-
-
-.pdfLink:hover {
- background: linear-gradient(135deg, #3a3a3a, #1a1a1a);
- transform: translateY(-2px);
- box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-}
-
-.spMenu {
- display: none;
-}
-
-.menuButton {
- position: fixed;
- right: 1rem;
- bottom: 1rem;
- z-index: 1000;
- background: linear-gradient(135deg, #4a4a4a, #2a2a2a);
- color: white;
- border: none;
- width: 48px;
- height: 48px;
- border-radius: 50%;
- display: flex;
- align-items: center;
- justify-content: center;
- font-size: 1.5rem;
- cursor: pointer;
- box-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
-}
-
-.mobileMenu {
- position: fixed;
- bottom: 5rem;
- right: 1rem;
- width: 250px;
- background: white;
- border-radius: 12px;
- padding: 0.5rem;
- box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
- z-index: 999;
-}
-
-.mobileMenuItem {
- width: 100%;
- padding: 1rem;
- text-align: left;
- background: none;
- border: none;
- border-bottom: 1px solid #eee;
- font-size: 1rem;
- cursor: pointer;
- transition: background-color 0.2s;
-}
-
-.mobileMenuItem:hover {
- background: #f5f5f5;
-}
-
-.mobileMenuItem:last-child {
- border-bottom: none;
-}
-
-.loading,
-.notFound {
- flex: 1;
- display: flex;
- align-items: center;
- justify-content: center;
- text-align: center;
- padding: 3rem;
- font-size: 1.2rem;
- color: #666;
-}
-
-@media (max-width: 768px) {
- .main {
-   padding: 2rem 1rem;
-   width: 100%;
- }
-
- .titleSection {
-   height: auto;
-   min-height: 200px;
-   margin-bottom: 1.5rem;
- }
-  .titleContainer {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.8rem;
-    padding: 7rem 1.5rem 1.5rem; /* 上部のパディングを4remに増やして、タイトルを下げる */
-    height: auto;
-    min-height: 120px;
-  }
-  .titleBackgroundImage {
-    object-fit: cover;
-    filter: blur(5px) brightness(0.6);
-    transform: scale(1.05) translateY(30px); /* translateYを追加して下に移動 */
-    width: 100%;
-    height: 100%;
-  }
-
- .title1 {
-   font-size: 1.5rem;
-   line-height: 1.3;
-   padding: 0;
- }
-
- .title2 {
-   font-size: 1.1rem;
-   line-height: 1.3;
-   padding: 0;
- }
-
- .pcSelect {
-   display: none;
- }
-
- .spMenu {
-   display: block;
- }
-
- .cardGrid {
-   grid-template-columns: 1fr;
-   gap: 1rem;
-   padding: 0;
- }
-
- .cardContent {
-   min-height: auto;
- }
-
- .updateCard {
-   margin-bottom: 1rem;
- }
-
- .updateBadge {
-   padding: 0.75rem;
-   font-size: 1.2rem;
- }
-
- .updateInfo {
-   padding: 1rem;
- }
-
- .updateDate {
-   font-size: 0.8rem;
-   margin-bottom: 0.8rem;
- }
-
- .updateBody {
-   font-size: 0.9rem;
-   line-height: 1.5;
- }
-
- .pdfLink {
-   padding: 0.75rem;
-   font-size: 0.9rem;
-   margin-top: 1rem;
- }
-
- .menuButton {
-   width: 40px;
-   height: 40px;
-   right: 0.8rem;
-   bottom: 0.8rem;
- }
-
+ 
  .mobileMenu {
-   width: calc(100% - 2rem);
-   right: 1rem;
-   bottom: 4rem;
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  width: 250px;
+  background: white;
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+  z-index: 999;
  }
-
+ 
  .mobileMenuItem {
-   padding: 0.8rem;
-   font-size: 0.9rem;
+  width: 100%;
+  padding: 1rem;
+  text-align: left;
+  background: none;
+  border: none;
+  border-bottom: 1px solid #eee;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
  }
-}
-
-@media (max-width: 480px) {
-
-
- .title1 {
-   font-size: 1.3rem;
+ 
+ .mobileMenuItem:hover {
+  background: #f5f5f5;
  }
-
- .title2 {
+ 
+ .mobileMenuItem:last-child {
+  border-bottom: none;
+ }
+ 
+ /* 読み込みアニメーション */
+ .loadingContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem;
+ }
+ 
+ .loadingSpinner {
+  width: 50px;
+  height: 50px;
+  border: 5px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  border-top-color: #333;
+  animation: spinner 1s ease-in-out infinite;
+  margin-bottom: 1rem;
+ }
+ 
+ @keyframes spinner {
+  to {
+    transform: rotate(360deg);
+  }
+ }
+ 
+ .error {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 3rem;
+  font-size: 1.2rem;
+  color: #666;
+ }
+ 
+ /* 大会概要エリア */
+ .tournamentDescription {
+   width: 100%;
+   max-width: 800px;
+   margin: 0 auto 2rem;
+   padding: 0 1rem;
+ }
+ 
+ .descriptionTitle {
+   font-size: 1.5rem;
+   margin: 0 0 1.5rem;
+   padding-bottom: 0.5rem;
+   border-bottom: 2px solid #ddd;
+   color: #333;
+ }
+ 
+ .descriptionText {
+   line-height: 1.6;
+   color: #333;
+ }
+ 
+ /* 大会詳細 */
+ .detailContent {
+   margin-top: 2rem;
+ }
+ 
+ .detailTitle {
+   font-size: 1.5rem;
+   margin: 0 0 1.5rem;
+   padding-bottom: 0.5rem;
+   border-bottom: 2px solid #ddd;
+   color: #333;
+ }
+ 
+ /* メタ情報 */
+ .metaInfo {
+   margin-top: 2rem;
+   padding-top: 1rem;
+   border-top: 1px solid #eee;
+ }
+ 
+ .metaTitle {
+   font-size: 1.2rem;
+   margin: 0 0 1rem;
+   color: #333;
+ }
+ 
+ /* 期間情報 */
+ .tournamentPeriod {
+   background: #f8f8f8;
+   border-radius: 4px;
+   padding: 1rem;
+   margin: 1.5rem 0;
+ }
+ 
+ .periodTitle {
+   font-size: 0.95rem;
+   font-weight: bold;
+   margin: 0 0 0.3rem;
+   color: #444;
+ }
+ 
+ .periodDate {
    font-size: 1rem;
+   margin: 0;
+   color: #333;
  }
-
- .cardGrid {
-   padding: 0;
+ 
+ /* 更新情報なしの場合 */
+ .noUpdates {
+   text-align: center;
+   padding: 2rem;
+   color: #666;
  }
-
- .updateBadge {
-   font-size: 1.1rem;
+ 
+ @media (max-width: 768px) {
+   .main {
+     padding: 1.5rem 1rem 3rem;
+   }
+ 
+   .titleSection {
+     height: auto;
+     min-height: 200px;
+     margin-bottom: 1.5rem;
+   }
+   
+   .titleContainer {
+     flex-direction: column;
+     align-items: flex-start;
+     gap: 0.8rem;
+     padding: 7rem 1.5rem 1.5rem;
+     height: auto;
+     min-height: 120px;
+   }
+   
+   .titleBackgroundImage {
+     object-fit: cover;
+     filter: blur(5px) brightness(0.6);
+     transform: scale(1.05) translateY(30px);
+     width: 100%;
+     height: 100%;
+   }
+ 
+   .title1 {
+     font-size: 1.5rem;
+     line-height: 1.3;
+     padding: 0;
+   }
+ 
+   .title2 {
+     font-size: 1.1rem;
+     line-height: 1.3;
+     padding: 0;
+   }
+ 
+   .pcSelect {
+     display: none;
+   }
+ 
+   .spMenu {
+     display: block;
+   }
+ 
+   .updateHeader {
+     margin-bottom: 1rem;
+   }
+ 
+   .updateTitle {
+     font-size: 1.5rem;
+   }
+ 
+   .updateDate {
+     font-size: 0.8rem;
+     margin: 0.8rem 0;
+   }
+ 
+   .pdfLink {
+     padding: 0.75rem;
+     font-size: 0.9rem;
+     margin: 1rem 0;
+     min-width: 200px;
+   }
+ 
+   .menuButton {
+     width: 40px;
+     height: 40px;
+     right: 0.8rem;
+     bottom: 0.8rem;
+   }
+ 
+   .mobileMenu {
+     width: calc(100% - 2rem);
+     right: 1rem;
+     bottom: 4rem;
+   }
+ 
+   .mobileMenuItem {
+     padding: 0.8rem;
+     font-size: 0.9rem;
+   }
+ 
+   .descriptionTitle, .detailTitle {
+     font-size: 1.3rem;
+     margin-bottom: 1rem;
+   }
+ 
+   .tournamentPeriod {
+     padding: 0.8rem;
+     margin: 1rem 0;
+   }
+ 
+   .periodTitle, .periodDate {
+     font-size: 0.9rem;
+   }
  }
-
- .mobileMenu {
-   width: calc(100% - 1rem);
-   right: 0.5rem;
+ 
+ @media (max-width: 480px) {
+   .title1 {
+     font-size: 1.3rem;
+   }
+ 
+   .title2 {
+     font-size: 1rem;
+   }
+ 
+   .mobileMenu {
+     width: calc(100% - 1rem);
+     right: 0.5rem;
+   }
+ 
+   .pdfLink {
+     width: 100%;
+     min-width: unset;
+   }
+   
+   .updateTitle {
+     font-size: 1.3rem;
+   }
+ 
+   .descriptionTitle, .detailTitle {
+     font-size: 1.2rem;
+   }
  }
-}
