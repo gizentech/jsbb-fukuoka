@@ -6,6 +6,7 @@ import Footer from '../components/Footer/Footer'
 import TopicSection from '../components/TopicSection/TopicSection'
 import HeroSlider from '../components/HeroSlider/HeroSlider'
 import Link from 'next/link'
+import Analytics from '@vercel/analytics/react';
 
 // getStaticPropsからgetServerSidePropsに変更
 export async function getServerSideProps() {
