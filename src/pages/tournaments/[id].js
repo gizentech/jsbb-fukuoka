@@ -70,43 +70,8 @@ const PdfThumbnail = ({ pdfUrl }) => {
   );
 };
 
-export async function getStaticPaths() {
-  try {
-    // Newt CMS API設定
-    const SPACE_UID = process.env.NEWT_SPACE_UID;
-    const TOKEN = process.env.NEWT_API_TOKEN;
-    const APP_UID = 'tournament';
-    
-    const headers = {
-      'Authorization': `Bearer ${TOKEN}`,
-      'Content-Type': 'application/json'
-    };
-
-    // 大会マスター情報を取得
-    const masterUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${APP_UID}/tour-create`;
-    
-    const masterResponse = await fetch(masterUrl, { headers });
-    
-    if (!masterResponse.ok) {
-      console.error('Failed to fetch tournament paths');
-      return { paths: [], fallback: false };
-    }
-    
-    const masterData = await masterResponse.json();
-    
-    // パスの生成
-    const paths = masterData.items.map((tournament) => ({
-      params: { id: tournament.id || tournament._id }
-    }));
-
-    return { paths, fallback: 'blocking' }; // blocking に変更してISRをサポート
-  } catch (error) {
-    console.error('Error generating tournament paths:', error);
-    return { paths: [], fallback: 'blocking' }; // blocking に変更
-  }
-}
-
-export async function getStaticProps({ params }) {
+// getStaticPathsとgetStaticPropsを削除して、getServerSidePropsに変更
+export async function getServerSideProps({ params }) {
   try {
     // Newt CMS API設定
     const SPACE_UID = process.env.NEWT_SPACE_UID;
@@ -124,13 +89,13 @@ export async function getStaticProps({ params }) {
     const masterResponse = await fetch(masterUrl, { headers });
     
     if (!masterResponse.ok) {
-      return { notFound: true, revalidate: 60 };
+      return { notFound: true };
     }
     
     const masterData = await masterResponse.json();
     
     if (!masterData.items || masterData.items.length === 0) {
-      return { notFound: true, revalidate: 60 };
+      return { notFound: true };
     }
     
     const masterInfo = masterData.items[0];
@@ -141,7 +106,7 @@ export async function getStaticProps({ params }) {
     const tournamentResponse = await fetch(tournamentUrl, { headers });
     
     if (!tournamentResponse.ok) {
-      return { notFound: true, revalidate: 60 };
+      return { notFound: true };
     }
     
     const tournamentData = await tournamentResponse.json();
@@ -209,14 +174,12 @@ export async function getStaticProps({ params }) {
     return {
       props: {
         tournament: tournamentInfo
-      },
-      revalidate: 60 // 60秒ごとに再検証
+      }
     };
   } catch (error) {
     console.error('Error fetching tournament:', error);
     return { 
-      notFound: true,
-      revalidate: 60
+      notFound: true
     };
   }
 }

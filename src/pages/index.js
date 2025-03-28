@@ -7,7 +7,8 @@ import TopicSection from '../components/TopicSection/TopicSection'
 import HeroSlider from '../components/HeroSlider/HeroSlider'
 import Link from 'next/link'
 
-export async function getStaticProps() {
+// getStaticPropsからgetServerSidePropsに変更
+export async function getServerSideProps() {
   try {
     // 環境変数からNewt CMS API設定を取得
     const SPACE_UID = process.env.NEWT_SPACE_UID;
@@ -112,8 +113,7 @@ export async function getStaticProps() {
         applications: applications,
         latestItems: latestItems,
         error: null
-      },
-      revalidate: 60 // 60秒ごとに再検証
+      }
     };
 
   } catch (error) {
@@ -124,8 +124,7 @@ export async function getStaticProps() {
         applications: [],
         latestItems: [],
         error: 'データの読み込みに失敗しました: ' + error.message
-      },
-      revalidate: 60 // エラー時も再検証
+      }
     };
   }
 }

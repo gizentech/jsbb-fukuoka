@@ -1,13 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // output: 'export' を削除
   images: {
-    // unoptimized: true を削除
     domains: [
       'firebasestorage.googleapis.com', 
       'jsbb-kurume.cdn.newt.so',
-      'jsbb-kurume.assets.newt.so'  // この行を追加
-    ]
+      'jsbb-kurume.assets.newt.so'
+    ],
+    unoptimized: process.env.NODE_ENV === 'development'
   },
   trailingSlash: true,
 };

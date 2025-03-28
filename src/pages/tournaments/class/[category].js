@@ -17,24 +17,14 @@ const categoryNames = {
   'c-class': '一般C級',
 };
 
-export async function getStaticPaths() {
-  // 事前に生成するパスを定義
-  return {
-    paths: Object.keys(categoryNames).map(category => ({
-      params: { category }
-    })),
-    fallback: 'blocking' // ISRのためにblockingを使用
-  };
-}
-
-export async function getStaticProps({ params }) {
+// getStaticPathsとgetStaticPropsを削除して、getServerSidePropsに置き換える
+export async function getServerSideProps({ params }) {
   try {
     const classValue = params.category;
     
     if (!categoryNames[classValue]) {
       return {
-        notFound: true,
-        revalidate: 60
+        notFound: true
       };
     }
 
@@ -55,8 +45,7 @@ export async function getStaticProps({ params }) {
     
     if (!masterResponse.ok) {
       return {
-        notFound: true,
-        revalidate: 60
+        notFound: true
       };
     }
     
@@ -139,29 +128,22 @@ export async function getStaticProps({ params }) {
         category: classValue,
         categoryName: categoryNames[classValue],
         error: null
-      },
-      revalidate: 60 // 60秒ごとに再検証
+      }
     };
   } catch (error) {
     return {
-      notFound: true,
-      revalidate: 60
+      props: {
+        tournaments: [],
+        category: params.category,
+        categoryName: categoryNames[params.category] || '不明',
+        error: error.message || 'エラーが発生しました'
+      }
     };
   }
 }
 
 export default function TournamentList({ tournaments, category, categoryName, error }) {
   const router = useRouter();
-
-  if (router.isFallback) {
-    return (
-      <div className={styles.container}>
-        <Header />
-        <div className={styles.loading}>読み込み中...</div>
-        <Footer />
-      </div>
-    );
-  }
 
   return (
     <div className={styles.container}>
