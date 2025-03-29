@@ -64,6 +64,12 @@ export default function Header() {
               <Link href="/about" onClick={handleLinkClick}>連盟概要</Link>
             </li>
             <li>
+              <Link href="/about/chronology" onClick={handleLinkClick}>沿革</Link>
+            </li>
+            <li>
+              <Link href="/about/history" onClick={handleLinkClick}>連盟のあゆみ</Link>
+            </li>
+            <li>
               <Link href="/contact" onClick={handleLinkClick}>お問い合わせ</Link>
             </li>
           </ul>
