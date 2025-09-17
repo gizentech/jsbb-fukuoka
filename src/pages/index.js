@@ -5,10 +5,11 @@ import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import TopicSection from '../components/TopicSection/TopicSection'
 import HeroSlider from '../components/HeroSlider/HeroSlider'
+import YaBanner from '../components/YaBanner/YaBanner' // 追加
 import Link from 'next/link'
 import Analytics from '@vercel/analytics/react';
 
-// getStaticPropsからgetServerSidePropsに変更
+// getServerSidePropsは既存のものをそのまま維持
 export async function getServerSideProps() {
   try {
     // 環境変数からNewt CMS API設定を取得
@@ -145,6 +146,9 @@ export default function Home({ news = [], applications = [], latestItems = [], e
       <Header />
       <main className={styles.main}>
         <HeroSlider />
+        
+        {/* YAバナーをHeroSliderの下に追加 */}
+        <YaBanner />
 
         <section className={styles.tournamentSection}>
           <div className={styles.cardContainer}>

@@ -6,7 +6,8 @@ const nextConfig = {
       'jsbb-kurume.cdn.newt.so',
       'jsbb-kurume.assets.newt.so'
     ],
-    unoptimized: process.env.NODE_ENV === 'development'
+    unoptimized: true, // 本番環境でも画像最適化を無効化
+    formats: ['image/webp', 'image/avif']
   },
   trailingSlash: true,
 };
