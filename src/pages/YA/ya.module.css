@@ -1,6 +1,6 @@
 /* pages/YA/ya.module.css */
 
-/* ローディングスクリーンのスタイル */
+/* ⑦ローディング画面のフォントをゴシックに */
 .loadingScreen {
   position: fixed;
   top: 0;
@@ -33,6 +33,7 @@
   font-size: 1.2rem;
   color: #1565c0;
   font-weight: 500;
+  font-family: 'ヒラギノ角ゴ Pro W3', 'Hiragino Kaku Gothic Pro', 'メイリオ', 'Meiryo', 'MS Pゴシック', 'MS PGothic', sans-serif;
   margin-bottom: 1rem;
   opacity: 0;
   animation: textAppear 1s ease-in-out 0.8s forwards;
@@ -144,7 +145,7 @@
 /* 左側パネル */
 .leftPanel {
   width: 40%;
-  background: #f8f9fa;
+  background: #ffffff;
   position: fixed;
   top: 0;
   left: 0;
@@ -154,17 +155,18 @@
   align-items: center;
   justify-content: center;
   box-sizing: border-box;
-  padding: 2rem;
+  padding: 0;
   z-index: 1;
 }
 
 .poster {
   width: 100%;
-  height: auto;
-  max-height: 90vh;
+  height: 100%;
   object-fit: contain;
-  border-radius: 8px;
+  border-radius: 0;
+  aspect-ratio: 2990 / 2440;
   max-width: 100%;
+  max-height: 100vh;
 }
 
 /* 右側パネル */
@@ -198,11 +200,64 @@
   border-radius: 0;
 }
 
-.eventDate {
+/* ①青背景の開催日バナー（全幅） */
+.eventDateBanner {
+  background: #1565c0;
+  color: white;
+  padding: 1rem 2rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin: 1.5rem -3rem 0 -3rem;
+  text-align: center;
+  width: calc(100% + 6rem);
+  box-sizing: border-box;
+}
+
+/* ②申し込みボタン - 大きくかっこよく */
+.applicationButton {
+  text-align: center;
+  margin: 2rem 0;
+}
+
+.applyBtn {
+  display: inline-block;
+  padding: 1.5rem 3rem;
+  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 50px;
   font-size: 1.3rem;
-  font-weight: 500;
-  color: #1565c0;
-  margin-bottom: 1.5rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+}
+
+.applyBtn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.applyBtn:hover {
+  background: linear-gradient(135deg, #0d47a1 0%, #1565c0 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(21, 101, 192, 0.4);
+}
+
+.applyBtn:hover::before {
+  left: 100%;
+}
+
+.applyBtn:active {
+  transform: translateY(0);
 }
 
 .organizers {
@@ -211,6 +266,7 @@
   line-height: 1.6;
   color: #666;
   word-wrap: break-word;
+  margin-top: 2rem;
 }
 
 .organizers p {
@@ -229,30 +285,6 @@
   color: #0d47a1;
   background-color: #f0f7ff;
   border-bottom: 1px solid #0d47a1;
-}
-
-/* 申し込みボタン */
-.applicationButton {
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-.applyBtn {
-  display: inline-block;
-  padding: 1rem 2rem;
-  background: #1565c0;
-  color: white;
-  text-decoration: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 500;
-  transition: background-color 0.3s ease;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.applyBtn:hover {
-  background: #0d47a1;
 }
 
 /* メインコンテンツ */
@@ -304,6 +336,19 @@
 .section li {
   margin-bottom: 0.4rem;
   word-wrap: break-word;
+}
+
+/* 特別なお知らせ - 青背景に白文字 */
+.specialNotice {
+  background: #1565c0;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 25px;
+  font-weight: 600;
+  text-align: center;
+  margin: 1rem 0;
+  display: inline-block;
+  font-size: 1.1rem;
 }
 
 /* プログラム */
@@ -423,6 +468,7 @@
 }
 
 /* レスポンシブ対応 - メインコンテンツ */
+/* レスポンシブ対応 - メインコンテンツ */
 @media (max-width: 768px) {
   .container {
     flex-direction: column;
@@ -431,17 +477,25 @@
   }
 
   .leftPanel {
-    width: 100%;
+    width: 100%; /* 100vwから変更 */
     height: auto;
     position: static;
-    padding: 1rem;
+    padding: 0;
+    margin: 0;
     box-sizing: border-box;
+    display: block;
+    background: #ffffff;
   }
 
   .poster {
-    max-height: 50vh;
-    width: 100%;
-    max-width: 100%;
+    width: 100%; /* 100vwから変更 */
+    height: auto;
+    max-width: 100%; /* 最大幅を制限 */
+    object-fit: contain; /* containに戻す */
+    aspect-ratio: 2990 / 2440;
+    margin: 0;
+    padding: 0;
+    display: block;
   }
 
   .rightPanel {
@@ -454,6 +508,18 @@
 
   .logo {
     max-width: 320px;
+  }
+
+  .eventDateBanner {
+    margin: 1.5rem -1rem 0 -1rem;
+    width: calc(100% + 2rem);
+    font-size: 1.2rem;
+    padding: 0.8rem 1rem;
+  }
+
+  .applyBtn {
+    padding: 1.2rem 2rem;
+    font-size: 1.1rem;
   }
 
   .organizers {
@@ -493,15 +559,46 @@
   .section h2 {
     font-size: 1.2rem;
   }
+
+  .specialNotice {
+    font-size: 1rem;
+    padding: 0.6rem 1.2rem;
+  }
 }
 
 @media (max-width: 480px) {
+  .leftPanel {
+    width: 100%; /* 100vwから変更 */
+    height: auto;
+    padding: 0;
+    margin: 0;
+    display: block;
+  }
+
+  .poster {
+    width: 100%; /* 100vwから変更 */
+    height: auto;
+    max-width: 100%; /* 最大幅を制限 */
+    object-fit: contain; /* containに戻す */
+    aspect-ratio: 2990 / 2440;
+    margin: 0;
+    padding: 0;
+    display: block;
+  }
+
   .logo {
     max-width: 280px;
   }
 
   .rightPanel {
     padding: 0.5rem;
+  }
+
+  .eventDateBanner {
+    margin: 1.5rem -0.5rem 0 -0.5rem;
+    width: calc(100% + 1rem);
+    font-size: 1.1rem;
+    padding: 0.7rem 0.8rem;
   }
 
   .organizers {
@@ -513,7 +610,7 @@
   }
 
   .applyBtn {
-    padding: 0.8rem 1.5rem;
+    padding: 1rem 1.8rem;
     font-size: 1rem;
   }
 
@@ -528,6 +625,59 @@
 
   .section h2 {
     font-size: 1.1rem;
+  }
+
+  .specialNotice {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo {
+    max-width: 280px;
+  }
+
+  .rightPanel {
+    padding: 0.5rem;
+  }
+
+  .eventDateBanner {
+    margin: 1.5rem -0.5rem 0 -0.5rem;
+    width: calc(100% + 1rem);
+    font-size: 1.1rem;
+    padding: 0.7rem 0.8rem;
+  }
+
+  .organizers {
+    font-size: 0.75rem;
+  }
+
+  .organizers p {
+    line-height: 1.4;
+  }
+
+  .applyBtn {
+    padding: 1rem 1.8rem;
+    font-size: 1rem;
+  }
+
+  .program h3 {
+    font-size: 0.95rem;
+    line-height: 1.3;
+  }
+
+  .section h1 {
+    font-size: 1.2rem;
+  }
+
+  .section h2 {
+    font-size: 1.1rem;
+  }
+
+  .specialNotice {
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
   }
 }
 
