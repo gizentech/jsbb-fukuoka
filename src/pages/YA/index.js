@@ -327,6 +327,7 @@ export default function YaPage() {
                     <ul>
                       <li><strong>親子ティーボール</strong> </li>
                       <li><strong>ストラックアウト</strong></li>
+                      <li><strong>久留米ビジョン特別企画</strong></li>
                     </ul>
                   </div>
                   
@@ -340,7 +341,39 @@ export default function YaPage() {
                     </ul>
                   </div>
                 </div>
-                
+
+                <div className={styles.specialEvent}>
+                  <div className={styles.specialEventHeader}>
+                    <h4>久留米ビジョン特別企画</h4>
+                    <img
+                      src="/images/ya_ku-min.webp"
+                      alt="協力企業ロゴ"
+                      className={styles.sponsorLogo}
+                      width={597}
+                      height={121}
+                    />
+                  </div>
+                  <div className={styles.peaceImageContainer}>
+                    <img
+                      src="/images/peace.webp"
+                      alt="ピースサインの様子"
+                      className={styles.peaceImage}
+                    />
+                  </div>
+                  <p>久留米市野球場の電光掲示板（久留米ビジョン）に来場者をご紹介する特別な体験！</p>
+                  <p><strong>体験の流れ:</strong></p>
+                  <ol>
+                    <li>カメラに向かってピース！</li>
+                    <li>5秒後に久留米ビジョンにあなたの写真とお名前が表示</li>
+                    <li>特別な思い出をお持ち帰り</li>
+                  </ol>
+                  <div className={styles.eventNotes}>
+                    <p className={styles.eventNote}>※個人のお申込みの方に限ります</p>
+                    <p className={styles.eventNote}>※撮影および投影には保護者からの同意が必要です</p>
+                    <p className={styles.eventNote}>※チーム所属選手および関係者の方はご参加いただけません</p>
+                  </div>
+                </div>
+
                 <p><strong>特典:</strong> 参加者全員に記念品をプレゼント！</p>
               </section>
 

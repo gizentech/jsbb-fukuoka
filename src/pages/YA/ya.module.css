@@ -167,6 +167,7 @@
   aspect-ratio: 2990 / 2440;
   max-width: 100%;
   max-height: 100vh;
+  margin-left: 20px;
 }
 
 /* 右側パネル */
@@ -202,7 +203,7 @@
 
 /* ①青背景の開催日バナー（全幅） */
 .eventDateBanner {
-  background: #1565c0;
+  background: #ff2a00;
   color: white;
   padding: 1rem 2rem;
   font-size: 1.4rem;
@@ -222,10 +223,10 @@
 .applyBtn {
   display: inline-block;
   padding: 1.5rem 3rem;
-  background: linear-gradient(135deg, #1565c0 0%, #0d47a1 100%);
+  background: linear-gradient(135deg, #da3a00 0%, #d60000 100%);
   color: white;
   text-decoration: none;
-  border-radius: 50px;
+  border-radius: 10px;
   font-size: 1.3rem;
   font-weight: 600;
   transition: all 0.3s ease;
@@ -686,9 +687,105 @@
   .leftPanel {
     max-width: 560px;
   }
-  
+
   .rightPanel {
     margin-left: 40vw;
     max-margin-left: 560px;
+  }
+}
+
+/* 久留米ビジョン特別企画スタイル */
+.specialEvent {
+  background: linear-gradient(135deg, #f8f9fa 100%);
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1rem;
+}
+
+.specialEventHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.8rem;
+  gap: 1rem;
+}
+
+.specialEvent h4 {
+  color: #1565c0;
+  font-size: 1.2rem;
+  margin-bottom: 0;
+  font-weight: bold;
+  flex: 1;
+}
+
+.sponsorLogo {
+  max-width: 200px;
+  height: auto;
+  flex-shrink: 0;
+}
+
+.specialEvent p {
+  margin-bottom: 0.8rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.specialEvent ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+
+.specialEvent ol li {
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+  color: #444;
+}
+
+.eventNotes {
+  line-height: 1.2;
+}
+
+.eventNote {
+  font-size: 0.9rem;
+  color: #666;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.peaceImageContainer {
+  text-align: center;
+  margin-top: 1rem;
+}
+
+.peaceImage {
+  max-width: 80%;
+  height: auto;
+  border-radius: 8px;
+}
+
+@media (max-width: 768px) {
+  .specialEvent {
+    padding: 1rem;
+    margin-top: 0.8rem;
+  }
+
+  .specialEventHeader {
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .specialEvent h4 {
+    font-size: 1.1rem;
+  }
+
+  .sponsorLogo {
+    max-width: 120px;
+    flex-shrink: 0;
+    align-self: flex-end;
+  }
+
+  .eventNote {
+    font-size: 0.85rem;
   }
 }

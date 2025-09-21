@@ -310,10 +310,18 @@ export default function Document() {
           `}
         </script>
 
+        {/* Google Fonts */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&display=swap"
+          rel="stylesheet"
+        />
+
         <link rel="preconnect" href="//www.google-analytics.com" />
         <link rel="preconnect" href="//www.googletagmanager.com" />
       </Head>
-      <body>
+      <body style={{ fontFamily: '"Noto Sans JP", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo", "MS Pゴシック", "MS PGothic", sans-serif' }}>
         <Main />
         <NextScript />
       </body>
