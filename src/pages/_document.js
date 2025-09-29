@@ -320,6 +320,22 @@ export default function Document() {
 
         <link rel="preconnect" href="//www.google-analytics.com" />
         <link rel="preconnect" href="//www.googletagmanager.com" />
+
+        {/* Google Analytics */}
+        <script
+          async
+          src="https://www.googletagmanager.com/gtag/js?id=G-6NZDGR8PNX"
+        />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-6NZDGR8PNX');
+            `,
+          }}
+        />
       </Head>
       <body style={{ fontFamily: '"Noto Sans JP", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo", "MS Pゴシック", "MS PGothic", sans-serif' }}>
         <Main />
