@@ -250,6 +250,21 @@
   color: #666;
 }
 
+/* バナーセクション */
+.bannerSection {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 2rem;
+  padding: 0 1rem;
+}
+
+.bannerImage {
+  width: 100%;
+  height: auto;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
 /* 大会概要エリア */
 .tournamentDescription {
   width: 100%;
@@ -483,6 +498,18 @@
     max-width: 100%;
     box-sizing: border-box;
     padding: 0 1rem;
+  }
+
+  .bannerSection {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    padding: 0 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .bannerImage {
+    border-radius: 6px;
   }
 }
 

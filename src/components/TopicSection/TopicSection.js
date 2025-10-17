@@ -60,7 +60,8 @@ const topics = [
    titleLine2: '久留米近圏秋季学童軟式野球大会',
    tournamentId: 'ekimae',
    image: '/images/ekimae.webp',
-   alt: '駅前不動産旗 久留米近圏秋季学童軟式野球大会のロゴ'
+   alt: '駅前不動産旗 久留米近圏秋季学童軟式野球大会のロゴ',
+   customPage: true // 専用ページを使用
  },
  {
    id: 8,
@@ -91,9 +92,9 @@ export default function TopicSection() {
    <section className={styles.topicSection}>
      <div className={styles.grid}>
        {topics.map(topic => (
-         <Link 
-           key={topic.id} 
-           href={`/tournaments/${topic.tournamentId}`}
+         <Link
+           key={topic.id}
+           href={topic.customPage ? `/tournaments/${topic.tournamentId}` : `/tournaments/${topic.tournamentId}`}
            className={styles.card}
            aria-label={`${topic.titleLine1} ${topic.titleLine2}`}
          >

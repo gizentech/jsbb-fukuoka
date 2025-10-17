@@ -15,6 +15,8 @@ const categoryNames = {
   'a-class': '一般A級',
   'b-class': '一般B級',
   'c-class': '一般C級',
+  'area': '校区対抗',
+  'night': 'ナイター',
 };
 
 // getStaticPathsとgetStaticPropsを削除して、getServerSidePropsに置き換える

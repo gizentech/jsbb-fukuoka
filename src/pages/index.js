@@ -139,6 +139,8 @@ export default function Home({ news = [], applications = [], latestItems = [], e
     { id: 'a-class', title: '一般A級' },
     { id: 'b-class', title: '一般B級' },
     { id: 'c-class', title: '一般C級' },
+    { id: 'area', title: '校区対抗' },
+    { id: 'night', title: 'ナイター' },
   ];
 
   return (
