@@ -229,7 +229,7 @@ const Chronology = () => {
                 className={`${styles.accordionHeader} ${expandedDecade === decade ? styles.expanded : ''}`}
                 onClick={() => toggleDecade(decade)}
               >
-                <span className={styles.decadeLabel}>{decade}年代</span>
+                <span className={styles.decadeLabel}>{decade}年～</span>
                 <span className={styles.accordionIcon}></span>
               </button>
               

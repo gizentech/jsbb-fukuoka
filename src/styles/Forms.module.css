@@ -5,11 +5,39 @@
 }
 
 .main {
-  flex: 1;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 40px 20px;
   width: 100%;
+  margin: 0 auto;
+  padding: 70px 0 0;
+  flex: 1;
+}
+
+.pageHeader {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  height: 200px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/images/top2.webp');
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  margin-bottom: 32px;
+}
+
+.pageHeader h1 {
+  font-size: 28px;
+  margin-bottom: 8px;
+}
+
+.pageHeader span {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 }
 
 .title {
@@ -24,6 +52,9 @@
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 40px;
   margin-top: 40px;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
 }
 
 .card {
@@ -116,10 +147,28 @@
   }
 }
 
+@media (max-width: 960px) {
+  .pageHeader {
+    height: 160px;
+  }
+
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+}
+
 @media (max-width: 768px) {
   .main {
-    padding: 0px;
-    padding-top: 60px;
+    padding: 70px 0 0;
+  }
+
+  .pageHeader {
+    height: 120px;
+    margin-bottom: 24px;
+  }
+
+  .pageHeader h1 {
+    font-size: 20px;
   }
 
   .title {

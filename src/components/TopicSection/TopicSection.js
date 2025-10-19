@@ -75,7 +75,7 @@ const topics = [
    id: 9,
    titleLine1: 'くーみんテレビ・はっぴとすビジョン旗',
    titleLine2: 'クロスロード学童軟式野球大会',
-   tournamentId: 'ku-min',
+   tournamentId: 'kumin-tv-gakudou-kurume',
    image: '/images/ku-min.webp',
    alt: 'くーみんテレビ・はっぴとすビジョン旗 クロスロード学童軟式野球大会のロゴ'
  }

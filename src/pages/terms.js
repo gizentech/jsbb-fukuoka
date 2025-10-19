@@ -40,15 +40,7 @@ export default function Terms() {
                 開発窓口：白石　稜</p>
             </div>
           </section>
-          
-          <section className={styles.section}>
-            <h2 className={styles.sectionTitle}>データ構築設計</h2>
-            <div className={styles.content}>
-              <p>
-                FL-PLANT
-              </p>
-            </div>
-          </section>
+
 
           <section className={styles.section}>
             <h2 className={styles.sectionTitle}>システム情報</h2>

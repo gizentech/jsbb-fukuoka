@@ -8,14 +8,15 @@
 .main {
   width: 100%;
   margin: 0 auto;
-  padding: 100px 0 0;
+  padding: 70px 0 0;
   flex: 1;
 }
 
 .pageHeader {
   position: relative;
-  max-width: 1080px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   height: 200px;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/images/top2.webp');

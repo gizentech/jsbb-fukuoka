@@ -124,7 +124,7 @@ export default function Document() {
         <meta name="author" content={siteName} />
         <meta name="copyright" content={`Copyright © ${new Date().getFullYear()} ${siteName} All Rights Reserved.`} />
         <meta name="format-detection" content="telephone=no" />
-        <meta name="theme-color" content="#2563eb" />
+        <meta name="theme-color" content="#ffffff" />
         <meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
         <meta name="googlebot" content="index, follow" />
         <meta name="google" content="notranslate" />

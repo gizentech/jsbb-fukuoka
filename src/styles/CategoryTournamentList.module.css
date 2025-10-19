@@ -7,15 +7,17 @@
 
 .main {
   width: 100%;
-  margin: 0 auto;
-  padding: 100px 0 0;
+  max-width: 100%;
+  margin: 0;
+  padding: 70px 0 0;
   flex: 1;
 }
 
 .pageHeader {
   position: relative;
-  max-width: 1080px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   height: 200px;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/images/top0.webp');
@@ -46,7 +48,7 @@
   gap: 20px;
   max-width: 1080px;
   margin: 0 auto;
-  padding: 0 16px;
+  padding: 0;
 }
 
 .listItem {
@@ -143,7 +145,7 @@
   .list {
       grid-template-columns: 1fr;
       display: block;
-      padding: 0 16px;
+      padding: 0;
   }
   
   .listItem {
@@ -152,14 +154,14 @@
       align-items: center;
       border-radius: 0;
       box-shadow: none;
-      padding: 12px 0;
+      padding: 12px 16px;
       border-bottom: 1px solid #eee;
   }
-  
+
   .imageWrapper {
       display: none;
   }
-  
+
   .tournamentInfo {
       padding: 0;
       flex: 1;

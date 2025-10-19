@@ -76,7 +76,13 @@
   flex-direction: column;
   border-top: 1px solid #eee;
 }
- 
+
+/* 校区対抗とナイターを含む行のラッパー */
+.list {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
 .listItem,
 .newsItem {
   display: flex;
@@ -88,13 +94,30 @@
   background: #fff;
   transition: background-color 0.3s ease;
   border-bottom: 1px solid #eee;
+  width: 100%;
 }
- 
+
+/* 校区対抗とナイターを横並びにする */
+.listItem:nth-child(6),
+.listItem:nth-child(7) {
+  width: 50%;
+  border-bottom: 1px solid #eee;
+  box-sizing: border-box;
+}
+
+.listItem:nth-child(6) {
+  border-right: 0.5px solid #eee;
+}
+
+.listItem:nth-child(7) {
+  border-left: 0.5px solid #eee;
+}
+
 .listItem:last-child,
 .newsItem:last-child {
   border-bottom: none;
 }
- 
+
 .listItem:hover,
 .newsItem:hover {
   background: #f8f8f8;
@@ -170,33 +193,33 @@
  
 @media (max-width: 640px) {
   .main {
-    padding: 50px 0;
+    padding: 50px 16px 0;
   }
- 
+
   .cardHeader {
     height: 120px;
-    margin-bottom: 24px;
+    margin-bottom: 0;
     border-radius: 16px 16px 0 0; /* こちらも上部のみ角丸に修正 */
   }
   .cardHeader h2 {
     font-size: 20px;
   }
- 
+
   .listItem,
   .newsItem {
     padding: 20px 24px;
   }
- 
+
   .categoryTitle,
   .newsTitle {
     font-size: 16px;
   }
- 
+
   .arrow {
     font-size: 20px;
     margin-left: 12px;
   }
- 
+
   .topicContainer h2 {
     font-size: 20px;
     margin-bottom: 24px;

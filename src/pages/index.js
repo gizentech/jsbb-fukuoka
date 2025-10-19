@@ -136,9 +136,9 @@ export default function Home({ news = [], applications = [], latestItems = [], e
   const tournamentCategories = [
     { id: 'es-class', title: '学童' },
     { id: 'jhs-class', title: '少年' },
-    { id: 'a-class', title: '一般A級' },
-    { id: 'b-class', title: '一般B級' },
-    { id: 'c-class', title: '一般C級' },
+    { id: 'a-class', title: 'A級' },
+    { id: 'b-class', title: 'B級' },
+    { id: 'c-class', title: 'C級' },
     { id: 'area', title: '校区対抗' },
     { id: 'night', title: 'ナイター' },
   ];

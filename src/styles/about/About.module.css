@@ -7,17 +7,17 @@
  }
  
  .main {
-  flex: 1;
-  max-width: 1080px;
-  margin: 0 auto;
-  padding: 60px;
   width: 100%;
+  margin: 0 auto;
+  padding: 70px 0 0;
+  flex: 1;
 }
  
  .pageHeader {
   position: relative;
-  max-width: 1080px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
   height: 200px;
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/images/top0.webp');
@@ -116,8 +116,7 @@
  }
  
  .executiveItem:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background-color: #f9f9f9;
  }
  
  .executiveImage {
@@ -217,15 +216,23 @@
  
 
   .executiveItem {
-    flex-direction: column;
-    text-align: center;
-    padding: 20px;
-    border-radius: 8px; /* 角丸を追加 */
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); /* シャドウを調整 */
+    flex-direction: row;
+    text-align: left;
+    padding: 8px 0;
+    border-radius: 0;
+    box-shadow: none;
+    border: none;
+    border-bottom: 1px solid #eee;
+    gap: 12px;
   }
  
   .executiveInfo {
-    align-items: center;
+    align-items: flex-start;
+    gap: 4px;
+  }
+
+  .position {
+    font-size: 13px;
   }
  
   .name {

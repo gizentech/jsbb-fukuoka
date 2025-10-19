@@ -49,7 +49,10 @@ export default function Forms() {
     <>
       <Header />
       <main className={styles.main}>
-        <h1 className={styles.title}>申請様式</h1>
+        <div className={styles.pageHeader}>
+          <h1>申請様式</h1>
+          <span>FORMS</span>
+        </div>
         <div className={styles.cardContainer}>
           <div className={styles.card}>
             <div className={styles.cardHeader}>
