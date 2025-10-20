@@ -283,7 +283,7 @@ export default function EkimaeTournamentDetail({ tournament, error }) {
       {tournament.banner && (
         <div className={styles.bannerSection}>
           <a
-            href="https://kurume.jsbb-fukuoka.com/YA/"
+            href="https://www.ekimae-r-e.co.jp/"
             target="_blank"
             rel="noopener noreferrer"
             className={styles.bannerLink}

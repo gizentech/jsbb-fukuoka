@@ -11,7 +11,7 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 80px 20px;
+  padding: 126px 20px 80px;
 }
  
 .tournamentSection {
@@ -163,7 +163,7 @@
  
 @media (max-width: 960px) {
   .main {
-    padding: 30px 16px 0;
+    padding: 106px 16px 0;
   }
  
   .cardContainer {
@@ -193,7 +193,7 @@
  
 @media (max-width: 640px) {
   .main {
-    padding: 50px 16px 0;
+    padding: 106px 16px 0;
   }
 
   .cardHeader {

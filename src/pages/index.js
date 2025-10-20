@@ -5,6 +5,8 @@ import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import TopicSection from '../components/TopicSection/TopicSection'
 import HeroSlider from '../components/HeroSlider/HeroSlider'
+import ScrollBanner from '../components/ScrollBanner/ScrollBanner' // 追加
+import TournamentBanner from '../components/TournamentBanner/TournamentBanner' // 追加
 import YaBanner from '../components/YaBanner/YaBanner' // 追加
 import Link from 'next/link'
 import Analytics from '@vercel/analytics/react';
@@ -146,11 +148,15 @@ export default function Home({ news = [], applications = [], latestItems = [], e
   return (
     <div className={styles.container}>
       <Header />
+      <ScrollBanner />
       <main className={styles.main}>
         <HeroSlider />
-        
+
         {/* YAバナーをHeroSliderの下に追加 */}
-        <YaBanner />
+        {/* <YaBanner /> */}
+
+        {/* TournamentBannerをYAバナーの下に追加 */}
+        <TournamentBanner />
 
         <section className={styles.tournamentSection}>
           <div className={styles.cardContainer}>

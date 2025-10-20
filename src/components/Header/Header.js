@@ -124,6 +124,9 @@ export default function Header() {
                   <li>
                     <Link href="/forms" onClick={handleLinkClick}>申請様式</Link>
                   </li>
+                  <li>
+                    <Link href="/YA" onClick={handleLinkClick}>久留米球場であそぼっ！</Link>
+                  </li>
                 </ul>
               </div>
 

@@ -1,4 +1,4 @@
-/* components/YaBanner/YaBanner.module.css */
+/* components/TournamentBanner/TournamentBanner.module.css */
 /* Home.module.cssのtournamentSectionと同じ構造を使用 */
 .bannerSection {
   margin: 64px 0;
@@ -43,7 +43,7 @@
   .cardContainer {
     gap: 32px;
   }
-  
+
   .bannerSection {
     margin: 32px 0;
   }
