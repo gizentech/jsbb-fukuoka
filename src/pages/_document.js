@@ -1,31 +1,31 @@
 import { Html, Head, Main, NextScript } from 'next/document';
 
 export default function Document() {
-  const siteUrl = 'https://kurume.jsbb-fukuoka.com';
-  const siteName = '久留米市野球連盟';
-  const description = '久留米市野球連盟は、福岡県の野球競技の中心として、各種大会の開催や野球を通じた青少年の健全育成に取り組んでいます。全日本軟式野球連盟加盟団体、一般社団法人福岡県軟式野球連盟の傘下として、久留米市を中心に福岡、九州地域の軟式野球の振興と発展に貢献。審判員は社会人野球、高校野球、中学硬式野球、軟式野球などサポートしています。';
+  const siteUrl = 'https://jsbb-fukuoka.com';
+  const siteName = '一般社団法人福岡県軟式野球連盟';
+  const description = '一般社団法人福岡県軟式野球連盟（公益財団法人全日本軟式野球連盟 福岡県支部）は、福岡県全域の軟式野球競技の中心として、各種大会の開催や野球を通じた青少年の健全育成に取り組んでいます。全日本軟式野球連盟加盟団体として、福岡県を中心に九州地域の軟式野球の振興と発展に貢献しています。';
 
   // ページごとのメタデータ定義
   const pageMetadata = {
     home: {
-      title: '久留米市野球連盟 - 福岡県の野球大会・試合情報',
+      title: '一般社団法人福岡県軟式野球連盟 - 福岡県全域の野球大会・試合情報',
       description: description
     },
     tournaments: {
-      title: '久留米市野球連盟 大会情報 - 福岡県の野球大会・試合情報',
-      description: '久留米市野球連盟主催の野球大会情報。学童、少年、社会人A級/B級/C級の各カテゴリーの大会申込、試合結果、スケジュールをご覧いただけます。'
+      title: '福岡県軟式野球連盟 大会情報 - 福岡県全域の野球大会・試合情報',
+      description: '福岡県軟式野球連盟主催の野球大会情報。学童、少年、社会人A級/B級/C級の各カテゴリー、福岡県全8ブロック（京築、北九州、筑豊、東福岡、福岡、北筑後、久留米、南筑後）の大会申込、試合結果、スケジュールをご覧いただけます。'
     },
     contact: {
-      title: '久留米市野球連盟 お問い合わせ - 福岡県の野球連盟',
-      description: '久留米市野球連盟への各種お問い合わせ、大会参加申込、審判員応募はこちらから受け付けております。'
+      title: '福岡県軟式野球連盟 お問い合わせ - 福岡県の野球連盟',
+      description: '一般社団法人福岡県軟式野球連盟への各種お問い合わせ、大会参加申込、審判員応募はこちらから受け付けております。'
     },
     forms: {
-      title: '久留米市野球連盟 申請様式 - 各種申請書類ダウンロード',
-      description: '久留米市野球連盟の各種申請書類、登録申請書、大会申込書などの様式をダウンロードいただけます。'
+      title: '福岡県軟式野球連盟 申請様式 - 各種申請書類ダウンロード',
+      description: '福岡県軟式野球連盟の各種申請書類、登録申請書、大会申込書などの様式をダウンロードいただけます。'
     },
     news: {
-      title: '久留米市野球連盟 お知らせ - 最新情報・イベント情報',
-      description: '久留米市野球連盟からの最新のお知らせ、大会情報、イベント情報をご覧いただけます。'
+      title: '福岡県軟式野球連盟 お知らせ - 最新情報・イベント情報',
+      description: '一般社団法人福岡県軟式野球連盟からの最新のお知らせ、大会情報、イベント情報をご覧いただけます。'
     }
   };
 
@@ -65,25 +65,29 @@ export default function Document() {
 
   const keywords = {
     primary: [
-      '久留米市野球連盟',
+      '福岡県軟式野球連盟',
+      '一般社団法人福岡県軟式野球連盟',
+      '全日本軟式野球連盟',
       '福岡県野球',
       '九州野球',
       '軟式野球',
-      '硬式野球', 
+      '硬式野球',
       '野球大会',
       '社会人野球',
       '中学硬式野球',
-      '久留米野球',
-      '筑後地区野球',
       '野球場',
       '草野球',
       '野球チーム',
       '野球連盟',
-      '久留米スポーツ'
+      '福岡スポーツ'
     ].join(','),
     location: [
       '福岡県',
+      '北九州市',
+      '福岡市',
       '久留米市',
+      '京築',
+      '筑豊',
       '筑後地域',
       '九州',
       '北部九州',
@@ -131,7 +135,7 @@ export default function Document() {
         <meta name="google-site-verification" content={process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION} />
 
         <meta property="og:type" content="website" />
-        <meta property="og:title" content={`${siteName} - 福岡県久留米市の野球大会・試合情報`} />
+        <meta property="og:title" content={`${siteName} - 福岡県全域の野球大会・試合情報`} />
         <meta property="og:description" content={description} />
         <meta property="og:url" content={siteUrl} />
         <meta property="og:site_name" content={siteName} />
@@ -142,7 +146,7 @@ export default function Document() {
         <meta property="og:updated_time" content={new Date().toISOString()} />
 
         <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:title" content={`${siteName} - 福岡県久留米市の野球大会・試合情報`} />
+        <meta name="twitter:title" content={`${siteName} - 福岡県全域の野球大会・試合情報`} />
         <meta name="twitter:description" content={description} />
         <meta name="twitter:image" content={`${siteUrl}/ogp.webp`} />
 
@@ -154,7 +158,7 @@ export default function Document() {
               "@type": "Organization",
               "@id": "${siteUrl}/#organization",
               "name": "${siteName}",
-              "alternateName": "久留米野球連盟",
+              "alternateName": "福岡県野球連盟",
               "url": "${siteUrl}",
               "logo": {
                 "@type": "ImageObject",
@@ -226,11 +230,11 @@ export default function Document() {
             {
               "@context": "https://schema.org",
               "@type": "SportsEvent",
-              "name": "久留米市野球大会",
-              "description": "福岡県久留米市で開催される各種野球大会",
+              "name": "福岡県軟式野球大会",
+              "description": "福岡県全域で開催される各種軟式野球大会",
               "location": {
                 "@type": "Place",
-                "name": "久留米市野球場",
+                "name": "福岡県軟式野球連盟本部",
                 "address": {
                   "@type": "PostalAddress",
                   "streetAddress": "東櫛原町173",

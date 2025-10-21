@@ -5,6 +5,13 @@ import styles from '../styles/Forms.module.css';
 import Header from '../components/Header/Header';
 import Footer from '../components/Footer/Footer';
 
+// クライアントサイドのみでレンダリング
+export async function getStaticProps() {
+  return {
+    props: {}
+  };
+}
+
 export default function Forms() {
   const [forms, setForms] = useState([]);
   const [loading, setLoading] = useState(true);

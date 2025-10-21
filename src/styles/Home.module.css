@@ -11,62 +11,71 @@
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 126px 20px 80px;
+  padding: 180px 20px 80px;
 }
  
 .tournamentSection {
   margin: 64px 0;
-  width: 100%;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: #fff;
+  padding: 40px 20px;
 }
  
 .cardContainer {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 40px;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
   width: 100%;
 }
  
 .card {
   background: #fff;
   width: 100%;
-  border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
 }
  
 .cardHeader {
   position: relative;
-  height: 200px;
+  height: 140px;
   background-size: cover;
   background-position: center;
-  padding: 20px;
+  padding: 16px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
   color: #fff;
   margin-bottom: 0;
-  border-radius: 16px 16px 0 0; /* 上部のみ角丸に */
 }
- 
+
 .card:nth-child(1) .cardHeader {
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/images/tournament-bg.webp');
 }
- 
+
 .card:nth-child(2) .cardHeader {
   background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
     url('/images/top2.webp');
 }
- 
-.cardHeader h2 {
-  font-size: 28px;
-  margin-bottom: 8px;
+
+.card:nth-child(3) .cardHeader {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/images/head03.webp');
 }
- 
+
+.cardHeader h2 {
+  font-size: 18px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
 .cardHeader span {
-  font-size: 14px;
+  font-size: 11px;
   text-transform: uppercase;
 }
  
@@ -77,10 +86,10 @@
   border-top: 1px solid #eee;
 }
 
-/* 校区対抗とナイターを含む行のラッパー */
 .list {
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #eee;
 }
 
 .listItem,
@@ -88,29 +97,13 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 24px 32px;
+  padding: 20px;
   text-decoration: none;
   color: inherit;
   background: #fff;
   transition: background-color 0.3s ease;
   border-bottom: 1px solid #eee;
   width: 100%;
-}
-
-/* 校区対抗とナイターを横並びにする */
-.listItem:nth-child(6),
-.listItem:nth-child(7) {
-  width: 50%;
-  border-bottom: 1px solid #eee;
-  box-sizing: border-box;
-}
-
-.listItem:nth-child(6) {
-  border-right: 0.5px solid #eee;
-}
-
-.listItem:nth-child(7) {
-  border-left: 0.5px solid #eee;
 }
 
 .listItem:last-child,
@@ -122,22 +115,22 @@
 .newsItem:hover {
   background: #f8f8f8;
 }
- 
+
 .categoryInfo,
 .newsInfo {
   flex: 1;
 }
- 
+
 .categoryTitle,
 .newsTitle {
-  font-size: 18px;
+  font-size: 15px;
   font-weight: 500;
 }
- 
+
 .arrow {
   color: #999;
-  font-size: 24px;
-  margin-left: 16px;
+  font-size: 20px;
+  margin-left: 12px;
 }
  
 .topicContainer {
@@ -163,28 +156,29 @@
  
 @media (max-width: 960px) {
   .main {
-    padding: 106px 16px 0;
+    padding: 150px 16px 0;
   }
- 
+
   .cardContainer {
-    gap: 32px;
+    grid-template-columns: 1fr;
+    gap: 24px;
   }
- 
+
   .cardHeader {
-    height: 160px;
+    height: 140px;
   }
- 
+
   .cardHeader h2 {
-    font-size: 24px;
+    font-size: 18px;
   }
 }
- 
+
 @media (max-width: 768px) {
   .cardContainer {
     grid-template-columns: 1fr;
-    gap: 40px;
+    gap: 24px;
   }
- 
+
   .tournamentSection,
   .topicContainer {
     margin: 40px 0;
@@ -193,13 +187,12 @@
  
 @media (max-width: 640px) {
   .main {
-    padding: 106px 16px 0;
+    padding: 90px 16px 0;
   }
 
   .cardHeader {
     height: 120px;
     margin-bottom: 0;
-    border-radius: 16px 16px 0 0; /* こちらも上部のみ角丸に修正 */
   }
   .cardHeader h2 {
     font-size: 20px;
@@ -260,15 +253,8 @@
   justify-content: space-between;
   align-items: center;
   background: #fff;
-  border-radius: 8px;
   padding: 16px 24px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   transition: all 0.3s ease;
-}
- 
-.applicationCard:hover {
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  transform: translateY(-2px);
 }
  
 .applicationInfo {
@@ -314,7 +300,6 @@
   background: #3182ce;
   color: white;
   padding: 8px 16px;
-  border-radius: 4px;
   text-decoration: none;
   font-size: 14px;
   font-weight: 500;
@@ -375,19 +360,81 @@
 /* 最新情報のスタイル修正 */
 .itemContent {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
   flex: 1;
 }
 
 .itemDate {
   font-size: 14px;
   color: #666;
-  margin-bottom: 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 100px;
 }
 
 .itemTitle {
   font-size: 16px;
   font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* お知らせセクション専用スタイル */
+.infoNewsItem {
+  background: #fff !important;
+}
+
+.infoNewsItem:hover {
+  background: #f8f8f8 !important;
+}
+
+.infoNewsItem .itemContent {
+  width: 100%;
+}
+
+.infoNewsItem:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+/* お知らせのメタ情報 */
+.importantBadgeWrapper {
+  width: 60px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.importantBadge {
+  background: #e53e3e;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.classTagWrapper {
+  width: 90px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.classTag {
+  background: #3182ce;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
 }
 
 /* 一覧リンク用のスタイル */
@@ -420,19 +467,178 @@
 
 /* モバイル対応 */
 @media (max-width: 640px) {
+  .itemContent {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
   .itemDate {
     font-size: 12px;
   }
-  
+
   .itemTitle {
     font-size: 14px;
+    flex-basis: 100%;
+    order: 3;
   }
-  
+
+  .importantBadgeWrapper {
+    width: 50px;
+  }
+
+  .classTagWrapper {
+    width: 80px;
+  }
+
+  .importantBadge,
+  .classTag {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .listItem,
+  .newsItem {
+    padding: 16px;
+  }
+
   .viewMoreLinks {
     padding: 12px 24px;
   }
-  
+
   .viewMoreLink {
     font-size: 13px;
   }
+}
+
+/* 最新情報セクション（1カラム） */
+.latestInfoSection {
+  margin: 64px 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: #e8e8e8;
+  padding: 40px 20px;
+}
+
+.latestInfoCard {
+  background: #fff;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.latestInfoCard .cardHeader {
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('/images/infoheader.webp');
+  background-position: center 30%;
+}
+
+/* 登録チーム数表示セクション */
+.teamCountSection {
+  margin: 64px 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 40px 20px;
+  background: #e8e8e8;
+}
+
+.teamCountSection h2 {
+  font-size: 28px;
+  font-weight: bold;
+  text-align: center;
+  margin-bottom: 32px;
+  color: #333;
+}
+
+.teamCountGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.teamCountCard {
+  background: #fff;
+  padding: 24px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.teamCountCard h3 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  color: #555;
+}
+
+.teamCount {
+  font-size: 32px;
+  font-weight: bold;
+  color: #3182ce;
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .teamCountSection {
+    padding: 32px 20px;
+  }
+
+  .teamCountGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .teamCountSection h2 {
+    font-size: 24px;
+  }
+
+  .teamCountCard h3 {
+    font-size: 16px;
+  }
+
+  .teamCount {
+    font-size: 28px;
+  }
+}
+
+@media (max-width: 480px) {
+  .teamCountGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* 支部フィルターセクション */
+.filterSection {
+  padding: 16px 20px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #eee;
+}
+
+.branchFilter {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  background: #fff;
+  cursor: pointer;
+  transition: border-color 0.3s ease;
+}
+
+.branchFilter:focus {
+  outline: none;
+  border-color: #3182ce;
+}
+
+.branchFilter:hover {
+  border-color: #3182ce;
+}
+
+.noData {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
 }

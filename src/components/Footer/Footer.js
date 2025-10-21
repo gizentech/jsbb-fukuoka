@@ -6,8 +6,8 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
         <div className={styles.organizationSection}>
-          <p className={styles.organizationSubtitle}>一般社団法人 福岡県軟式野球連盟 久留米支部</p>
-          <h2 className={styles.organizationTitle}>久留米市野球連盟</h2>
+          <p className={styles.organizationSubtitle}>公益財団法人全日本軟式野球九州連合会 福岡県支部</p>
+          <h2 className={styles.organizationTitle}>一般社団法人福岡県軟式野球連盟</h2>
           <address className={styles.organizationAddress}>
             〒830-0003<br />
             福岡県久留米市東櫛原町173 久留米市野球場内
