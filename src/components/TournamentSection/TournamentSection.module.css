@@ -1,0 +1,317 @@
+/* Tournament Section Styles */
+.tournamentSection {
+  margin: 64px 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  background: transparent;
+  padding: 40px 20px;
+  position: relative;
+  z-index: 2;
+}
+
+@media (max-width: 960px) {
+  .tournamentSection {
+    margin-top: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+}
+
+/* Tab Navigation (SP only) */
+.tabNavigation {
+  display: none;
+}
+
+.cardContainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  max-width: 1000px;
+  margin: 0 auto;
+  width: 100%;
+  overflow: visible;
+  position: relative;
+  z-index: 10;
+}
+
+@media (min-width: 961px) {
+  .tournamentSection {
+    margin-top: -150px;
+    padding-top: 60px;
+  }
+}
+
+.cardsWrapper {
+  display: contents;
+}
+
+.card {
+  background: #fff;
+  width: 100%;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 0;
+}
+
+.cardHeader {
+  position: relative;
+  height: 140px;
+  background-size: cover;
+  background-position: center;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #000;
+  margin-bottom: 0;
+}
+
+.card:nth-child(1) .cardHeader {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    url('/images/tournament-bg.webp');
+}
+
+.card:nth-child(2) .cardHeader {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    url('/images/top2.webp');
+}
+
+.card:nth-child(3) .cardHeader {
+  background-image: linear-gradient(rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.7)),
+    url('/images/head03.webp');
+}
+
+.cardHeader h2 {
+  font-size: 16px;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.cardHeader span {
+  font-size: 10px;
+  text-transform: uppercase;
+}
+
+.list,
+.newsList {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #eee;
+}
+
+.listItem,
+.newsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 13px 20px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+}
+
+.listItem:last-child,
+.newsItem:last-child {
+  border-bottom: none;
+}
+
+.listItem:hover,
+.newsItem:hover {
+  background: #f8f8f8;
+}
+
+.listItem:active,
+.newsItem:active {
+  background: #f8f8f8;
+}
+
+.listItem:focus,
+.newsItem:focus {
+  outline: none;
+  background: #fff;
+}
+
+.categoryTitle {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.arrow {
+  color: #999;
+  font-size: 20px;
+  margin-left: 12px;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 5px;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.itemDate {
+  font-size: 13px;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: auto;
+}
+
+.itemTitle {
+  font-size: 12px;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap !important;
+  min-width: 0;
+  word-break: keep-all;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 24px;
+  font-size: 16px;
+  color: #e53e3e;
+}
+
+.noData {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* Mobile Styles */
+@media (max-width: 960px) {
+  .tabNavigation {
+    display: none;
+  }
+
+  .tabNavigation::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    height: 2px;
+    background: #333;
+    margin-left: -50vw;
+  }
+
+  .tabButton {
+    flex: 1;
+    padding: 16px 20px;
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    color: #999;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    border-bottom: 3px solid transparent;
+  }
+
+  .tabButton.active {
+    color: #fff;
+    border-bottom-color: #fff;
+    font-weight: 600;
+  }
+
+  .tabButton:hover {
+    color: #fff;
+    background: #2a2a2a;
+  }
+
+  .tournamentSection {
+    padding: 0;
+    overflow-x: visible;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    width: 100vw;
+    position: relative;
+    z-index: 1000;
+  }
+
+  .cardContainer {
+    position: relative;
+    overflow: hidden;
+    width: calc(100vw - 24px);
+    max-width: calc(100vw - 24px);
+    padding: 0;
+    margin: -180px 12px 0;
+    display: block;
+    z-index: 1001;
+  }
+
+  .cardsWrapper {
+    display: flex !important;
+    transition: transform 0.4s ease;
+    width: calc(300vw - 72px);
+  }
+
+  .card {
+    flex: 0 0 calc(100vw - 24px);
+    width: calc(100vw - 24px);
+    min-width: calc(100vw - 24px);
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  .card:nth-child(1) {
+    margin-left: 0;
+  }
+
+  .cardHeader {
+    height: 140px;
+    background-size: cover !important;
+    background-position: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+  }
+
+  .cardHeader h2 {
+    font-size: 18px;
+    display: block;
+    margin-bottom: 4px;
+  }
+
+  .cardHeader span {
+    font-size: 11px;
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .itemContent {
+    flex-wrap: nowrap;
+    gap: 5px;
+  }
+
+  .itemDate {
+    font-size: 11px;
+  }
+
+  .itemTitle {
+    font-size: 11px;
+    flex-basis: auto;
+    order: 0;
+  }
+
+  .listItem,
+  .newsItem {
+    padding: 16px;
+  }
+}

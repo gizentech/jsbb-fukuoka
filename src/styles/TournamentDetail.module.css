@@ -196,7 +196,20 @@
 }
 
 .updateHeader:hover {
-  background: #222;
+  background: #000;
+}
+
+.updateHeader:active {
+  background: #000;
+}
+
+.updateHeader:focus {
+  outline: none;
+  background: #000;
+}
+
+.updateHeader:focus-visible {
+  background: #000;
 }
 
 .accordionIconWrapper {

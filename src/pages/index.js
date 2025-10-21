@@ -1,8 +1,10 @@
 // pages/index.js
-import React from 'react'
+import React, { useState } from 'react'
 import styles from '../styles/Home.module.css'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
+import TopView from '../components/TopView/TopView'
+import TournamentSection from '../components/TournamentSection/TournamentSection'
 import Link from 'next/link'
 import Analytics from '@vercel/analytics/react';
 
@@ -50,9 +52,10 @@ export async function getServerSideProps() {
     }
 
     // 大会情報を取得（福岡県大会情報用App）
-    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=6&order=-_sys.createdAt`;
+    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=100&order=-_sys.createdAt&depth=2`;
 
     let tournaments = [];
+    let allTournaments = [];
 
     try {
       const tournamentResponse = await fetch(tournamentUrl, { headers });
@@ -61,12 +64,13 @@ export async function getServerSideProps() {
         const tournamentData = await tournamentResponse.json();
 
         if (tournamentData.items && tournamentData.items.length > 0) {
-          tournaments = tournamentData.items.map(item => {
-            const frameInfo = item['fukuoka-frame'] || {};
+          allTournaments = tournamentData.items.map(item => {
+            const torData = item['tor-data'] || {};
             return {
               id: item._id,
               type: 'tournament',
-              title: frameInfo['fukuoka-title1'] || '大会',
+              title: torData['fukuoka-title1'] || '大会',
+              nameRyaku: item['fukuoka-tor-name-ryaku'] || '',
               createdAt: item['tor-start'] || item._sys?.createdAt || new Date().toISOString(),
               tournamentFile: item['fuku-tournament'] || null,
               startDate: item['tor-start'] || null,
@@ -76,6 +80,38 @@ export async function getServerSideProps() {
               torNo: item['tor-no'] || 0
             };
           });
+
+          // 今日の日付を取得
+          const today = new Date();
+          today.setHours(0, 0, 0, 0);
+
+          // 前後10日を計算
+          const tenDaysBefore = new Date(today);
+          tenDaysBefore.setDate(today.getDate() - 10);
+
+          const tenDaysAfter = new Date(today);
+          tenDaysAfter.setDate(today.getDate() + 10);
+
+          // 前後10日以内の大会をフィルタリング
+          const filteredTournaments = allTournaments.filter(item => {
+            if (!item.startDate || !item.endDate) return false;
+
+            const start = new Date(item.startDate);
+            const end = new Date(item.endDate);
+
+            // 大会期間が前後10日以内に重なっているかチェック
+            return (start <= tenDaysAfter && end >= tenDaysBefore);
+          });
+
+          // フィルタ後が8大会以下の場合、終了日が直近のものを表示
+          if (filteredTournaments.length <= 8) {
+            tournaments = allTournaments
+              .filter(item => item.endDate) // 終了日があるもののみ
+              .sort((a, b) => new Date(b.endDate) - new Date(a.endDate)) // 終了日の降順
+              .slice(0, 8);
+          } else {
+            tournaments = filteredTournaments;
+          }
         }
       } else {
         console.error(`Tournament API Error: ${tournamentResponse.status}`);
@@ -115,135 +151,14 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ news = [], tournaments = [], latestItems = [], error = null }) {
-  // 福岡県8ブロック情報
-  const fukuokaBlocks = [
-    {
-      id: 'kyochiku',
-      title: '京築ブロック',
-      branches: ['行橋支部', '苅田支部', '豊前支部']
-    },
-    {
-      id: 'kitakyushu',
-      title: '北九州ブロック',
-      branches: ['北九州支部']
-    },
-    {
-      id: 'chikuho',
-      title: '筑豊ブロック',
-      branches: ['中遠支部', '直鞍支部', '嘉飯支部', '田川支部']
-    },
-    {
-      id: 'higashi-fukuoka',
-      title: '東福岡ブロック',
-      branches: ['古賀支部', '糟屋支部', '宗像支部']
-    },
-    {
-      id: 'fukuoka',
-      title: '福岡ブロック',
-      branches: ['福岡支部', '筑紫支部', '春日支部', '大野城支部']
-    },
-    {
-      id: 'kita-chikugo',
-      title: '北筑後ブロック',
-      branches: ['朝倉支部', '八女支部', '浮羽支部', '小郡支部']
-    },
-    {
-      id: 'kurume',
-      title: '久留米ブロック',
-      branches: ['久留米支部']
-    },
-    {
-      id: 'minami-chikugo',
-      title: '南筑後ブロック',
-      branches: ['柳川支部', '筑後支部', '大牟田支部', '大川大木支部']
-    }
-  ];
-
-  // カテゴリー情報
-  const tournamentCategories = [
-    { id: 'gakudo', title: '学童' },
-    { id: 'shonen', title: '少年' },
-    { id: 'a-class', title: 'A級' },
-    { id: 'b-class', title: 'B級' },
-    { id: 'c-class', title: 'C級' },
-    { id: 'other', title: 'その他' },
-  ];
+  const [activeTab, setActiveTab] = useState(1);
 
   return (
     <div className={styles.container}>
       <Header />
+      <TopView activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className={styles.main}>
-        <section className={styles.tournamentSection}>
-          <div className={styles.cardContainer}>
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2>最近の大会</h2>
-                <span>RECENT TOURNAMENTS</span>
-              </div>
-              <div className={styles.newsList}>
-                {error ? (
-                  <p className={styles.errorMessage}>{error}</p>
-                ) : tournaments.length === 0 ? (
-                  <p className={styles.noData}>大会情報はありません</p>
-                ) : (
-                  tournaments.slice(0, 5).map((item) => (
-                    <Link
-                      key={item.id}
-                      href={`/tournaments/${item.id}`}
-                      className={styles.newsItem}
-                    >
-                      <div className={styles.itemContent}>
-                        <span className={styles.itemDate}>
-                          {new Date(item.createdAt).toLocaleDateString('ja-JP')}
-                        </span>
-                        <span className={styles.itemTitle}>{item.title}</span>
-                      </div>
-                      <span className={styles.arrow}>→</span>
-                    </Link>
-                  ))
-                )}
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2>ブロック情報</h2>
-                <span>BLOCK INFORMATION</span>
-              </div>
-              <div className={styles.list}>
-                {fukuokaBlocks.map((block) => (
-                  <Link
-                    key={block.id}
-                    href={`/tournaments/block/${block.id}`}
-                    className={styles.listItem}
-                  >
-                    <span className={styles.categoryTitle}>{block.title}</span>
-                    <span className={styles.arrow}>→</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            <div className={styles.card}>
-              <div className={styles.cardHeader}>
-                <h2>大会情報（カテゴリー別）</h2>
-                <span>TOURNAMENTS BY CATEGORY</span>
-              </div>
-              <div className={styles.list}>
-                {tournamentCategories.map((category) => (
-                  <Link
-                    key={category.id}
-                    href={`/tournaments/class/${category.id}`}
-                    className={styles.listItem}
-                  >
-                    <span className={styles.categoryTitle}>{category.title}</span>
-                    <span className={styles.arrow}>→</span>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
+        <TournamentSection tournaments={tournaments} error={error} activeTab={activeTab} setActiveTab={setActiveTab} />
 
         {/* お知らせセクション */}
         <section className={styles.latestInfoSection}>
