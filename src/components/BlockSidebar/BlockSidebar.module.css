@@ -125,11 +125,20 @@
 
 @media (max-width: 1024px) {
   .sidebar {
-    width: 100%;
+    width: 100vw;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
     margin-bottom: 24px;
   }
 
   .sidebarInner {
     position: static;
+    border-radius: 0;
+    border-left: none;
+    border-right: none;
+  }
+
+  .scrollArea {
+    width: 100%;
   }
 }

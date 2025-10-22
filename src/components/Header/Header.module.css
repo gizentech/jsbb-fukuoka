@@ -5,7 +5,7 @@
   top: 0;
   left: 0;
   right: 0;
-  z-index: 1000;
+  z-index: 2000;
   transition: all 0.3s ease;
 }
 
@@ -356,7 +356,7 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 1102;
+    z-index: 2002;
   }
 
   .topBar.hidden {
@@ -374,7 +374,7 @@
 
   .menuBar {
     margin-top: 50px;
-    z-index: 1101;
+    z-index: 2001;
   }
 
   .hamburger {
@@ -386,7 +386,7 @@
     right: 15px;
     top: calc(50% - 1px);
     transform: translateY(-50%);
-    z-index: 1103;
+    z-index: 2003;
   }
 
   .mainMenu,

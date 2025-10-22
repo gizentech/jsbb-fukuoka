@@ -156,7 +156,7 @@ export default function TournamentSection({ tournaments = [], error = null, acti
                   return (
                     <Link
                       key={item.id}
-                      href={`/tournaments/${item.id}`}
+                      href={`/tournaments/tournament/${item.id}`}
                       className={styles.newsItem}
                     >
                       <div className={styles.itemContent}>
@@ -182,7 +182,7 @@ export default function TournamentSection({ tournaments = [], error = null, acti
               {fukuokaBlocks.map((block) => (
                 <Link
                   key={block.id}
-                  href={`/tournaments/block/${block.id}`}
+                  href={`/tournaments/${block.id}`}
                   className={styles.listItem}
                 >
                   <span className={styles.categoryTitle}>{block.title}</span>

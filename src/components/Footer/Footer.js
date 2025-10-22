@@ -19,7 +19,6 @@ export default function Footer() {
             <h3 className={styles.footerTitle}>連盟について</h3>
             <ul className={styles.footerList}>
               <li><Link href="/about">連盟概要</Link></li>
-              <li><Link href="/about/chronology">沿革</Link></li>
               <li><Link href="/contact">お問い合わせ</Link></li>
               <li><Link href="/privacy">プライバシーポリシー</Link></li>
               <li><Link href="/terms">ホームページについて</Link></li>
@@ -27,13 +26,25 @@ export default function Footer() {
           </div>
 
           <div className={styles.footerSection}>
-            <h3 className={styles.footerTitle}>大会情報</h3>
+            <h3 className={styles.footerTitle}>大会・イベント</h3>
             <ul className={styles.footerList}>
-              <li><Link href="/tournaments/class/es-class">学童</Link></li>
-              <li><Link href="/tournaments/class/jhs-class">少年</Link></li>
-              <li><Link href="/tournaments/class/a-class">一般A級</Link></li>
-              <li><Link href="/tournaments/class/b-class">一般B級</Link></li>
-              <li><Link href="/tournaments/class/c-class">一般C級</Link></li>
+              <li><Link href="/tournaments">大会情報</Link></li>
+              <li><a href="https://kurume.jsbb-fukuoka.com/YA" target="_blank" rel="noopener noreferrer">全国大会での活躍</a></li>
+              <li><a href="https://kurume.jsbb-fukuoka.com/YA" target="_blank" rel="noopener noreferrer">久留米球場であそぼっ！野球感謝祭</a></li>
+            </ul>
+          </div>
+
+          <div className={styles.footerSection}>
+            <h3 className={styles.footerTitle}>ブロック</h3>
+            <ul className={styles.footerList}>
+              <li><Link href="/tournaments/kyochiku">京築ブロック</Link></li>
+              <li><Link href="/tournaments/kitakyushu">北九州ブロック</Link></li>
+              <li><Link href="/tournaments/chikuho">筑豊ブロック</Link></li>
+              <li><Link href="/tournaments/higashi-fukuoka">東福岡ブロック</Link></li>
+              <li><Link href="/tournaments/fukuoka">福岡ブロック</Link></li>
+              <li><Link href="/tournaments/kita-chikugo">北筑後ブロック</Link></li>
+              <li><Link href="/tournaments/kurume">久留米ブロック</Link></li>
+              <li><Link href="/tournaments/minami-chikugo">南筑後ブロック</Link></li>
             </ul>
           </div>
 
@@ -41,10 +52,14 @@ export default function Footer() {
             <h3 className={styles.footerTitle}>お知らせ・申請</h3>
             <ul className={styles.footerList}>
               <li><Link href="/news">お知らせ</Link></li>
+              <li><Link href="/announcer">アナウンサー</Link></li>
+              <li><Link href="/umpire">審判員</Link></li>
+              <li><Link href="/registration">登録</Link></li>
+              <li><Link href="/registration-system">登録システム</Link></li>
               <li><Link href="/application">大会申込書</Link></li>
               <li><Link href="/forms">申請様式</Link></li>
             </ul>
-            <p className={styles.copyright}>© 2025 KURUME BASEBALL ASSOCIATION All Rights Reserved.</p>
+            <p className={styles.copyright}>© 2025 一般社団法人福岡県軟式野球連盟 All Rights Reserved.</p>
           </div>
         </div>
       </div>

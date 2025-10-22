@@ -17,42 +17,74 @@ export default function Header() {
     {
       id: 'kyochiku',
       title: '京築',
-      branches: ['行橋支部', '苅田支部', '豊前支部']
+      branches: [
+        { id: 'yukuhashi', name: '行橋支部' },
+        { id: 'kanda', name: '苅田支部' },
+        { id: 'buzen', name: '豊前支部' }
+      ]
     },
     {
       id: 'kitakyushu',
       title: '北九州',
-      branches: ['北九州支部']
+      branches: [
+        { id: 'kitakyushu', name: '北九州支部' }
+      ]
     },
     {
       id: 'chikuho',
       title: '筑豊',
-      branches: ['中遠支部', '直鞍支部', '嘉飯支部', '田川支部']
+      branches: [
+        { id: 'chuen', name: '中遠支部' },
+        { id: 'chokukuwa', name: '直鞍支部' },
+        { id: 'kahan', name: '嘉飯支部' },
+        { id: 'tagawa', name: '田川支部' }
+      ]
     },
     {
       id: 'higashi-fukuoka',
       title: '東福岡',
-      branches: ['古賀支部', '糟屋支部', '宗像支部']
+      branches: [
+        { id: 'koga', name: '古賀支部' },
+        { id: 'kasuya', name: '糟屋支部' },
+        { id: 'munakata', name: '宗像支部' }
+      ]
     },
     {
       id: 'fukuoka',
       title: '福岡',
-      branches: ['福岡支部', '筑紫支部', '春日支部', '大野城支部']
+      branches: [
+        { id: 'fukuoka', name: '福岡支部' },
+        { id: 'chikushi', name: '筑紫支部' },
+        { id: 'kasuga', name: '春日支部' },
+        { id: 'onojo', name: '大野城支部' }
+      ]
     },
     {
       id: 'kita-chikugo',
       title: '北筑後',
-      branches: ['朝倉支部', '八女支部', '浮羽支部', '小郡支部']
+      branches: [
+        { id: 'asakura', name: '朝倉支部' },
+        { id: 'yame', name: '八女支部' },
+        { id: 'ukiha', name: '浮羽支部' },
+        { id: 'ogori', name: '小郡支部' }
+      ]
     },
     {
       id: 'kurume',
       title: '久留米',
-      branches: ['久留米支部']
+      branches: [
+        { id: 'kurume', name: '久留米支部' }
+      ]
     },
     {
       id: 'minami-chikugo',
       title: '南筑後',
-      branches: ['柳川支部', '筑後支部', '大牟田支部', '大川大木支部']
+      branches: [
+        { id: 'yanagawa', name: '柳川支部' },
+        { id: 'chikugo', name: '筑後支部' },
+        { id: 'omuta', name: '大牟田支部' },
+        { id: 'okawa-oki', name: '大川大木支部' }
+      ]
     }
   ];
 
@@ -150,10 +182,7 @@ export default function Header() {
                 <Link href="/tournaments">大会情報</Link>
               </li>
               <li>
-                <Link href="/national">全国大会での活躍</Link>
-              </li>
-              <li>
-                <Link href="/festival">野球感謝祭</Link>
+                <Link href="/application">大会申込書</Link>
               </li>
               <li>
                 <Link href="/umpire">審判員</Link>
@@ -162,13 +191,7 @@ export default function Header() {
                 <Link href="/announcer">アナウンス</Link>
               </li>
               <li>
-                <Link href="/registration-system">野球競技者登録システム</Link>
-              </li>
-              <li>
                 <Link href="/news">お知らせ</Link>
-              </li>
-              <li>
-                <Link href="/application">大会申込書</Link>
               </li>
               <li>
                 <Link href="/registration">選手登録申請</Link>
@@ -177,7 +200,16 @@ export default function Header() {
                 <Link href="/about">連盟概要</Link>
               </li>
               <li>
+                <Link href="/national">全国大会での活躍</Link>
+              </li>
+              <li>
+                <Link href="/festival">野球感謝祭</Link>
+              </li>
+              <li>
                 <Link href="/contact">お問い合わせ</Link>
+              </li>
+              <li>
+                <Link href="/registration-system">野球競技者登録システム</Link>
               </li>
             </ul>
 
@@ -188,9 +220,9 @@ export default function Header() {
                   <li key={block.id} className={styles.hasSubmenu}>
                     <span>{block.title}</span>
                     <ul className={styles.submenu}>
-                      {block.branches.map((branch, index) => (
-                        <li key={index}>
-                          <Link href={`/tournaments/block/${block.id}`}>{branch}</Link>
+                      {block.branches.map((branch) => (
+                        <li key={branch.id}>
+                          <Link href={`/tournaments/${block.id}/${branch.id}`}>{branch.name}</Link>
                         </li>
                       ))}
                     </ul>
@@ -243,14 +275,29 @@ export default function Header() {
                 <h3 className={styles.categoryTitle}>ブロック一覧</h3>
                 <div className={styles.blockButtonGrid}>
                   {fukuokaBlocks.map((block) => (
-                    <Link
-                      key={block.id}
-                      href={`/tournaments/block/${block.id}`}
-                      onClick={handleLinkClick}
-                      className={styles.blockButton}
-                    >
-                      {block.title}
-                    </Link>
+                    <div key={block.id} style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+                      <div style={{
+                        padding: '8px',
+                        background: '#333',
+                        color: '#fff',
+                        fontSize: '0.85rem',
+                        textAlign: 'center',
+                        fontWeight: '600'
+                      }}>
+                        {block.title}
+                      </div>
+                      {block.branches.map((branch) => (
+                        <Link
+                          key={branch.id}
+                          href={`/tournaments/${block.id}/${branch.id}`}
+                          onClick={handleLinkClick}
+                          className={styles.blockButton}
+                          style={{ fontSize: '0.8rem', padding: '8px' }}
+                        >
+                          {branch.name}
+                        </Link>
+                      ))}
+                    </div>
                   ))}
                 </div>
               </div>

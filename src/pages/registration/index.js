@@ -1,7 +1,7 @@
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
-import BlockSidebar from '../components/BlockSidebar/BlockSidebar';
-import styles from '../styles/Page.module.css';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
+import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
+import styles from '../../styles/Page.module.css';
 
 export async function getServerSideProps() {
   try {
@@ -70,63 +70,77 @@ export async function getServerSideProps() {
   }
 }
 
-export default function RegistrationSystem({ tournaments = [] }) {
+export default function Registration({ tournaments = [] }) {
   return (
     <div className={styles.container}>
       <Header />
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>野球競技者登録システム</h1>
-            <span>REGISTRATION SYSTEM</span>
+            <h1>選手登録申請</h1>
+            <span>PLAYER REGISTRATION</span>
           </div>
 
           <div className={styles.content}>
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>野球競技者登録システムについて</h2>
-            <p style={{ margin: '16px 0' }}>日本軟式野球連盟が運営する「野球競技者登録システム」を利用して、選手登録を行うことができます。</p>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>選手登録について</h2>
+            <p style={{ margin: '16px 0' }}>福岡県軟式野球連盟主催の大会に出場するには、選手登録が必要です。</p>
 
             <div style={{ background: '#f8f9fa', padding: '20px', borderLeft: '4px solid #0066cc', margin: '24px 0' }}>
-              <p style={{ margin: 0 }}><strong>オンラインで簡単に選手登録が可能です</strong></p>
+              <p style={{ margin: 0 }}><strong>オンライン登録システムをご利用ください</strong></p>
             </div>
 
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>システムの特徴</h2>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>登録の種類</h2>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 600, margin: '32px 0 12px' }}>一般の部</h3>
             <ul style={{ margin: '16px 0', paddingLeft: '24px' }}>
-              <li style={{ margin: '8px 0' }}>24時間いつでも登録申請が可能</li>
-              <li style={{ margin: '8px 0' }}>登録状況をリアルタイムで確認</li>
-              <li style={{ margin: '8px 0' }}>データの一元管理</li>
-              <li style={{ margin: '8px 0' }}>登録証明書の即時発行</li>
+              <li style={{ margin: '8px 0' }}>年齢制限：満15歳以上</li>
+              <li style={{ margin: '8px 0' }}>登録期間：4月1日〜翌年3月31日</li>
             </ul>
 
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>登録の流れ</h2>
+            <h3 style={{ fontSize: '20px', fontWeight: 600, margin: '32px 0 12px' }}>壮年の部</h3>
+            <ul style={{ margin: '16px 0', paddingLeft: '24px' }}>
+              <li style={{ margin: '8px 0' }}>年齢制限：満40歳以上</li>
+              <li style={{ margin: '8px 0' }}>登録期間：4月1日〜翌年3月31日</li>
+            </ul>
+
+            <h3 style={{ fontSize: '20px', fontWeight: 600, margin: '32px 0 12px' }}>還暦の部</h3>
+            <ul style={{ margin: '16px 0', paddingLeft: '24px' }}>
+              <li style={{ margin: '8px 0' }}>年齢制限：満60歳以上</li>
+              <li style={{ margin: '8px 0' }}>登録期間：4月1日〜翌年3月31日</li>
+            </ul>
+
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>登録方法</h2>
+            <p style={{ margin: '16px 0' }}>日本軟式野球連盟の「野球競技者登録システム」を利用して登録を行います。</p>
+
             <ol style={{ margin: '16px 0', paddingLeft: '24px' }}>
               <li style={{ margin: '8px 0' }}>野球競技者登録システムにアクセス</li>
               <li style={{ margin: '8px 0' }}>アカウント作成（初回のみ）</li>
-              <li style={{ margin: '8px 0' }}>必要事項を入力</li>
+              <li style={{ margin: '8px 0' }}>チーム選択</li>
+              <li style={{ margin: '8px 0' }}>選手情報入力</li>
               <li style={{ margin: '8px 0' }}>登録料の支払い</li>
               <li style={{ margin: '8px 0' }}>審査・承認</li>
-              <li style={{ margin: '8px 0' }}>登録完了</li>
             </ol>
 
+            <div style={{ background: '#fff3cd', padding: '20px', borderLeft: '4px solid #ffc107', margin: '24px 0' }}>
+              <p style={{ margin: 0 }}><strong>重要</strong></p>
+              <p style={{ margin: '8px 0 0' }}>登録には数日かかる場合があります。大会出場予定の方は、余裕をもって登録手続きを行ってください。</p>
+            </div>
+
             <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>登録料</h2>
-            <p style={{ margin: '16px 0' }}>選手登録には、日本軟式野球連盟が定める登録料が必要です。</p>
             <ul style={{ margin: '16px 0', paddingLeft: '24px' }}>
               <li style={{ margin: '8px 0' }}>一般：年間○○○○円</li>
               <li style={{ margin: '8px 0' }}>壮年：年間○○○○円</li>
               <li style={{ margin: '8px 0' }}>還暦：年間○○○○円</li>
             </ul>
 
-            <div style={{ background: '#fff3cd', padding: '20px', borderLeft: '4px solid #ffc107', margin: '24px 0' }}>
-              <p style={{ margin: 0 }}><strong>重要なお知らせ</strong></p>
-              <p style={{ margin: '8px 0 0' }}>登録申請から承認まで数日かかる場合があります。大会出場予定の方は、余裕をもって登録手続きを行ってください。</p>
-            </div>
-
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>システムへのアクセス</h2>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>登録システムへのアクセス</h2>
             <div style={{ margin: '24px 0' }}>
               <a href="https://jsbb-entry.com/" target="_blank" rel="noopener noreferrer" style={{ display: 'inline-block', padding: '12px 24px', background: '#0066cc', color: '#fff', textDecoration: 'none', borderRadius: '4px', marginRight: '8px' }}>野球競技者登録システム</a>
+              <a href="/registration-system" style={{ display: 'inline-block', padding: '12px 24px', background: '#0066cc', color: '#fff', textDecoration: 'none', borderRadius: '4px' }}>システム詳細</a>
             </div>
 
             <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>お問い合わせ</h2>
-            <p style={{ margin: '16px 0' }}>システムの利用方法や登録に関するご質問は、お問い合わせフォームよりご連絡ください。</p>
+            <p style={{ margin: '16px 0' }}>選手登録に関するご不明な点は、お問い合わせフォームよりご連絡ください。</p>
 
             <div style={{ margin: '24px 0' }}>
               <a href="/contact" style={{ display: 'inline-block', padding: '12px 24px', background: '#0066cc', color: '#fff', textDecoration: 'none', borderRadius: '4px' }}>お問い合わせ</a>

@@ -14,42 +14,74 @@ export default function BlockSidebar({ tournaments = [] }) {
     {
       id: 'kyochiku',
       title: '京築',
-      branches: ['行橋支部', '苅田支部', '豊前支部']
+      branches: [
+        { id: 'yukuhashi', name: '行橋支部' },
+        { id: 'kanda', name: '苅田支部' },
+        { id: 'buzen', name: '豊前支部' }
+      ]
     },
     {
       id: 'kitakyushu',
       title: '北九州',
-      branches: ['北九州支部']
+      branches: [
+        { id: 'kitakyushu', name: '北九州支部' }
+      ]
     },
     {
       id: 'chikuho',
       title: '筑豊',
-      branches: ['中遠支部', '直鞍支部', '嘉飯支部', '田川支部']
+      branches: [
+        { id: 'chuen', name: '中遠支部' },
+        { id: 'chokukuwa', name: '直鞍支部' },
+        { id: 'kahan', name: '嘉飯支部' },
+        { id: 'tagawa', name: '田川支部' }
+      ]
     },
     {
       id: 'higashi-fukuoka',
       title: '東福岡',
-      branches: ['古賀支部', '糟屋支部', '宗像支部']
+      branches: [
+        { id: 'koga', name: '古賀支部' },
+        { id: 'kasuya', name: '糟屋支部' },
+        { id: 'munakata', name: '宗像支部' }
+      ]
     },
     {
       id: 'fukuoka',
       title: '福岡',
-      branches: ['福岡支部', '筑紫支部', '春日支部', '大野城支部']
+      branches: [
+        { id: 'fukuoka', name: '福岡支部' },
+        { id: 'chikushi', name: '筑紫支部' },
+        { id: 'kasuga', name: '春日支部' },
+        { id: 'onojo', name: '大野城支部' }
+      ]
     },
     {
       id: 'kita-chikugo',
       title: '北筑後',
-      branches: ['朝倉支部', '八女支部', '浮羽支部', '小郡支部']
+      branches: [
+        { id: 'asakura', name: '朝倉支部' },
+        { id: 'yame', name: '八女支部' },
+        { id: 'ukiha', name: '浮羽支部' },
+        { id: 'ogori', name: '小郡支部' }
+      ]
     },
     {
       id: 'kurume',
       title: '久留米',
-      branches: ['久留米支部']
+      branches: [
+        { id: 'kurume', name: '久留米支部' }
+      ]
     },
     {
       id: 'minami-chikugo',
       title: '南筑後',
-      branches: ['柳川支部', '筑後支部', '大牟田支部', '大川大木支部']
+      branches: [
+        { id: 'yanagawa', name: '柳川支部' },
+        { id: 'chikugo', name: '筑後支部' },
+        { id: 'omuta', name: '大牟田支部' },
+        { id: 'okawa-oki', name: '大川大木支部' }
+      ]
     }
   ];
 
@@ -80,7 +112,7 @@ export default function BlockSidebar({ tournaments = [] }) {
                 {recentTournaments.length > 0 ? (
                   recentTournaments.map((tournament) => (
                     <li key={tournament.id}>
-                      <Link href={`/tournaments/${tournament.id}`} className={styles.branchLink}>
+                      <Link href={`/tournaments/tournament/${tournament.id}`} className={styles.branchLink}>
                         {tournament.title}
                       </Link>
                     </li>
@@ -104,10 +136,10 @@ export default function BlockSidebar({ tournaments = [] }) {
               </button>
               {openBlocks[block.id] && (
                 <ul className={styles.branchList}>
-                  {block.branches.map((branch, index) => (
-                    <li key={index}>
-                      <Link href={`/tournaments/block/${block.id}`} className={styles.branchLink}>
-                        {branch}
+                  {block.branches.map((branch) => (
+                    <li key={branch.id}>
+                      <Link href={`/tournaments/${block.id}/${branch.id}`} className={styles.branchLink}>
+                        {branch.name}
                       </Link>
                     </li>
                   ))}

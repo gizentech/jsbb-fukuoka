@@ -1,7 +1,7 @@
-import Header from '../components/Header/Header';
-import Footer from '../components/Footer/Footer';
-import BlockSidebar from '../components/BlockSidebar/BlockSidebar';
-import styles from '../styles/Page.module.css';
+import Header from '../../components/Header/Header';
+import Footer from '../../components/Footer/Footer';
+import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
+import styles from '../../styles/Page.module.css';
 
 export async function getServerSideProps() {
   try {
