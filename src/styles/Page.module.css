@@ -1,0 +1,155 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 149px 20px 80px;
+}
+
+.mainWithSidebar {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 149px 20px 80px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.contentArea {
+  flex: 1;
+  min-width: 0;
+  padding-left: 32px;
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #eee;
+}
+
+.pageHeader h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.pageHeader span {
+  font-size: 14px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.content {
+  line-height: 1.8;
+  color: #333;
+}
+
+.content h2 {
+  font-size: 24px;
+  font-weight: 600;
+  margin: 40px 0 16px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #eee;
+}
+
+.content h3 {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 32px 0 12px;
+}
+
+.content p {
+  margin: 16px 0;
+}
+
+.content ul,
+.content ol {
+  margin: 16px 0;
+  padding-left: 24px;
+}
+
+.content li {
+  margin: 8px 0;
+}
+
+.content a {
+  color: #0066cc;
+  text-decoration: none;
+}
+
+.content a:hover {
+  text-decoration: underline;
+}
+
+.linkButton {
+  display: inline-block;
+  padding: 12px 24px;
+  background: #0066cc;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 4px;
+  margin: 8px 8px 8px 0;
+  transition: background 0.3s;
+}
+
+.linkButton:hover {
+  background: #0052a3;
+  text-decoration: none;
+}
+
+.infoBox {
+  background: #f8f9fa;
+  padding: 20px;
+  border-left: 4px solid #0066cc;
+  margin: 24px 0;
+}
+
+.noticeBox {
+  background: #fff3cd;
+  padding: 20px;
+  border-left: 4px solid #ffc107;
+  margin: 24px 0;
+}
+
+@media (max-width: 1024px) {
+  .mainWithSidebar {
+    flex-direction: column;
+  }
+
+  .contentArea {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 750px) {
+  .main {
+    padding: 110px 16px 60px;
+  }
+
+  .mainWithSidebar {
+    padding: 110px 16px 60px;
+  }
+
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+
+  .content h2 {
+    font-size: 20px;
+  }
+
+  .content h3 {
+    font-size: 18px;
+  }
+}

@@ -1,0 +1,205 @@
+.latestInfoCard {
+  background: #fff;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.cardHeader {
+  background: #fff;
+  color: #333;
+  border-bottom: 2px solid #eee;
+  height: auto;
+  padding: 20px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.cardHeader h2 {
+  color: #333;
+  margin-bottom: 4px;
+  font-size: 18px;
+  margin: 0;
+  margin-bottom: 4px;
+  font-weight: 600;
+}
+
+.cardHeader span {
+  color: #999;
+  font-size: 11px;
+  text-transform: uppercase;
+}
+
+.newsList {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.newsItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+  transition: background-color 0.3s ease;
+  border-bottom: 1px solid #eee;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.newsItem:last-child {
+  border-bottom: none;
+}
+
+.newsItem:hover {
+  background: #f8f8f8;
+}
+
+.infoNewsItem {
+  background: #fff !important;
+}
+
+.infoNewsItem:hover {
+  background: #f8f8f8 !important;
+}
+
+.infoNewsItem .itemContent {
+  width: 100%;
+}
+
+.infoNewsItem:not(:last-child) {
+  border-bottom: 1px solid #eee;
+}
+
+.itemContent {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+}
+
+.itemDate {
+  font-size: 14px;
+  color: #666;
+  white-space: nowrap;
+  flex-shrink: 0;
+  width: 100px;
+}
+
+.itemTitle {
+  font-size: 16px;
+  font-weight: 500;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.importantBadgeWrapper {
+  width: 60px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.importantBadge {
+  background: #e53e3e;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+.classTagWrapper {
+  width: 90px;
+  flex-shrink: 0;
+  display: inline-block;
+}
+
+.classTag {
+  background: #3182ce;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-size: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+  display: inline-block;
+  min-width: 70px;
+  text-align: center;
+}
+
+.arrow {
+  color: #999;
+  font-size: 20px;
+  margin-left: 12px;
+}
+
+.errorMessage {
+  text-align: center;
+  padding: 24px;
+  font-size: 16px;
+  color: #e53e3e;
+}
+
+.noData {
+  padding: 24px;
+  text-align: center;
+  color: #666;
+  font-size: 14px;
+}
+
+/* モバイル対応 */
+@media (max-width: 1024px) {
+  .itemContent {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .itemDate {
+    font-size: 12px;
+    width: 100%;
+    order: 1;
+  }
+
+  .importantBadgeWrapper {
+    order: 2;
+    width: auto;
+    display: inline-block;
+  }
+
+  .classTagWrapper {
+    display: none;
+  }
+
+  .itemTitle {
+    font-size: 14px;
+    width: 100%;
+    order: 3;
+    white-space: normal;
+    line-height: 1.5;
+  }
+
+  .importantBadge {
+    font-size: 11px;
+    padding: 3px 8px;
+  }
+
+  .newsItem {
+    padding: 16px;
+  }
+}

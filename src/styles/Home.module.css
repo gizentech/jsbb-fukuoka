@@ -14,9 +14,10 @@
   padding: 0 20px 80px;
 }
 
-@media (max-width: 960px) {
+@media (max-width: 1024px) {
   .main {
     padding: 0;
+    max-width: 100%;
   }
 }
  
@@ -621,105 +622,116 @@
   }
 }
 
-/* 最新情報セクション（1カラム） */
-.latestInfoSection {
+/* お知らせ・登録状況セクション（2/3 + 1/3カラム） */
+.infoRegistrationSection {
   margin: 64px 0;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   background: #e8e8e8;
   padding: 40px 20px;
+  box-sizing: border-box;
 }
 
-.latestInfoCard {
-  background: #fff;
-  width: 100%;
+.infoRegistrationContainer {
   max-width: 1200px;
+  width: 100%;
+  min-width: 0;
   margin: 0 auto;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1.8fr 1.2fr;
+  gap: 24px;
+  box-sizing: border-box;
+}
+
+/* お知らせエリア */
+.newsArea {
+  width: 100%;
+  min-width: 0;
   overflow: hidden;
 }
 
-.latestInfoCard .cardHeader {
-  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
-    url('/images/infoheader.webp');
-  background-position: center 30%;
+/* 登録状況エリア */
+.registrationArea {
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
-/* 登録チーム数表示セクション */
-.teamCountSection {
-  margin: 64px 0;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 40px 20px;
-  background: #e8e8e8;
-}
-
-.teamCountSection h2 {
-  font-size: 28px;
-  font-weight: bold;
-  text-align: center;
-  margin-bottom: 32px;
-  color: #333;
-}
-
-.teamCountGrid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
-  max-width: 1200px;
-  margin: 0 auto;
-}
-
-.teamCountCard {
-  background: #fff;
-  padding: 24px;
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.teamCountCard h3 {
-  font-size: 18px;
-  font-weight: 600;
-  margin-bottom: 12px;
-  color: #555;
-}
-
-.teamCount {
-  font-size: 32px;
-  font-weight: bold;
-  color: #3182ce;
-  margin: 0;
-}
-
-@media (max-width: 768px) {
-  .teamCountSection {
-    padding: 32px 20px;
+/* レスポンシブ対応 */
+@media (max-width: 1024px) {
+  .infoRegistrationSection {
+    padding: 40px 20px;
+    margin: 64px 0;
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
   }
 
-  .teamCountGrid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px;
+  .infoRegistrationContainer {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 0 20px;
+    width: 100%;
+    max-width: 100%;
   }
 
-  .teamCountSection h2 {
-    font-size: 24px;
+  .newsArea,
+  .registrationArea {
+    width: 100%;
   }
 
-  .teamCountCard h3 {
-    font-size: 16px;
+  .newsArea {
+    order: 2;
   }
 
-  .teamCount {
-    font-size: 28px;
+  .registrationArea {
+    order: 1;
+  }
+}
+
+@media (max-width: 640px) {
+  .infoRegistrationSection {
+    padding: 32px 0;
+    margin: 64px 0;
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .infoRegistrationContainer {
+    grid-template-columns: 1fr;
+    gap: 24px;
+    padding: 0 16px;
+    width: 100%;
   }
 }
 
 @media (max-width: 480px) {
-  .teamCountGrid {
+  .infoRegistrationSection {
+    padding: 24px 0;
+    margin: 48px 0;
+    width: 100%;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+  }
+
+  .infoRegistrationContainer {
     grid-template-columns: 1fr;
+    gap: 20px;
+    padding: 0 12px;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .newsArea,
+  .registrationArea {
+    width: 100%;
+    max-width: 100%;
   }
 }
+
 
 /* 支部フィルターセクション */
 .filterSection {

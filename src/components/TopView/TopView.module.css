@@ -72,6 +72,13 @@
   }
 }
 
+/* アイソメトリックイラストのスタイル */
+.aisoImage {
+  position: absolute;
+  pointer-events: none;
+  z-index: 10;
+}
+
 .content {
   position: relative;
   z-index: 2;

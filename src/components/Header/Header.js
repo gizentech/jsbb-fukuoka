@@ -1,9 +1,12 @@
 // Header.js
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/router'
 import styles from './Header.module.css'
 import Link from 'next/link'
 
 export default function Header() {
+  const router = useRouter();
+  const isHomePage = router.pathname === '/';
   const [isOpen, setIsOpen] = useState(false);
   const [scrollPosition, setScrollPosition] = useState(0);
   const [openSubmenu, setOpenSubmenu] = useState(null);
@@ -147,16 +150,16 @@ export default function Header() {
                 <Link href="/tournaments">大会情報</Link>
               </li>
               <li>
-                <Link href="/national-achievements">全国大会での活躍</Link>
+                <Link href="/national">全国大会での活躍</Link>
               </li>
               <li>
-                <Link href="/baseball-festival">野球感謝祭</Link>
+                <Link href="/festival">野球感謝祭</Link>
               </li>
               <li>
-                <Link href="/referees">審判員</Link>
+                <Link href="/umpire">審判員</Link>
               </li>
               <li>
-                <Link href="/announcers">アナウンス</Link>
+                <Link href="/announcer">アナウンス</Link>
               </li>
               <li>
                 <Link href="/registration-system">野球競技者登録システム</Link>
@@ -168,7 +171,7 @@ export default function Header() {
                 <Link href="/application">大会申込書</Link>
               </li>
               <li>
-                <Link href="/forms">選手登録申請</Link>
+                <Link href="/registration">選手登録申請</Link>
               </li>
               <li>
                 <Link href="/about">連盟概要</Link>
@@ -178,21 +181,23 @@ export default function Header() {
               </li>
             </ul>
 
-            {/* 2行目: ブロックメニュー */}
-            <ul className={styles.blockMenu}>
-              {fukuokaBlocks.map((block) => (
-                <li key={block.id} className={styles.hasSubmenu}>
-                  <span>{block.title}</span>
-                  <ul className={styles.submenu}>
-                    {block.branches.map((branch, index) => (
-                      <li key={index}>
-                        <Link href={`/tournaments/block/${block.id}`}>{branch}</Link>
-                      </li>
-                    ))}
-                  </ul>
-                </li>
-              ))}
-            </ul>
+            {/* 2行目: ブロックメニュー（トップページのみ表示） */}
+            {isHomePage && (
+              <ul className={styles.blockMenu}>
+                {fukuokaBlocks.map((block) => (
+                  <li key={block.id} className={styles.hasSubmenu}>
+                    <span>{block.title}</span>
+                    <ul className={styles.submenu}>
+                      {block.branches.map((branch, index) => (
+                        <li key={index}>
+                          <Link href={`/tournaments/block/${block.id}`}>{branch}</Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </li>
+                ))}
+              </ul>
+            )}
 
           <div className={styles.mobileMenu}>
             <div className={styles.menuContent}>
@@ -201,7 +206,7 @@ export default function Header() {
                 <h3 className={styles.categoryTitle}>大会・活動情報</h3>
                 <ul className={styles.categoryList}>
                   <li><Link href="/tournaments" onClick={handleLinkClick}>大会情報</Link></li>
-                  <li><Link href="/national-achievements" onClick={handleLinkClick}>全国大会での活躍</Link></li>
+                  <li><Link href="/national" onClick={handleLinkClick}>全国大会での活躍</Link></li>
                 </ul>
               </div>
 
@@ -209,8 +214,8 @@ export default function Header() {
               <div className={styles.menuCategory}>
                 <h3 className={styles.categoryTitle}>審判・アナウンス</h3>
                 <ul className={styles.categoryList}>
-                  <li><Link href="/referees" onClick={handleLinkClick}>審判員</Link></li>
-                  <li><Link href="/announcers" onClick={handleLinkClick}>アナウンス</Link></li>
+                  <li><Link href="/umpire" onClick={handleLinkClick}>審判員</Link></li>
+                  <li><Link href="/announcer" onClick={handleLinkClick}>アナウンス</Link></li>
                 </ul>
               </div>
 
@@ -219,7 +224,7 @@ export default function Header() {
                 <h3 className={styles.categoryTitle}>申請・登録</h3>
                 <ul className={styles.categoryList}>
                   <li><Link href="/application" onClick={handleLinkClick}>大会申込書</Link></li>
-                  <li><Link href="/forms" onClick={handleLinkClick}>選手登録申請</Link></li>
+                  <li><Link href="/registration" onClick={handleLinkClick}>選手登録申請</Link></li>
                 </ul>
               </div>
 

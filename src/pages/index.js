@@ -5,7 +5,8 @@ import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
 import TopView from '../components/TopView/TopView'
 import TournamentSection from '../components/TournamentSection/TournamentSection'
-import Link from 'next/link'
+import NewsSection from '../components/NewsSection/NewsSection'
+import RegistrationStatus from '../components/RegistrationStatus/RegistrationStatus'
 import Analytics from '@vercel/analytics/react';
 
 // getServerSidePropsは既存のものをそのまま維持
@@ -160,79 +161,17 @@ export default function Home({ news = [], tournaments = [], latestItems = [], er
       <main className={styles.main}>
         <TournamentSection tournaments={tournaments} error={error} activeTab={activeTab} setActiveTab={setActiveTab} />
 
-        {/* お知らせセクション */}
-        <section className={styles.latestInfoSection}>
-          <div className={styles.latestInfoCard}>
-            <div className={styles.cardHeader}>
-              <h2>お知らせ</h2>
-              <span>NEWS</span>
+        {/* お知らせ・登録状況セクション */}
+        <section className={styles.infoRegistrationSection}>
+          <div className={styles.infoRegistrationContainer}>
+            {/* お知らせエリア (1.8fr) */}
+            <div className={styles.newsArea}>
+              <NewsSection news={news} error={error} />
             </div>
 
-            <div className={styles.newsList}>
-              {error ? (
-                <p className={styles.errorMessage}>{error}</p>
-              ) : news.length === 0 ? (
-                <p className={styles.noData}>お知らせはありません</p>
-              ) : (
-                news.slice(0, 6).map((item) => (
-                  <Link
-                    key={item.id}
-                    href={`/news/${item.id}`}
-                    className={`${styles.newsItem} ${styles.infoNewsItem}`}
-                  >
-                    <div className={styles.itemContent}>
-                      <span className={styles.importantBadgeWrapper}>
-                        {item.important && (
-                          <span className={styles.importantBadge}>重要</span>
-                        )}
-                      </span>
-                      <span className={styles.itemDate}>
-                        {new Date(item.createdAt).toLocaleDateString('ja-JP')}
-                      </span>
-                      <div className={styles.classTagWrapper}>
-                        {item.class && item.class.length > 0 && (
-                          <span className={styles.classTag}>
-                            {typeof item.class[0] === 'object' ? item.class[0].label : item.class[0]}
-                          </span>
-                        )}
-                      </div>
-                      <span className={styles.itemTitle}>{item.title}</span>
-                    </div>
-                    <span className={styles.arrow}>→</span>
-                  </Link>
-                ))
-              )}
-            </div>
-          </div>
-        </section>
-
-        {/* 登録チーム数表示セクション */}
-        <section className={styles.teamCountSection}>
-          <h2>登録チーム数</h2>
-          <div className={styles.teamCountGrid}>
-            <div className={styles.teamCountCard}>
-              <h3>学童</h3>
-              <p className={styles.teamCount}>-</p>
-            </div>
-            <div className={styles.teamCountCard}>
-              <h3>少年</h3>
-              <p className={styles.teamCount}>-</p>
-            </div>
-            <div className={styles.teamCountCard}>
-              <h3>A級</h3>
-              <p className={styles.teamCount}>-</p>
-            </div>
-            <div className={styles.teamCountCard}>
-              <h3>B級</h3>
-              <p className={styles.teamCount}>-</p>
-            </div>
-            <div className={styles.teamCountCard}>
-              <h3>C級</h3>
-              <p className={styles.teamCount}>-</p>
-            </div>
-            <div className={styles.teamCountCard}>
-              <h3>その他</h3>
-              <p className={styles.teamCount}>-</p>
+            {/* 登録状況エリア (1.2fr) */}
+            <div className={styles.registrationArea}>
+              <RegistrationStatus />
             </div>
           </div>
         </section>

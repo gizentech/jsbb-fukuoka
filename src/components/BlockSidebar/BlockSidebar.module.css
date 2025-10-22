@@ -1,0 +1,135 @@
+.sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  align-self: flex-start;
+}
+
+.sidebarInner {
+  position: sticky;
+  top: 149px;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 0;
+  overflow: hidden;
+  margin-top: 100px;
+}
+
+.header {
+  width: 100%;
+  background: #333;
+  padding: 14px 12px;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.header:hover {
+  background: #444;
+}
+
+.header h3 {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0;
+  color: #fff;
+}
+
+.scrollArea {
+  overflow-y: visible;
+}
+
+.blockItem {
+  border-bottom: 1px solid #eee;
+}
+
+.blockItem:last-child {
+  border-bottom: none;
+}
+
+.blockTitle {
+  width: 100%;
+  padding: 12px 12px;
+  background: #333;
+  font-weight: 600;
+  font-size: 13px;
+  color: #fff;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.blockTitle:hover {
+  background: #444;
+}
+
+.branchList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  max-height: 500px;
+  overflow: hidden;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 500px;
+    opacity: 1;
+  }
+}
+
+.branchLink {
+  display: block;
+  padding: 10px 12px 10px 20px;
+  text-decoration: none;
+  color: #666;
+  font-size: 13px;
+  transition: background 0.2s;
+  border-bottom: 1px solid #ddd;
+}
+
+.branchLink:last-child {
+  border-bottom: 1px solid #ddd;
+}
+
+.branchLink:hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.tournamentItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tournamentDate {
+  font-size: 11px;
+  color: #999;
+  margin-bottom: 2px;
+}
+
+.tournamentTitle {
+  font-weight: 400;
+  color: #333;
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+@media (max-width: 1024px) {
+  .sidebar {
+    width: 100%;
+    margin-bottom: 24px;
+  }
+
+  .sidebarInner {
+    position: static;
+  }
+}

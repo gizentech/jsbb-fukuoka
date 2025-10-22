@@ -8,7 +8,15 @@
       "Bash(npm run dev:*)",
       "Bash(npm outdated:*)",
       "Bash(mkdir -p src/components/TournamentBanner)",
-      "Bash(test -f .env.local)"
+      "Bash(test -f .env.local)",
+      "Bash(for file in festival.js umpire.js announcer.js registration-system.js registration.js)",
+      "Bash(do)",
+      "Bash(done)",
+      "Bash(for file in national.js festival.js umpire.js announcer.js registration-system.js registration.js)",
+      "Bash(if [ -f \"$file\" ])",
+      "Bash(then)",
+      "Bash(fi)",
+      "Bash(echo:*)"
     ],
     "deny": [],
     "ask": []
