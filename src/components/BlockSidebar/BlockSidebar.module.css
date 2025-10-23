@@ -104,6 +104,14 @@
   color: #333;
 }
 
+.branchLink.active {
+  background: #f0f7ff;
+  color: #3182ce;
+  font-weight: 600;
+  border-left: 4px solid #3182ce;
+  padding-left: 16px;
+}
+
 .tournamentItem {
   display: flex;
   flex-direction: column;

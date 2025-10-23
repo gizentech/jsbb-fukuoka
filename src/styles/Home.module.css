@@ -643,6 +643,7 @@
   grid-template-columns: 1.8fr 1.2fr;
   gap: 24px;
   box-sizing: border-box;
+  align-items: stretch;
 }
 
 /* お知らせエリア */
@@ -650,6 +651,7 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
+  height: 100%;
 }
 
 /* 登録状況エリア */
@@ -657,6 +659,7 @@
   width: 100%;
   min-width: 0;
   overflow: hidden;
+  height: 100%;
 }
 
 /* レスポンシブ対応 */

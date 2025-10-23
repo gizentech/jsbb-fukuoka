@@ -50,6 +50,37 @@
   letter-spacing: 2px;
 }
 
+.umpireGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-top: 32px;
+}
+
+.branchOfficersGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+}
+
+@media (max-width: 768px) {
+  .umpireGrid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .pcTable {
+    display: none !important;
+  }
+
+  .spCards {
+    display: block !important;
+  }
+
+  .branchOfficersGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .content {
   line-height: 1.8;
   color: #333;

@@ -16,7 +16,7 @@ export default function NewsSection({ news = [], error = null }) {
         ) : news.length === 0 ? (
           <p className={styles.noData}>お知らせはありません</p>
         ) : (
-          news.slice(0, 6).map((item) => (
+          news.slice(0, 4).map((item) => (
             <Link
               key={item.id}
               href={`/news/${item.id}`}

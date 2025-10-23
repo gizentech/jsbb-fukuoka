@@ -1,0 +1,104 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.mainWithSidebar {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 149px 20px 80px;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.contentArea {
+  flex: 1;
+  min-width: 0;
+  padding-left: 32px;
+}
+
+.pageHeader {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 2px solid #eee;
+}
+
+.pageHeader h1 {
+  font-size: 32px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 8px;
+}
+
+.pageHeader span {
+  font-size: 14px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.content {
+  line-height: 1.8;
+  color: #333;
+}
+
+.pcTable {
+  display: block;
+}
+
+.spCards {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mainWithSidebar {
+    flex-direction: column;
+  }
+
+  .contentArea {
+    padding-left: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  .pcTable {
+    display: none !important;
+  }
+
+  .spCards {
+    display: block !important;
+  }
+}
+
+@media (max-width: 750px) {
+  .mainWithSidebar {
+    padding: 110px 16px 60px;
+  }
+
+  .pageHeader h1 {
+    font-size: 24px;
+  }
+
+  .pageHeader span {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 500px) {
+  .mainWithSidebar {
+    padding: 110px 8px 60px;
+  }
+
+  .pageHeader h1 {
+    font-size: 20px;
+  }
+
+  .pageHeader span {
+    font-size: 11px;
+  }
+}

@@ -151,6 +151,13 @@ export default function Header() {
           </h1>
         </div>
 
+        {/* 野球競技者登録システムボタン */}
+        <div className={styles.registrationButtonWrapper}>
+          <Link href="/registration-system" className={styles.registrationButton}>
+            野球競技者登録システム
+          </Link>
+        </div>
+
         {/* ハンバーガーボタン */}
         <button
           className={`${styles.hamburger} ${isOpen ? styles.active : ''}`}
@@ -207,9 +214,6 @@ export default function Header() {
               </li>
               <li>
                 <Link href="/contact">お問い合わせ</Link>
-              </li>
-              <li>
-                <Link href="/registration-system">野球競技者登録システム</Link>
               </li>
             </ul>
 

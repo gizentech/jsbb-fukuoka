@@ -1,12 +1,13 @@
 import { useState } from 'react';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
-import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
-import styles from '../../styles/Page.module.css';
+import Header from '../../../components/Header/Header';
+import Footer from '../../../components/Footer/Footer';
+import BlockSidebar from '../../../components/BlockSidebar/BlockSidebar';
+import styles from '../../../styles/TorList.module.css';
 import Link from 'next/link';
 
 export async function getServerSideProps(context) {
   try {
+    const { id } = context.params;
     const SPACE_UID = process.env.NEWT_SPACE_UID;
     const TOKEN = process.env.NEWT_API_TOKEN;
     const TOURNAMENT_APP_UID = 'fukuoka-tournament';
@@ -20,75 +21,58 @@ export async function getServerSideProps(context) {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    // まず全件取得して複数年度の大会を判定
-    const allTournamentsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
+    // 指定されたtor-dataのidに紐づく大会を取得
+    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=${limit}&skip=${skip}&order=-_sys.updatedAt&depth=2`;
     let tournamentsData = [];
     let total = 0;
-    let torDataCounts = {};
-
-    try {
-      const allResponse = await fetch(allTournamentsUrl, { headers });
-
-      if (allResponse.ok) {
-        const allResult = await allResponse.json();
-
-        // tor-data.id ごとの件数をカウント
-        if (allResult.items && allResult.items.length > 0) {
-          allResult.items.forEach(item => {
-            const torDataId = item['tor-data']?.id;
-            if (torDataId) {
-              torDataCounts[torDataId] = (torDataCounts[torDataId] || 0) + 1;
-            }
-          });
-        }
-      }
-    } catch (error) {
-      console.error('Count API Error:', error);
-    }
-
-    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=${limit}&skip=${skip}&order=-_sys.updatedAt&depth=2`;
+    let torDataInfo = null;
 
     try {
       const tournamentResponse = await fetch(tournamentUrl, { headers });
 
       if (tournamentResponse.ok) {
         const tournamentResult = await tournamentResponse.json();
-        total = tournamentResult.total || 0;
 
         if (tournamentResult.items && tournamentResult.items.length > 0) {
-          tournamentsData = tournamentResult.items.map(item => {
-            // 年度を計算（開始日から）
-            let year = '';
-            if (item['tor-start']) {
-              const startDate = new Date(item['tor-start']);
-              year = startDate.getFullYear();
-            }
+          // 指定されたidでフィルタリング
+          const filteredItems = tournamentResult.items.filter(item =>
+            item['tor-data']?.id === id
+          );
 
-            const torDataId = item['tor-data']?.id || '';
-            const isMultiYear = torDataCounts[torDataId] > 1;
+          total = filteredItems.length;
 
-            return {
-              id: item._id,
-              torDataId: torDataId,
-              isMultiYear: isMultiYear,
-              title1: item['tor-data']?.['fukuoka-title1'] || '',
-              title2: item['tor-data']?.['fukuoka-title2'] || '',
-              area: item.area || '',
-              winner: item['win-team-fukuoka'] || '',
-              classes: item['tor-data']?.['fukuoka-class'] || [],
-              year: year,
-              startDate: item['tor-start'] || null,
-              endDate: item['end-tor'] || null,
-              updatedAt: item._sys?.updatedAt || ''
-            };
-          });
+          if (filteredItems.length > 0) {
+            // tor-data情報を取得
+            torDataInfo = filteredItems[0]['tor-data'];
+
+            tournamentsData = filteredItems.map(item => {
+              let year = '';
+              if (item['tor-start']) {
+                const startDate = new Date(item['tor-start']);
+                year = startDate.getFullYear();
+              }
+
+              return {
+                id: item._id,
+                title1: item['tor-data']?.['fukuoka-title1'] || '',
+                title2: item['tor-data']?.['fukuoka-title2'] || '',
+                area: item.area || '',
+                winner: item['win-team-fukuoka'] || '',
+                classes: item['tor-data']?.['fukuoka-class'] || [],
+                year: year,
+                startDate: item['tor-start'] || null,
+                endDate: item['end-tor'] || null,
+                updatedAt: item._sys?.updatedAt || ''
+              };
+            });
+          }
         }
       }
     } catch (error) {
       console.error('Tournament API Error:', error);
     }
 
-    // サイドバー用の最新5件
+    // サイドバー用の最新5件（単年度の大会のみ）
     const sidebarUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=5&order=-_sys.updatedAt&depth=2`;
     let sidebarTournaments = [];
 
@@ -114,9 +98,11 @@ export async function getServerSideProps(context) {
       props: {
         tournaments: tournamentsData,
         sidebarTournaments,
+        torDataInfo,
         currentPage: page,
         totalPages: Math.ceil(total / limit),
-        total
+        total,
+        torId: id
       }
     };
   } catch (error) {
@@ -125,15 +111,17 @@ export async function getServerSideProps(context) {
       props: {
         tournaments: [],
         sidebarTournaments: [],
+        torDataInfo: null,
         currentPage: 1,
         totalPages: 1,
-        total: 0
+        total: 0,
+        torId: context.params.id
       }
     };
   }
 }
 
-export default function Tournaments({ tournaments = [], sidebarTournaments = [], currentPage = 1, totalPages = 1, total = 0 }) {
+export default function TorList({ tournaments = [], sidebarTournaments = [], torDataInfo = null, currentPage = 1, totalPages = 1, total = 0, torId = '' }) {
   const [selectedArea, setSelectedArea] = useState('all');
   const [selectedClass, setSelectedClass] = useState('all');
 
@@ -151,14 +139,18 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
   // クラス一覧
   const classOptions = ['all', '学童', '少年', 'A級', 'B級', 'C級', 'その他'];
 
+  const pageTitle = torDataInfo
+    ? `${torDataInfo['fukuoka-title1']} ${torDataInfo['fukuoka-title2']}`
+    : '大会情報';
+
   return (
     <div className={styles.container}>
       <Header />
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>大会情報</h1>
-            <span>TOURNAMENTS</span>
+            <h1>{pageTitle}</h1>
+            <span>TOURNAMENT LIST</span>
           </div>
 
           <div className={styles.content}>
@@ -230,7 +222,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 {filteredTournaments.map((tournament) => (
                   <Link
                     key={tournament.id}
-                    href={tournament.isMultiYear ? `/tournaments/torlist/${tournament.torDataId}` : `/tournaments/tournament/${tournament.id}`}
+                    href={`/tournaments/tournament/${tournament.id}`}
                     style={{
                       display: 'flex',
                       alignItems: 'center',
@@ -350,7 +342,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 marginTop: '32px'
               }}>
                 {currentPage > 1 && (
-                  <a href={`/tournaments?page=${currentPage - 1}`} style={{
+                  <a href={`/tournaments/torlist/${torId}?page=${currentPage - 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -372,7 +364,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                     return (
                       <a
                         key={page}
-                        href={`/tournaments?page=${page}`}
+                        href={`/tournaments/torlist/${torId}?page=${page}`}
                         style={{
                           padding: '8px 16px',
                           border: '1px solid #333',
@@ -397,7 +389,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 })}
 
                 {currentPage < totalPages && (
-                  <a href={`/tournaments?page=${currentPage + 1}`} style={{
+                  <a href={`/tournaments/torlist/${torId}?page=${currentPage + 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
