@@ -29,7 +29,7 @@ export default function Footer() {
             <h3 className={styles.footerTitle}>大会・イベント</h3>
             <ul className={styles.footerList}>
               <li><Link href="/tournaments">大会情報</Link></li>
-              <li><a href="https://kurume.jsbb-fukuoka.com/YA" target="_blank" rel="noopener noreferrer">全国大会での活躍</a></li>
+              <li><a href="/national" target="_blank" rel="noopener noreferrer">全国大会での活躍</a></li>
               <li><a href="https://kurume.jsbb-fukuoka.com/YA" target="_blank" rel="noopener noreferrer">久留米球場であそぼっ！野球感謝祭</a></li>
             </ul>
           </div>

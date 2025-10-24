@@ -1,86 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../../../components/Header/Header';
-import Footer from '../../../components/Footer/Footer';
-import Meta from '../../../components/Meta/Meta';
-import TournamentSidebar from '../../../components/TournamentSidebar/TournamentSidebar';
-import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb';
-import styles from '../../../styles/TournamentDetail.module.css';
+import Header from '../../../../../components/Header/Header';
+import Footer from '../../../../../components/Footer/Footer';
+import Meta from '../../../../../components/Meta/Meta';
+import TournamentSidebar from '../../../../../components/TournamentSidebar/TournamentSidebar';
+import Breadcrumb from '../../../../../components/Breadcrumb/Breadcrumb';
+import styles from '../../../../../styles/TournamentDetail.module.css';
 import Image from 'next/image';
-import { pdfjs } from 'react-pdf';
 import Link from 'next/link';
-import { classDisplayToSlug } from '../../../utils/classConvert';
-
-// PDF.js workerの設定
-pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
-
-// PDFサムネイルコンポーネント
-const PdfThumbnail = ({ pdfUrl }) => {
-  const [thumbnailSrc, setThumbnailSrc] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [isLandscape, setIsLandscape] = useState(false);
-
-  useEffect(() => {
-    if (!pdfUrl) return;
-
-    const renderPdf = async () => {
-      try {
-        setLoading(true);
-        const loadingTask = pdfjs.getDocument(pdfUrl);
-        const pdf = await loadingTask.promise;
-        const page = await pdf.getPage(1);
-
-        const canvas = document.createElement('canvas');
-        const viewport = page.getViewport({ scale: 1.0 });
-
-        const landscape = viewport.width > viewport.height;
-        setIsLandscape(landscape);
-
-        const scale = landscape ? 2.0 : 2.0;
-        const scaledViewport = page.getViewport({ scale });
-
-        canvas.height = scaledViewport.height;
-        canvas.width = scaledViewport.width;
-
-        const renderContext = {
-          canvasContext: canvas.getContext('2d'),
-          viewport: scaledViewport
-        };
-
-        await page.render(renderContext).promise;
-
-        const thumbnailDataUrl = canvas.toDataURL('image/png');
-        setThumbnailSrc(thumbnailDataUrl);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error rendering PDF:', err);
-        setError(err);
-        setLoading(false);
-      }
-    };
-
-    renderPdf();
-  }, [pdfUrl]);
-
-  if (loading) return <div className={styles.thumbnailLoading}>サムネイル読み込み中...</div>;
-  if (error) return <div className={styles.thumbnailError}>プレビューを表示できません</div>;
-
-  return (
-    <div className={`${styles.pdfPreviewContainer} ${isLandscape ? styles.landscape : styles.portrait}`}>
-      {thumbnailSrc && (
-        <img
-          src={thumbnailSrc}
-          alt="PDFサムネイル"
-          className={styles.pdfCanvas}
-        />
-      )}
-    </div>
-  );
-};
+import { classSlugToDisplay, classDisplayToSlug } from '../../../../../utils/classConvert';
 
 export async function getServerSideProps(context) {
   try {
-    const { id } = context.params;
+    const { id, class: classSlug, area: areaSlug } = context.params;
     const SPACE_UID = process.env.NEWT_SPACE_UID;
     const TOKEN = process.env.NEWT_API_TOKEN;
     const TOURNAMENT_APP_UID = 'fukuoka-tournament';
@@ -95,7 +26,7 @@ export async function getServerSideProps(context) {
     const skip = (page - 1) * limit;
 
     // 指定されたtor-dataのidに紐づく大会を全件取得してからフィルタリング
-    const allTournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-tor-start&depth=2`;
+    const allTournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-YYYY,-tor-start&depth=2`;
     let tournamentsData = [];
     let total = 0;
     let torDataInfo = null;
@@ -112,8 +43,12 @@ export async function getServerSideProps(context) {
             item['tor-data']?.id === id
           );
 
-          // 開始日の降順にソート（新しい年度が上）
+          // YYYYの降順、次に開始日の降順にソート（新しい年度が上）
           const sortedItems = filteredItems.sort((a, b) => {
+            const yyyyA = a.YYYY || 0;
+            const yyyyB = b.YYYY || 0;
+            if (yyyyA !== yyyyB) return yyyyB - yyyyA;
+
             const dateA = new Date(a['tor-start'] || 0);
             const dateB = new Date(b['tor-start'] || 0);
             return dateB - dateA;
@@ -145,11 +80,13 @@ export async function getServerSideProps(context) {
                 winner: item['win-team-fukuoka'] || '',
                 classes: item['tor-data']?.['fukuoka-class'] || [],
                 year: year,
+                yyyy: item.YYYY || null,
                 startDate: item['tor-start'] || null,
                 endDate: item['end-tor'] || null,
                 updatedAt: item._sys?.updatedAt || '',
                 fileUrl: item['fuku-tournament']?.src || null,
-                fileName: item['fuku-tournament']?.fileName || 'トーナメント表.pdf'
+                fileName: item['fuku-tournament']?.fileName || 'トーナメント表.pdf',
+                tournamentId: item._id
               };
             });
           }
@@ -170,6 +107,44 @@ export async function getServerSideProps(context) {
       });
     };
 
+    // サイドバー用：同じ大会の過去の年度を取得（YYYYの降順）
+    const allSidebarUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-YYYY,-tor-start&depth=2`;
+    let sidebarTournaments = [];
+
+    try {
+      const sidebarResponse = await fetch(allSidebarUrl, { headers });
+      if (sidebarResponse.ok) {
+        const sidebarResult = await sidebarResponse.json();
+        if (sidebarResult.items && sidebarResult.items.length > 0) {
+          // 同じtor-data.idでフィルタリング
+          const filteredSidebar = sidebarResult.items
+            .filter(item => item['tor-data']?.id === id)
+            .slice(0, 5)
+            .map(item => {
+              let year = '';
+              if (item['tor-start']) {
+                const startDate = new Date(item['tor-start']);
+                year = startDate.getFullYear();
+              }
+              return {
+                id: item._id,
+                torDataId: item['tor-data']?.id || '',
+                title1: item['tor-data']?.['fukuoka-title1'] || '',
+                title2: item['tor-data']?.['fukuoka-title2'] || '',
+                area: item.area || '',
+                classes: item['tor-data']?.['fukuoka-class'] || [],
+                year: year,
+                yyyy: item.YYYY || year,
+                yearList: false  // 詳細ページへリンク
+              };
+            });
+          sidebarTournaments = filteredSidebar;
+        }
+      }
+    } catch (error) {
+      console.error('Sidebar API Error:', error);
+    }
+
     // 大会情報を構築
     const tournamentInfo = torDataInfo ? {
       id: id,
@@ -182,6 +157,7 @@ export async function getServerSideProps(context) {
       updates: tournamentsData.map(item => ({
         count: item.year,
         year: item.year,
+        yyyy: item.yyyy,
         updatedAt: item.updatedAt,
         body: '',
         startDate: formatDate(item.startDate),
@@ -189,24 +165,11 @@ export async function getServerSideProps(context) {
         fileUrl: item.fileUrl,
         fileName: item.fileName,
         meta: item.winner ? `優勝チーム: ${item.winner}` : '',
-        tournamentId: item.id
+        tournamentId: item.tournamentId,
+        classes: item.classes,
+        area: item.area
       }))
     } : null;
-
-    // サイドバー用：同じ大会の過去の年度を取得（YYYYの降順）
-    const sidebarTournaments = tournamentsData.slice(0, 5).map(item => {
-      return {
-        id: item.id,
-        torDataId: id,
-        title1: item.title1,
-        title2: item.title2,
-        area: item.area,
-        classes: item.classes,
-        year: item.year,
-        yyyy: item.year,
-        yearList: false  // 詳細ページへリンク
-      };
-    });
 
     return {
       props: {
@@ -215,7 +178,9 @@ export async function getServerSideProps(context) {
         totalPages: Math.ceil(total / limit),
         total,
         torId: id,
-        sidebarTournaments
+        sidebarTournaments,
+        classSlug,
+        areaSlug
       }
     };
   } catch (error) {
@@ -226,13 +191,16 @@ export async function getServerSideProps(context) {
         currentPage: 1,
         totalPages: 1,
         total: 0,
-        torId: context.params.id
+        torId: context.params.id,
+        sidebarTournaments: [],
+        classSlug: context.params.class,
+        areaSlug: context.params.area
       }
     };
   }
 }
 
-export default function TorList({ tournament, sidebarTournaments = [] }) {
+export default function TournamentYearList({ tournament, sidebarTournaments = [], classSlug, areaSlug }) {
   const [fontSize, setFontSize] = useState({ title1: 2.5, title2: 1.8 });
 
   useEffect(() => {
@@ -279,22 +247,18 @@ export default function TorList({ tournament, sidebarTournaments = [] }) {
     );
   }
 
-  // パンくずのための情報
-  const firstClass = tournament.fukuokaClass && tournament.fukuokaClass.length > 0
-    ? tournament.fukuokaClass[0]
-    : '';
-  const classSlug = firstClass ? classDisplayToSlug(firstClass) : 'others';
-
   const breadcrumbItems = [
     { label: '大会情報', href: '/tournaments' },
+    { label: classSlugToDisplay(classSlug), href: `/tournaments/${classSlug}` },
+    { label: decodeURIComponent(areaSlug), href: `/tournaments/${classSlug}/${areaSlug}` },
     { label: `${tournament.title1}${tournament.title2}`, href: null }
   ];
 
   return (
     <div className={styles.wrapper}>
       <Meta
-        title={`${tournament.title1} ${tournament.title2}`}
-        description={`${tournament.title1} ${tournament.title2}の大会情報ページです`}
+        title={`${tournament.title1}${tournament.title2}`}
+        description={`${tournament.title1}${tournament.title2}の大会情報ページです`}
       />
       <Header />
 
@@ -357,61 +321,77 @@ export default function TorList({ tournament, sidebarTournaments = [] }) {
 
           {tournament.updates && tournament.updates.length > 0 ? (
             <div className={styles.allUpdatesContainer}>
-            {tournament.updates.map((update, index) => {
-              // URL用のパラメータを生成
-              const classSlug = tournament.fukuokaClass && tournament.fukuokaClass.length > 0
-                ? (tournament.fukuokaClass[0].toLowerCase() === '学童' ? 'gakudou' :
-                   tournament.fukuokaClass[0].toLowerCase() === '少年' ? 'shounen' :
-                   tournament.fukuokaClass[0].toLowerCase())
-                : 'other';
-              const areaSlug = tournament.area ? tournament.area.replace(/支部/g, '').toLowerCase() : 'unknown';
-              const torDataId = tournament.id; // torlist の id パラメータ
+              {tournament.updates.map((update, index) => {
+                // URL用のパラメータを生成
+                const updateClassSlug = update.classes && update.classes.length > 0
+                  ? classDisplayToSlug(update.classes[0])
+                  : 'others';
+                const updateAreaSlug = update.area ? update.area.replace(/支部/g, '').toLowerCase() : 'unknown';
+                const torDataId = tournament.id;
+                const yyyy = update.yyyy || update.year || '0000';
 
-              const detailUrl = `/tournaments/tournament/${classSlug}/${areaSlug}/${torDataId}/${update.tournamentId}`;
+                const detailUrl = `/tournaments/${updateClassSlug}/${encodeURIComponent(updateAreaSlug)}/${torDataId}/${yyyy}`;
 
-              return (
-              <div key={index} className={styles.updateItem}>
-                <Link
-                  href={detailUrl}
-                  style={{ textDecoration: 'none', color: 'inherit' }}
-                >
-                  <div className={styles.updateHeader}>
-                    <div className={styles.headerContent}>
-                      <div className={styles.headerMainLine}>
-                        <span className={styles.updateYear}>
-                          {update.year}年
-                        </span>
-                        {update.meta && update.meta.includes('優勝チーム:') && (
-                          <span className={styles.winnerInfo}>
-                            優勝　{update.meta.replace('優勝チーム: ', '')}
-                          </span>
-                        )}
+                return (
+                <div key={index} className={styles.updateItem}>
+                  <Link
+                    href={detailUrl}
+                    style={{ textDecoration: 'none', color: 'inherit' }}
+                  >
+                    <div className={styles.updateHeader}>
+                      <div className={styles.headerContent}>
+                        <div className={styles.headerMainLine}>
+                          {update.yyyy ? (
+                            <span className={styles.updateYear}>
+                              {update.yyyy}年度
+                            </span>
+                          ) : (
+                            <span className={styles.updateYear}>
+                              {update.year}年
+                            </span>
+                          )}
+                          {update.classes && update.classes.length > 0 && (
+                            <span style={{
+                              padding: '4px 12px',
+                              background: '#555',
+                              color: '#fff',
+                              fontSize: '0.9rem',
+                              borderRadius: '4px'
+                            }}>
+                              {update.classes.join('・')}
+                            </span>
+                          )}
+                          {update.meta && update.meta.includes('優勝チーム:') && (
+                            <span className={styles.winnerInfo}>
+                              優勝　{update.meta.replace('優勝チーム: ', '')}
+                            </span>
+                          )}
+                        </div>
+                        <div className={styles.headerSubLines}>
+                          {update.area && (
+                            <div className={styles.headerSubLine}>
+                              開催支部：{typeof update.area === 'object' ? update.area.label : update.area}
+                            </div>
+                          )}
+                          {(update.startDate || update.endDate) && (
+                            <div className={styles.headerSubLine}>
+                              大会期間：{update.startDate}
+                              {update.endDate && update.startDate !== update.endDate && ` 〜 ${update.endDate}`}
+                            </div>
+                          )}
+                        </div>
                       </div>
-                      <div className={styles.headerSubLines}>
-                        {tournament.area && (
-                          <div className={styles.headerSubLine}>
-                            開催支部：{typeof tournament.area === 'object' ? tournament.area.label : tournament.area}
-                          </div>
-                        )}
-                        {(update.startDate || update.endDate) && (
-                          <div className={styles.headerSubLine}>
-                            大会期間：{update.startDate}
-                            {update.endDate && update.startDate !== update.endDate && ` 〜 ${update.endDate}`}
-                          </div>
-                        )}
-                      </div>
+                      <span style={{
+                        color: '#fff',
+                        fontSize: '20px',
+                        marginLeft: '12px',
+                        flexShrink: '0'
+                      }}>→</span>
                     </div>
-                    <span style={{
-                      color: '#fff',
-                      fontSize: '20px',
-                      marginLeft: '12px',
-                      flexShrink: '0'
-                    }}>→</span>
-                  </div>
-                </Link>
-              </div>
-              );
-            })}
+                  </Link>
+                </div>
+                );
+              })}
             </div>
           ) : (
             <div className={styles.noUpdates}>

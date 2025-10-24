@@ -13,7 +13,7 @@
   width: 100vw;
   background: #1a1a1a;
   margin-bottom: 2rem;
-  margin-top: 149px;
+  margin-top: 80px;
   height: 300px;
   overflow: hidden;
   left: 50%;
@@ -139,12 +139,29 @@
   font-weight: 500;
 }
 
+.mainWithSidebar {
+  flex: 1;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  gap: 24px;
+  align-items: flex-start;
+}
+
+.contentArea {
+  flex: 1;
+  min-width: 0;
+  padding: 0.5rem 1rem 4rem;
+}
+
 .main {
   flex: 1;
   width: 100%;
   max-width: 1200px;
   margin: 0 auto;
-  padding: 2rem 1rem 4rem;
+  padding: 0.5rem 1rem 4rem;
 }
 
 .pcSelect {

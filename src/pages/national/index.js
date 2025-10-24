@@ -2,6 +2,9 @@ import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
 import styles from '../../styles/Page.module.css';
+import { signInWithRedirect } from 'firebase/auth';
+import { skeletonClasses } from '@mui/material';
+import TorList from '../tournaments/torlist/[id]';
 
 export async function getServerSideProps() {
   try {
@@ -43,7 +46,7 @@ export async function getServerSideProps() {
           tournamentsData = allTournaments
             .sort((a, b) => new Date(b.startDate) - new Date(a.startDate))
             .slice(0, 5);
-
+            
           console.log('Final tournamentsData:', tournamentsData);
         } else {
           console.log('No tournament items found');

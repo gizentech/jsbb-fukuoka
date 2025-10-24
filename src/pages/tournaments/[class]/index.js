@@ -1,13 +1,15 @@
 import { useState } from 'react';
-import Header from '../../components/Header/Header';
-import Footer from '../../components/Footer/Footer';
-import TournamentSidebar from '../../components/TournamentSidebar/TournamentSidebar';
-import Breadcrumb from '../../components/Breadcrumb/Breadcrumb';
-import styles from '../../styles/Page.module.css';
+import Header from '../../../components/Header/Header';
+import Footer from '../../../components/Footer/Footer';
+import TournamentSidebar from '../../../components/TournamentSidebar/TournamentSidebar';
+import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb';
+import styles from '../../../styles/Page.module.css';
 import Link from 'next/link';
+import { classSlugToDisplay, classDisplayToSlug } from '../../../utils/classConvert';
 
 export async function getServerSideProps(context) {
   try {
+    const { class: classSlug } = context.params;
     const SPACE_UID = process.env.NEWT_SPACE_UID;
     const TOKEN = process.env.NEWT_API_TOKEN;
     const TOURNAMENT_APP_UID = 'fukuoka-tournament';
@@ -17,15 +19,17 @@ export async function getServerSideProps(context) {
       'Content-Type': 'application/json'
     };
 
+    // クラス名の変換
+    const classDisplayName = classSlugToDisplay(classSlug);
+
     const page = parseInt(context.query.page || '1', 10);
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    // まず全件取得して複数年度の大会を判定
+    // 全件取得してクラスでフィルタリング
     const allTournamentsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
     let tournamentsData = [];
     let total = 0;
-    let torDataCounts = {};
 
     try {
       const allResponse = await fetch(allTournamentsUrl, { headers });
@@ -33,45 +37,28 @@ export async function getServerSideProps(context) {
       if (allResponse.ok) {
         const allResult = await allResponse.json();
 
-        // tor-data.id ごとの件数をカウント
+        // クラスでフィルタリング
         if (allResult.items && allResult.items.length > 0) {
-          allResult.items.forEach(item => {
-            const torDataId = item['tor-data']?.id;
-            if (torDataId) {
-              torDataCounts[torDataId] = (torDataCounts[torDataId] || 0) + 1;
-            }
+          const filteredItems = allResult.items.filter(item => {
+            const classes = item['tor-data']?.['fukuoka-class'] || [];
+            return classes.includes(classDisplayName);
           });
-        }
-      }
-    } catch (error) {
-      console.error('Count API Error:', error);
-    }
 
-    const tournamentUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=${limit}&skip=${skip}&order=-_sys.updatedAt&depth=2`;
+          total = filteredItems.length;
 
-    try {
-      const tournamentResponse = await fetch(tournamentUrl, { headers });
+          // ページネーション
+          const paginatedItems = filteredItems.slice(skip, skip + limit);
 
-      if (tournamentResponse.ok) {
-        const tournamentResult = await tournamentResponse.json();
-        total = tournamentResult.total || 0;
-
-        if (tournamentResult.items && tournamentResult.items.length > 0) {
-          tournamentsData = tournamentResult.items.map(item => {
-            // 年度を計算（開始日から）
+          tournamentsData = paginatedItems.map(item => {
             let year = '';
             if (item['tor-start']) {
               const startDate = new Date(item['tor-start']);
               year = startDate.getFullYear();
             }
 
-            const torDataId = item['tor-data']?.id || '';
-            const isMultiYear = torDataCounts[torDataId] > 1;
-
             return {
               id: item._id,
-              torDataId: torDataId,
-              isMultiYear: isMultiYear,
+              torDataId: item['tor-data']?.id || '',
               title1: item['tor-data']?.['fukuoka-title1'] || '',
               title2: item['tor-data']?.['fukuoka-title2'] || '',
               area: item.area || '',
@@ -90,8 +77,8 @@ export async function getServerSideProps(context) {
       console.error('Tournament API Error:', error);
     }
 
-    // サイドバー用の最新5件
-    const sidebarUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=5&order=-_sys.updatedAt&depth=2`;
+    // サイドバー用：同じクラスの大会5件を取得
+    const sidebarUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
     let sidebarTournaments = [];
 
     try {
@@ -99,23 +86,31 @@ export async function getServerSideProps(context) {
       if (sidebarResponse.ok) {
         const sidebarResult = await sidebarResponse.json();
         if (sidebarResult.items && sidebarResult.items.length > 0) {
-          sidebarTournaments = sidebarResult.items.map(item => {
-            let year = '';
-            if (item['tor-start']) {
-              const startDate = new Date(item['tor-start']);
-              year = startDate.getFullYear();
-            }
-            return {
-              id: item._id,
-              torDataId: item['tor-data']?.id || '',
-              title1: item['tor-data']?.['fukuoka-title1'] || '',
-              title2: item['tor-data']?.['fukuoka-title2'] || '',
-              area: item.area || '',
-              classes: item['tor-data']?.['fukuoka-class'] || [],
-              year: year,
-              yyyy: item.YYYY || null
-            };
-          });
+          // 同じクラスでフィルタリング
+          const filteredSidebar = sidebarResult.items
+            .filter(item => {
+              const classes = item['tor-data']?.['fukuoka-class'] || [];
+              return classes.includes(classDisplayName);
+            })
+            .slice(0, 5)
+            .map(item => {
+              let year = '';
+              if (item['tor-start']) {
+                const startDate = new Date(item['tor-start']);
+                year = startDate.getFullYear();
+              }
+              return {
+                id: item._id,
+                torDataId: item['tor-data']?.id || '',
+                title1: item['tor-data']?.['fukuoka-title1'] || '',
+                title2: item['tor-data']?.['fukuoka-title2'] || '',
+                area: item.area || '',
+                classes: item['tor-data']?.['fukuoka-class'] || [],
+                year: year,
+                yyyy: item.YYYY || null
+              };
+            });
+          sidebarTournaments = filteredSidebar;
         }
       }
     } catch (error) {
@@ -128,7 +123,9 @@ export async function getServerSideProps(context) {
         sidebarTournaments,
         currentPage: page,
         totalPages: Math.ceil(total / limit),
-        total
+        total,
+        classSlug,
+        classDisplayName
       }
     };
   } catch (error) {
@@ -139,32 +136,29 @@ export async function getServerSideProps(context) {
         sidebarTournaments: [],
         currentPage: 1,
         totalPages: 1,
-        total: 0
+        total: 0,
+        classSlug: context.params.class,
+        classDisplayName: ''
       }
     };
   }
 }
 
-export default function Tournaments({ tournaments = [], sidebarTournaments = [], currentPage = 1, totalPages = 1, total = 0 }) {
+export default function TournamentsByClass({ tournaments = [], sidebarTournaments = [], currentPage = 1, totalPages = 1, total = 0, classSlug, classDisplayName }) {
   const [selectedArea, setSelectedArea] = useState('all');
-  const [selectedClass, setSelectedClass] = useState('all');
 
   // フィルタリング
   const filteredTournaments = tournaments.filter(tournament => {
     const areaMatch = selectedArea === 'all' || tournament.area === selectedArea;
-    const classMatch = selectedClass === 'all' ||
-      (tournament.classes && tournament.classes.includes(selectedClass));
-    return areaMatch && classMatch;
+    return areaMatch;
   });
 
   // エリア一覧を取得
   const areas = ['all', ...new Set(tournaments.map(t => t.area).filter(Boolean))];
 
-  // クラス一覧
-  const classOptions = ['all', '学童', '少年', 'A級', 'B級', 'C級', 'その他'];
-
   const breadcrumbItems = [
-    { label: '大会情報', href: null }
+    { label: '大会情報', href: '/tournaments' },
+    { label: classDisplayName, href: null }
   ];
 
   return (
@@ -173,19 +167,18 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>大会情報</h1>
-            <span>TOURNAMENTS</span>
+            <h1>{classDisplayName} 大会情報</h1>
+            <span>TOURNAMENTS - {classDisplayName.toUpperCase()}</span>
           </div>
 
           <Breadcrumb items={breadcrumbItems} />
 
           <div className={styles.content}>
-            {/* フィルター */}
+            {/* エリアフィルター */}
             <div style={{ marginBottom: '24px' }}>
               <div style={{
                 display: 'flex',
                 gap: '8px',
-                marginBottom: '12px',
                 flexWrap: 'wrap'
               }}>
                 {areas.map(area => (
@@ -206,31 +199,8 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                   </button>
                 ))}
               </div>
-
-              <div style={{
-                display: 'flex',
-                gap: '8px',
-                flexWrap: 'wrap'
-              }}>
-                {classOptions.map(option => (
-                  <button
-                    key={option}
-                    onClick={() => setSelectedClass(option)}
-                    style={{
-                      padding: '8px 16px',
-                      background: selectedClass === option ? '#333' : '#fff',
-                      color: selectedClass === option ? '#fff' : '#333',
-                      border: '1px solid #333',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      transition: 'all 0.3s ease'
-                    }}
-                  >
-                    {option === 'all' ? 'すべて' : option}
-                  </button>
-                ))}
-              </div>
             </div>
+
             {filteredTournaments.length === 0 ? (
               <p style={{
                 textAlign: 'center',
@@ -246,20 +216,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 border: '1px solid #eee'
               }}>
                 {filteredTournaments.map((tournament) => {
-                  // URL用のパラメータを生成
-                  const classSlug = tournament.classes && tournament.classes.length > 0
-                    ? (tournament.classes[0] === '学童' ? 'es' :
-                       tournament.classes[0] === '少年' ? 'jhs' :
-                       tournament.classes[0] === 'A級' ? 'a-class' :
-                       tournament.classes[0] === 'B級' ? 'b-class' :
-                       tournament.classes[0] === 'C級' ? 'c-class' :
-                       tournament.classes[0] === 'ガールズ' ? 'girls' :
-                       tournament.classes[0] === 'その他' ? 'others' :
-                       tournament.classes[0].toLowerCase())
-                    : 'others';
                   const areaSlug = tournament.area ? tournament.area.replace(/支部/g, '').toLowerCase() : 'unknown';
-
-                  // 常に詳細ページに直接リンク（YYYYフィールドがある場合はそれを使用、ない場合はyearを使用）
                   const yyyy = tournament.yyyy || tournament.year || '0000';
                   const tournamentUrl = `/tournaments/${classSlug}/${encodeURIComponent(areaSlug)}/${tournament.torDataId}/${yyyy}`;
 
@@ -290,8 +247,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                       flex: '1',
                       minWidth: '0'
                     }}>
-                      {/* PC表示 */}
-                      <div className={styles.pcTable} style={{
+                      <div style={{
                         display: 'flex',
                         flexDirection: 'column',
                         gap: '4px',
@@ -324,47 +280,6 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                           {tournament.winner && `優勝：${tournament.winner}`}
                         </div>
                       </div>
-
-                      {/* SP表示 */}
-                      <div className={styles.spCards} style={{
-                        display: 'none',
-                        flexDirection: 'column',
-                        gap: '4px',
-                        flex: '1'
-                      }}>
-                        <div style={{
-                          display: 'flex',
-                          gap: '8px',
-                          fontSize: '12px',
-                          color: '#999',
-                          marginBottom: '2px'
-                        }}>
-                          {tournament.year && <span>{tournament.year}年度</span>}
-                          {tournament.area && <span>{tournament.area}</span>}
-                        </div>
-                        <span style={{
-                          fontSize: '14px',
-                          fontWeight: '500'
-                        }}>
-                          {tournament.title1}
-                        </span>
-                        {tournament.title2 && (
-                          <div style={{
-                            fontSize: '13px',
-                            color: '#666'
-                          }}>
-                            {tournament.title2}
-                          </div>
-                        )}
-                        {tournament.winner && (
-                          <div style={{
-                            fontSize: '13px',
-                            color: '#999'
-                          }}>
-                            優勝：{tournament.winner}
-                          </div>
-                        )}
-                      </div>
                     </div>
                     <span style={{
                       color: '#999',
@@ -387,7 +302,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 marginTop: '32px'
               }}>
                 {currentPage > 1 && (
-                  <a href={`/tournaments?page=${currentPage - 1}`} style={{
+                  <a href={`/tournaments/${classSlug}?page=${currentPage - 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -409,7 +324,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                     return (
                       <a
                         key={page}
-                        href={`/tournaments?page=${page}`}
+                        href={`/tournaments/${classSlug}?page=${page}`}
                         style={{
                           padding: '8px 16px',
                           border: '1px solid #333',
@@ -434,7 +349,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
                 })}
 
                 {currentPage < totalPages && (
-                  <a href={`/tournaments?page=${currentPage + 1}`} style={{
+                  <a href={`/tournaments/${classSlug}?page=${currentPage + 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -450,7 +365,7 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
             )}
           </div>
         </div>
-        <TournamentSidebar tournaments={sidebarTournaments} title="最新の大会情報" />
+        <TournamentSidebar tournaments={sidebarTournaments} title={`${classDisplayName}の大会`} />
       </main>
       <Footer />
     </div>
