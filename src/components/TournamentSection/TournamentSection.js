@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import Link from 'next/link';
 import styles from './TournamentSection.module.css';
+import { classSlugToDisplay } from '../../utils/classConvert';
 
 export default function TournamentSection({ tournaments = [], error = null, activeTab = 0, setActiveTab = () => {} }) {
   const [touchStart, setTouchStart] = useState(0);
@@ -80,12 +81,13 @@ export default function TournamentSection({ tournaments = [], error = null, acti
 
   // カテゴリー情報
   const tournamentCategories = [
-    { id: 'gakudo', title: '学童' },
-    { id: 'shonen', title: '少年' },
-    { id: 'a-class', title: 'A級' },
-    { id: 'b-class', title: 'B級' },
-    { id: 'c-class', title: 'C級' },
-    { id: 'other', title: 'その他' },
+    { id: 'es', title: classSlugToDisplay('es') },
+    { id: 'jhs', title: classSlugToDisplay('jhs') },
+    { id: 'a-class', title: classSlugToDisplay('a-class') },
+    { id: 'b-class', title: classSlugToDisplay('b-class') },
+    { id: 'c-class', title: classSlugToDisplay('c-class') },
+    { id: 'girls', title: classSlugToDisplay('girls') },
+    { id: 'others', title: classSlugToDisplay('others') },
   ];
 
   return (
@@ -154,9 +156,8 @@ export default function TournamentSection({ tournaments = [], error = null, acti
                   }
 
                   return (
-                    <Link
+                    <div
                       key={item.id}
-                      href={`/tournaments/tournament/${item.id}`}
                       className={styles.newsItem}
                     >
                       <div className={styles.itemContent}>
@@ -165,8 +166,7 @@ export default function TournamentSection({ tournaments = [], error = null, acti
                         </span>
                         <span className={styles.itemTitle}>{displayName}</span>
                       </div>
-                      <span className={styles.arrow}>→</span>
-                    </Link>
+                    </div>
                   );
                 })
               )}
@@ -182,7 +182,7 @@ export default function TournamentSection({ tournaments = [], error = null, acti
               {fukuokaBlocks.map((block) => (
                 <Link
                   key={block.id}
-                  href={`/tournaments/${block.id}`}
+                  href={`/tournaments/block/${block.id}`}
                   className={styles.listItem}
                 >
                   <span className={styles.categoryTitle}>{block.title}</span>

@@ -5,11 +5,55 @@ import TournamentSidebar from '../../../components/TournamentSidebar/TournamentS
 import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb';
 import styles from '../../../styles/Page.module.css';
 import Link from 'next/link';
-import { classSlugToDisplay, classDisplayToSlug } from '../../../utils/classConvert';
+import { classSlugToDisplay } from '../../../utils/classConvert';
+
+// 福岡県8ブロック情報
+const fukuokaBlocks = {
+  'kyochiku': {
+    title: '京築',
+    branches: ['行橋', '苅田', '豊前']
+  },
+  'kitakyushu': {
+    title: '北九州',
+    branches: ['北九州']
+  },
+  'chikuho': {
+    title: '筑豊',
+    branches: ['中遠', '直鞍', '嘉飯', '田川']
+  },
+  'higashi-fukuoka': {
+    title: '東福岡',
+    branches: ['古賀', '糟屋', '宗像']
+  },
+  'fukuoka': {
+    title: '福岡',
+    branches: ['福岡', '筑紫', '春日', '大野城']
+  },
+  'kita-chikugo': {
+    title: '北筑後',
+    branches: ['朝倉', '八女', '浮羽', '小郡']
+  },
+  'kurume': {
+    title: '久留米',
+    branches: ['久留米']
+  },
+  'minami-chikugo': {
+    title: '南筑後',
+    branches: ['柳川', '筑後', '大牟田', '大川大木']
+  }
+};
 
 export async function getServerSideProps(context) {
   try {
-    const { class: classSlug } = context.params;
+    const { blockId } = context.params;
+    const blockInfo = fukuokaBlocks[blockId];
+
+    if (!blockInfo) {
+      return {
+        notFound: true
+      };
+    }
+
     const SPACE_UID = process.env.NEWT_SPACE_UID;
     const TOKEN = process.env.NEWT_API_TOKEN;
     const TOURNAMENT_APP_UID = 'fukuoka-tournament';
@@ -19,14 +63,11 @@ export async function getServerSideProps(context) {
       'Content-Type': 'application/json'
     };
 
-    // クラス名の変換
-    const classDisplayName = classSlugToDisplay(classSlug);
-
     const page = parseInt(context.query.page || '1', 10);
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    // 全件取得してクラスでフィルタリング
+    // 全件取得してブロック内の支部でフィルタリング
     const allTournamentsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
     let tournamentsData = [];
     let total = 0;
@@ -37,11 +78,14 @@ export async function getServerSideProps(context) {
       if (allResponse.ok) {
         const allResult = await allResponse.json();
 
-        // クラスでフィルタリング
+        // ブロック内の支部でフィルタリング
         if (allResult.items && allResult.items.length > 0) {
           const filteredItems = allResult.items.filter(item => {
-            const classes = item['tor-data']?.['fukuoka-class'] || [];
-            return classes.includes(classDisplayName);
+            const area = item.area || '';
+            // ブロック内のいずれかの支部にマッチするか確認
+            return blockInfo.branches.some(branch =>
+              area.includes(branch) || branch.includes(area.replace('支部', ''))
+            );
           });
 
           total = filteredItems.length;
@@ -77,7 +121,7 @@ export async function getServerSideProps(context) {
       console.error('Tournament API Error:', error);
     }
 
-    // サイドバー用：同じクラスの大会5件を取得
+    // サイドバー用：同じブロックの大会5件を取得
     const sidebarUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
     let sidebarTournaments = [];
 
@@ -86,11 +130,13 @@ export async function getServerSideProps(context) {
       if (sidebarResponse.ok) {
         const sidebarResult = await sidebarResponse.json();
         if (sidebarResult.items && sidebarResult.items.length > 0) {
-          // 同じクラスでフィルタリング
+          // 同じブロックでフィルタリング
           const filteredSidebar = sidebarResult.items
             .filter(item => {
-              const classes = item['tor-data']?.['fukuoka-class'] || [];
-              return classes.includes(classDisplayName);
+              const area = item.area || '';
+              return blockInfo.branches.some(branch =>
+                area.includes(branch) || branch.includes(area.replace('支部', ''))
+              );
             })
             .slice(0, 5)
             .map(item => {
@@ -124,8 +170,8 @@ export async function getServerSideProps(context) {
         currentPage: page,
         totalPages: Math.ceil(total / limit),
         total,
-        classSlug,
-        classDisplayName
+        blockId,
+        blockTitle: blockInfo.title
       }
     };
   } catch (error) {
@@ -137,28 +183,35 @@ export async function getServerSideProps(context) {
         currentPage: 1,
         totalPages: 1,
         total: 0,
-        classSlug: context.params.class,
-        classDisplayName: ''
+        blockId: context.params.blockId,
+        blockTitle: ''
       }
     };
   }
 }
 
-export default function TournamentsByClass({ tournaments = [], sidebarTournaments = [], currentPage = 1, totalPages = 1, total = 0, classSlug, classDisplayName }) {
-  const [selectedArea, setSelectedArea] = useState('all');
+export default function TournamentsByBlock({ tournaments = [], sidebarTournaments = [], currentPage = 1, totalPages = 1, total = 0, blockId, blockTitle }) {
+  const [selectedClass, setSelectedClass] = useState('all');
 
-  // フィルタリング
+  // クラスフィルタリング
   const filteredTournaments = tournaments.filter(tournament => {
-    const areaMatch = selectedArea === 'all' || tournament.area === selectedArea;
-    return areaMatch;
+    if (selectedClass === 'all') return true;
+    const classes = tournament.classes || [];
+    return classes.includes(selectedClass);
   });
 
-  // エリア一覧を取得
-  const areas = ['all', ...new Set(tournaments.map(t => t.area).filter(Boolean))];
+  // クラス一覧を取得
+  const allClasses = new Set();
+  tournaments.forEach(t => {
+    if (t.classes && Array.isArray(t.classes)) {
+      t.classes.forEach(c => allClasses.add(c));
+    }
+  });
+  const classOptions = ['all', ...Array.from(allClasses)];
 
   const breadcrumbItems = [
     { label: '大会情報', href: '/tournaments' },
-    { label: classDisplayName, href: null }
+    { label: `${blockTitle}ブロック`, href: null }
   ];
 
   return (
@@ -167,35 +220,35 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>{classDisplayName} 大会情報</h1>
-            <span>TOURNAMENTS - {classDisplayName.toUpperCase()}</span>
+            <h1>{blockTitle}ブロック 大会情報</h1>
+            <span>TOURNAMENTS - {blockTitle.toUpperCase()}</span>
           </div>
 
           <Breadcrumb items={breadcrumbItems} />
 
           <div className={styles.content}>
-            {/* エリアフィルター */}
+            {/* クラスフィルター */}
             <div style={{ marginBottom: '24px' }}>
               <div style={{
                 display: 'flex',
                 gap: '8px',
                 flexWrap: 'wrap'
               }}>
-                {areas.map(area => (
+                {classOptions.map(option => (
                   <button
-                    key={area}
-                    onClick={() => setSelectedArea(area)}
+                    key={option}
+                    onClick={() => setSelectedClass(option)}
                     style={{
                       padding: '8px 16px',
-                      background: selectedArea === area ? '#333' : '#fff',
-                      color: selectedArea === area ? '#fff' : '#333',
+                      background: selectedClass === option ? '#333' : '#fff',
+                      color: selectedClass === option ? '#fff' : '#333',
                       border: '1px solid #333',
                       cursor: 'pointer',
                       fontSize: '14px',
                       transition: 'all 0.3s ease'
                     }}
                   >
-                    {area === 'all' ? 'すべての地域' : area}
+                    {option === 'all' ? 'すべてのクラス' : classSlugToDisplay(option)}
                   </button>
                 ))}
               </div>
@@ -216,9 +269,12 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
                 border: '1px solid #eee'
               }}>
                 {filteredTournaments.map((tournament) => {
-                  const areaSlug = tournament.area ? tournament.area.replace(/支部/g, '').toLowerCase() : 'unknown';
-                  const yyyy = tournament.yyyy || tournament.year || '0000';
-                  const tournamentUrl = `/tournaments/${classSlug}/${encodeURIComponent(areaSlug)}/${tournament.torDataId}/${yyyy}`;
+                  // クラスごとにURLを生成
+                  const firstClass = tournament.classes && tournament.classes.length > 0
+                    ? tournament.classes[0]
+                    : '';
+
+                  const tournamentUrl = `/tournaments/${encodeURIComponent(firstClass)}/${encodeURIComponent(tournament.area)}/${tournament.torDataId}/${tournament.year || tournament.yyyy || ''}`;
 
                   return (
                   <Link
@@ -257,8 +313,19 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
                         <div style={{
                           display: 'flex',
                           alignItems: 'center',
-                          gap: '0'
+                          gap: '8px'
                         }}>
+                          {tournament.classes && tournament.classes.length > 0 && (
+                            <span style={{
+                              padding: '2px 8px',
+                              background: '#333',
+                              color: '#fff',
+                              fontSize: '12px',
+                              borderRadius: '3px'
+                            }}>
+                              {tournament.classes.map(c => typeof c === 'object' ? c.label : classSlugToDisplay(c)).join('・')}
+                            </span>
+                          )}
                           <span style={{
                             fontSize: '20px',
                             color: '#333',
@@ -302,7 +369,7 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
                 marginTop: '32px'
               }}>
                 {currentPage > 1 && (
-                  <a href={`/tournaments/${classSlug}?page=${currentPage - 1}`} style={{
+                  <a href={`/tournaments/block/${blockId}?page=${currentPage - 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -324,7 +391,7 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
                     return (
                       <a
                         key={page}
-                        href={`/tournaments/${classSlug}?page=${page}`}
+                        href={`/tournaments/block/${blockId}?page=${page}`}
                         style={{
                           padding: '8px 16px',
                           border: '1px solid #333',
@@ -349,7 +416,7 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
                 })}
 
                 {currentPage < totalPages && (
-                  <a href={`/tournaments/${classSlug}?page=${currentPage + 1}`} style={{
+                  <a href={`/tournaments/block/${blockId}?page=${currentPage + 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -365,7 +432,7 @@ export default function TournamentsByClass({ tournaments = [], sidebarTournament
             )}
           </div>
         </div>
-        <TournamentSidebar tournaments={sidebarTournaments} title={`${classDisplayName}の大会`} />
+        <TournamentSidebar tournaments={sidebarTournaments} title={`${blockTitle}ブロックの大会`} />
       </main>
       <Footer />
     </div>

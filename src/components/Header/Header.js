@@ -153,7 +153,7 @@ export default function Header() {
 
         {/* 野球競技者登録システムボタン */}
         <div className={styles.registrationButtonWrapper}>
-          <Link href="/registration-system" className={styles.registrationButton}>
+          <Link href="https://yakyu-net.jp/" className={styles.registrationButton}>
             野球競技者登録システム
           </Link>
         </div>
@@ -226,7 +226,7 @@ export default function Header() {
                     <ul className={styles.submenu}>
                       {block.branches.map((branch) => (
                         <li key={branch.id}>
-                          <Link href={`/tournaments/${block.id}/${branch.id}`}>{branch.name}</Link>
+                          <Link href={`/tournaments/area/${encodeURIComponent(branch.name.replace('支部', ''))}`}>{branch.name}</Link>
                         </li>
                       ))}
                     </ul>
@@ -293,7 +293,7 @@ export default function Header() {
                       {block.branches.map((branch) => (
                         <Link
                           key={branch.id}
-                          href={`/tournaments/${block.id}/${branch.id}`}
+                          href={`/tournaments/area/${encodeURIComponent(branch.name.replace('支部', ''))}`}
                           onClick={handleLinkClick}
                           className={styles.blockButton}
                           style={{ fontSize: '0.8rem', padding: '8px' }}

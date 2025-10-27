@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import Header from '../../../components/Header/Header';
-import Footer from '../../../components/Footer/Footer';
-import Meta from '../../../components/Meta/Meta';
-import TournamentSidebar from '../../../components/TournamentSidebar/TournamentSidebar';
-import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb';
-import styles from '../../../styles/TournamentDetail.module.css';
+import Header from '../../../../components/Header/Header';
+import Footer from '../../../../components/Footer/Footer';
+import Meta from '../../../../components/Meta/Meta';
+import TournamentSidebar from '../../../../components/TournamentSidebar/TournamentSidebar';
+import Breadcrumb from '../../../../components/Breadcrumb/Breadcrumb';
+import styles from '../../../../styles/TournamentDetail.module.css';
 import Image from 'next/image';
 import { pdfjs } from 'react-pdf';
 import Link from 'next/link';
-import { classDisplayToSlug } from '../../../utils/classConvert';
+import { classDisplayToSlug, classSlugToDisplay } from '../../../../utils/classConvert';
 
 // PDF.js workerの設定
 pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.min.js`;
@@ -318,7 +318,7 @@ export default function TorList({ tournament, sidebarTournaments = [] }) {
               <div className={styles.classLabels}>
                 {tournament.fukuokaClass.map((item, index) => (
                   <span key={index} className={styles.classLabel}>
-                    {typeof item === 'object' ? item.label : item}
+                    {typeof item === 'object' ? item.label : classSlugToDisplay(item)}
                   </span>
                 ))}
               </div>
@@ -359,15 +359,12 @@ export default function TorList({ tournament, sidebarTournaments = [] }) {
             <div className={styles.allUpdatesContainer}>
             {tournament.updates.map((update, index) => {
               // URL用のパラメータを生成
-              const classSlug = tournament.fukuokaClass && tournament.fukuokaClass.length > 0
-                ? (tournament.fukuokaClass[0].toLowerCase() === '学童' ? 'gakudou' :
-                   tournament.fukuokaClass[0].toLowerCase() === '少年' ? 'shounen' :
-                   tournament.fukuokaClass[0].toLowerCase())
-                : 'other';
-              const areaSlug = tournament.area ? tournament.area.replace(/支部/g, '').toLowerCase() : 'unknown';
-              const torDataId = tournament.id; // torlist の id パラメータ
+              const firstClass = tournament.fukuokaClass && tournament.fukuokaClass.length > 0
+                ? tournament.fukuokaClass[0]
+                : '';
+              const area = tournament.area || '';
 
-              const detailUrl = `/tournaments/tournament/${classSlug}/${areaSlug}/${torDataId}/${update.tournamentId}`;
+              const detailUrl = `/tournaments/${encodeURIComponent(firstClass)}/${encodeURIComponent(area)}/${tournament.id}/${update.year}`;
 
               return (
               <div key={index} className={styles.updateItem}>

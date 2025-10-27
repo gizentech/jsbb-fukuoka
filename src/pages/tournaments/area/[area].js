@@ -1,10 +1,11 @@
 import { useState } from 'react';
-import Header from '../../../../components/Header/Header';
-import Footer from '../../../../components/Footer/Footer';
-import TournamentSidebar from '../../../../components/TournamentSidebar/TournamentSidebar';
-import Breadcrumb from '../../../../components/Breadcrumb/Breadcrumb';
-import styles from '../../../../styles/Page.module.css';
+import Header from '../../../components/Header/Header';
+import Footer from '../../../components/Footer/Footer';
+import TournamentSidebar from '../../../components/TournamentSidebar/TournamentSidebar';
+import Breadcrumb from '../../../components/Breadcrumb/Breadcrumb';
+import styles from '../../../styles/Page.module.css';
 import Link from 'next/link';
+import { classSlugToDisplay } from '../../../utils/classConvert';
 
 export async function getServerSideProps(context) {
   try {
@@ -25,7 +26,7 @@ export async function getServerSideProps(context) {
     const limit = 20;
     const skip = (page - 1) * limit;
 
-    // 全件取得してエリアのみでフィルタリング（クラスフィルタなし）
+    // 全件取得してエリアでフィルタリング
     const allTournamentsUrl = `https://${SPACE_UID}.cdn.newt.so/v1/${TOURNAMENT_APP_UID}/fukuoka-tor?limit=1000&order=-_sys.updatedAt&depth=2`;
     let tournamentsData = [];
     let total = 0;
@@ -36,7 +37,7 @@ export async function getServerSideProps(context) {
       if (allResponse.ok) {
         const allResult = await allResponse.json();
 
-        // エリアのみでフィルタリング
+        // エリアでフィルタリング
         if (allResult.items && allResult.items.length > 0) {
           const filteredItems = allResult.items.filter(item => {
             const area = item.area || '';
@@ -65,6 +66,7 @@ export async function getServerSideProps(context) {
               winner: item['win-team-fukuoka'] || '',
               classes: item['tor-data']?.['fukuoka-class'] || [],
               year: year,
+              yyyy: item.YYYY || null,
               startDate: item['tor-start'] || null,
               endDate: item['end-tor'] || null,
               updatedAt: item._sys?.updatedAt || ''
@@ -226,11 +228,8 @@ export default function TournamentsByArea({ tournaments = [], sidebarTournaments
                   const firstClass = tournament.classes && tournament.classes.length > 0
                     ? tournament.classes[0]
                     : '';
-                  const classSlug = firstClass === '学童' ? 'gakudou' :
-                                   firstClass === '少年' ? 'shounen' :
-                                   firstClass.toLowerCase();
 
-                  const tournamentUrl = `/tournaments/tournament/${classSlug}/${encodeURIComponent(areaDisplayName)}/${tournament.torDataId}/${tournament.id}`;
+                  const tournamentUrl = `/tournaments/${encodeURIComponent(firstClass)}/${encodeURIComponent(areaDisplayName)}/${tournament.torDataId}/${tournament.year || tournament.yyyy || ''}`;
 
                   return (
                   <Link
@@ -279,7 +278,7 @@ export default function TournamentsByArea({ tournaments = [], sidebarTournaments
                               fontSize: '12px',
                               borderRadius: '3px'
                             }}>
-                              {tournament.classes.join('・')}
+                              {tournament.classes.map(c => typeof c === 'object' ? c.label : classSlugToDisplay(c)).join('・')}
                             </span>
                           )}
                           <span style={{
@@ -325,7 +324,7 @@ export default function TournamentsByArea({ tournaments = [], sidebarTournaments
                 marginTop: '32px'
               }}>
                 {currentPage > 1 && (
-                  <a href={`/tournaments/tournament/all-class/${encodeURIComponent(areaDisplayName)}?page=${currentPage - 1}`} style={{
+                  <a href={`/tournaments/area/${encodeURIComponent(areaDisplayName)}?page=${currentPage - 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',
@@ -347,7 +346,7 @@ export default function TournamentsByArea({ tournaments = [], sidebarTournaments
                     return (
                       <a
                         key={page}
-                        href={`/tournaments/tournament/all-class/${encodeURIComponent(areaDisplayName)}?page=${page}`}
+                        href={`/tournaments/area/${encodeURIComponent(areaDisplayName)}?page=${page}`}
                         style={{
                           padding: '8px 16px',
                           border: '1px solid #333',
@@ -372,7 +371,7 @@ export default function TournamentsByArea({ tournaments = [], sidebarTournaments
                 })}
 
                 {currentPage < totalPages && (
-                  <a href={`/tournaments/tournament/all-class/${encodeURIComponent(areaDisplayName)}?page=${currentPage + 1}`} style={{
+                  <a href={`/tournaments/area/${encodeURIComponent(areaDisplayName)}?page=${currentPage + 1}`} style={{
                     padding: '8px 16px',
                     border: '1px solid #333',
                     textDecoration: 'none',

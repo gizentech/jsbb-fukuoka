@@ -405,10 +405,8 @@ export default function BlockSidebar({ tournaments = [], showAboutMenu = false, 
               <ul className={styles.branchList}>
                 {recentTournaments.length > 0 ? (
                   recentTournaments.map((tournament) => (
-                    <li key={tournament.id}>
-                      <Link href={`/tournaments/tournament/${tournament.id}`} className={styles.branchLink}>
-                        {tournament.title}
-                      </Link>
+                    <li key={tournament.id} className={styles.branchLink}>
+                      <div>{tournament.title}</div>
                     </li>
                   ))
                 ) : (
@@ -432,7 +430,7 @@ export default function BlockSidebar({ tournaments = [], showAboutMenu = false, 
                 <ul className={styles.branchList}>
                   {block.branches.map((branch) => (
                     <li key={branch.id}>
-                      <Link href={`/tournaments/${block.id}/${branch.id}`} className={styles.branchLink}>
+                      <Link href={`/tournaments/area/${encodeURIComponent(branch.name.replace('支部', ''))}`} className={styles.branchLink}>
                         {branch.name}
                       </Link>
                     </li>

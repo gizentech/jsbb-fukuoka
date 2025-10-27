@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import styles from './TournamentSidebar.module.css';
-import { classDisplayToSlug } from '../../utils/classConvert';
+import { classDisplayToSlug, classSlugToDisplay } from '../../utils/classConvert';
 
 export default function TournamentSidebar({ tournaments = [], title = '関連する大会' }) {
   if (!tournaments || tournaments.length === 0) {
@@ -32,8 +32,8 @@ export default function TournamentSidebar({ tournaments = [], title = '関連す
 
             // yearListがtrueの場合は年度リストページへ、それ以外は詳細ページへ
             const url = tournament.yearList
-              ? `/tournaments/${classSlug}/${encodeURIComponent(areaSlug)}/${torDataId}`
-              : `/tournaments/${classSlug}/${encodeURIComponent(areaSlug)}/${torDataId}/${yyyy}`;
+              ? `/tournaments/tor/${torDataId}`
+              : `/tournaments/${encodeURIComponent(tournament.classes?.[0] || '')}/${encodeURIComponent(tournament.area || '')}/${torDataId}/${yyyy}`;
 
             return (
               <li key={tournament.id || index} className={styles.tournamentItem}>
@@ -49,7 +49,7 @@ export default function TournamentSidebar({ tournaments = [], title = '関連す
                     </span>
                     {tournament.classes && tournament.classes.length > 0 && (
                       <span className={styles.tournamentClass}>
-                        {tournament.classes.join('・')}
+                        {tournament.classes.map(c => typeof c === 'object' ? c.label : classSlugToDisplay(c)).join('・')}
                       </span>
                     )}
                   </div>

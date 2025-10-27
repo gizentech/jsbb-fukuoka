@@ -68,6 +68,16 @@ export async function getServerSideProps(context) {
             const torDataId = item['tor-data']?.id || '';
             const isMultiYear = torDataCounts[torDataId] > 1;
 
+            // classesを配列として正規化
+            let classes = item['tor-data']?.['fukuoka-class'];
+            if (!classes) {
+              classes = [];
+            } else if (typeof classes === 'string') {
+              classes = [classes];
+            } else if (!Array.isArray(classes)) {
+              classes = [];
+            }
+
             return {
               id: item._id,
               torDataId: torDataId,
@@ -76,7 +86,7 @@ export async function getServerSideProps(context) {
               title2: item['tor-data']?.['fukuoka-title2'] || '',
               area: item.area || '',
               winner: item['win-team-fukuoka'] || '',
-              classes: item['tor-data']?.['fukuoka-class'] || [],
+              classes: classes,
               year: year,
               yyyy: item.YYYY || null,
               startDate: item['tor-start'] || null,
@@ -105,13 +115,24 @@ export async function getServerSideProps(context) {
               const startDate = new Date(item['tor-start']);
               year = startDate.getFullYear();
             }
+
+            // classesを配列として正規化
+            let classes = item['tor-data']?.['fukuoka-class'];
+            if (!classes) {
+              classes = [];
+            } else if (typeof classes === 'string') {
+              classes = [classes];
+            } else if (!Array.isArray(classes)) {
+              classes = [];
+            }
+
             return {
               id: item._id,
               torDataId: item['tor-data']?.id || '',
               title1: item['tor-data']?.['fukuoka-title1'] || '',
               title2: item['tor-data']?.['fukuoka-title2'] || '',
               area: item.area || '',
-              classes: item['tor-data']?.['fukuoka-class'] || [],
+              classes: classes,
               year: year,
               yyyy: item.YYYY || null
             };
@@ -151,9 +172,16 @@ export default function Tournaments({ tournaments = [], sidebarTournaments = [],
 
   // フィルタリング
   const filteredTournaments = tournaments.filter(tournament => {
-    const areaMatch = selectedArea === 'all' || tournament.area === selectedArea;
-    const classMatch = selectedClass === 'all' ||
-      (tournament.classes && tournament.classes.includes(selectedClass));
+    // エリアのマッチング
+    const areaMatch = selectedArea === 'all' ||
+      (tournament.area && tournament.area.trim() === selectedArea.trim());
+
+    // クラスのマッチング
+    let classMatch = selectedClass === 'all';
+    if (!classMatch && tournament.classes && Array.isArray(tournament.classes)) {
+      classMatch = tournament.classes.includes(selectedClass);
+    }
+
     return areaMatch && classMatch;
   });
 

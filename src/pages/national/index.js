@@ -4,7 +4,6 @@ import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
 import styles from '../../styles/Page.module.css';
 import { signInWithRedirect } from 'firebase/auth';
 import { skeletonClasses } from '@mui/material';
-import TorList from '../tournaments/torlist/[id]';
 
 export async function getServerSideProps() {
   try {
