@@ -2,7 +2,9 @@
   "permissions": {
     "allow": [
       "Bash(npm install:*)",
-      "Bash(npm uninstall:*)"
+      "Bash(npm uninstall:*)",
+      "Bash(node scripts/create-admin-user.js:*)",
+      "Bash(test:*)"
     ],
     "deny": [],
     "ask": []

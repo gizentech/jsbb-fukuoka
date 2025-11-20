@@ -1,0 +1,164 @@
+/* admin/setup/setup.module.css */
+.container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  position: relative;
+  overflow: hidden;
+}
+
+.setupBox {
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  padding: 32px;
+  width: 100%;
+  max-width: 480px;
+  position: relative;
+  z-index: 1;
+  backdrop-filter: blur(10px);
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.header h1 {
+  font-size: 22px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 6px 0;
+}
+
+.header p {
+  font-size: 13px;
+  color: #666;
+  margin: 0;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.success {
+  background-color: #e8f5e9;
+  border: 1px solid #4caf50;
+  color: #2e7d32;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.error {
+  background-color: #fee;
+  border: 1px solid #fcc;
+  color: #c33;
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 13px;
+  text-align: center;
+}
+
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.formGroup label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup select {
+  padding: 10px 14px;
+  font-size: 15px;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  transition: all 0.2s;
+  background: white;
+}
+
+.formGroup input:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #4CAF50;
+  box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+}
+
+.formGroup input:disabled,
+.formGroup select:disabled {
+  background-color: #f5f5f5;
+  cursor: not-allowed;
+}
+
+.select {
+  cursor: pointer;
+}
+
+.createButton {
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 600;
+  color: white;
+  background: linear-gradient(135deg, #2196F3 0%, #1976D2 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s;
+  margin-top: 4px;
+}
+
+.createButton:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+}
+
+.createButton:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.createButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+.footer {
+  margin-top: 16px;
+  text-align: center;
+}
+
+.footer a {
+  color: #2196F3;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.footer a:hover {
+  color: #1976D2;
+  text-decoration: underline;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .setupBox {
+    padding: 28px 24px;
+  }
+
+  .header h1 {
+    font-size: 20px;
+  }
+
+  .formGroup input {
+    font-size: 16px; /* iOSのズームを防ぐため16px以上 */
+  }
+}

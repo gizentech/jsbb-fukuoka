@@ -1,10 +1,8 @@
 // src/components/AdminLayout/AdminLayout.js
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { auth } from '../../lib/firebase';
-import { signOut } from 'firebase/auth';
+import { getSession, clearSession } from '../../lib/auth';
 import Link from 'next/link';
-import Background from '../Background/Background';
 import styles from './AdminLayout.module.css';
 
 export default function AdminLayout({ children }) {
@@ -14,15 +12,14 @@ export default function AdminLayout({ children }) {
   const [isMobile, setIsMobile] = useState(false);
 
   const menuItems = [
-    { href: '/admin/dashboard', label: 'ダッシュボード', icon: '📊' },
-    { href: '/admin/tournament-entry', label: '申込書登録', icon: '📝' },
-    { href: '/admin/news', label: 'お知らせ管理', icon: '📢' },
-    { href: '/admin/tournaments', label: '大会一覧', icon: '🏆' },
-    { href: '/admin/tournaments-create', label: '大会登録', icon: '➕' },
-    { href: '/admin/tournaments-round', label: '年度追加', icon: '📅' },
-    { href: '/admin/tournaments-edit', label: '大会情報更新', icon: '✏️' },
-    { href: '/admin/files', label: 'ファイル管理', icon: '📁' }
-    
+    { href: '/admin/dashboard', label: 'ダッシュボード' },
+    { href: '/admin/application', label: '大会申込書管理' },
+    { href: '/admin/tournament-entry', label: '申込書登録' },
+    { href: '/admin/news', label: 'お知らせ管理' },
+    { href: '/admin/tournaments', label: '大会情報' },
+    { href: '/admin/files', label: 'ファイル管理' },
+    { href: '/admin/master/organization', label: '組織マスタ' },
+    { href: '/admin/master/tournament', label: '大会マスタ' }
   ];
 
   useEffect(() => {
@@ -33,23 +30,22 @@ export default function AdminLayout({ children }) {
     checkMobile();
     window.addEventListener('resize', checkMobile);
 
-    const unsubscribe = auth.onAuthStateChanged((user) => {
-      if (!user && router.pathname !== '/admin/login') {
-        router.push('/admin/login');
-      } else {
-        setLoading(false);
-      }
-    });
+    // セッションチェック
+    const session = getSession();
+    if (!session && router.pathname !== '/admin/login') {
+      router.push('/admin/login');
+    } else {
+      setLoading(false);
+    }
 
     return () => {
-      unsubscribe();
       window.removeEventListener('resize', checkMobile);
     };
   }, [router]);
 
   const handleLogout = async () => {
     try {
-      await signOut(auth);
+      clearSession();
       router.push('/admin/login');
     } catch (error) {
       console.error('Logout error:', error);
@@ -76,8 +72,6 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className={styles.layout}>
-      <Background />
-      
       <button 
         className={`${styles.menuToggle} ${menuOpen ? styles.open : ''}`}
         onClick={() => setMenuOpen(!menuOpen)}
@@ -105,21 +99,19 @@ export default function AdminLayout({ children }) {
         <ul className={styles.menu}>
           {menuItems.map((item) => (
             <li key={item.href}>
-              <Link 
-                href={item.href} 
+              <Link
+                href={item.href}
                 className={router.pathname === item.href ? styles.active : ''}
                 onClick={handleMenuItemClick}
               >
-                <span className={styles.menuIcon}>{item.icon}</span>
-                <span className={styles.menuLabel}>{item.label}</span>
+                {item.label}
               </Link>
             </li>
           ))}
         </ul>
 
         <button onClick={handleLogout} className={styles.logoutButton}>
-          <span className={styles.menuIcon}>🚪</span>
-          <span className={styles.menuLabel}>ログアウト</span>
+          ログアウト
         </button>
       </nav>
 

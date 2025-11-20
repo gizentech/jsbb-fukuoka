@@ -1,0 +1,486 @@
+/* application.module.css */
+.container {
+  background: #fff;
+  border-radius: 8px;
+  padding: 30px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+}
+
+.header h1 {
+  font-size: 1.8rem;
+  margin: 0;
+  color: #1a1a1a;
+}
+
+.addButton {
+  background: #000;
+  color: #fff;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.addButton:hover {
+  background: #333;
+}
+
+.loading {
+  text-align: center;
+  padding: 40px;
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th,
+.table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #eee;
+}
+
+.table th {
+  background: #f5f5f5;
+  font-weight: 600;
+  color: #333;
+}
+
+.table tbody tr:hover {
+  background: #fafafa;
+}
+
+.status {
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.status.published {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status.draft {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+.actions {
+  display: flex;
+  gap: 8px;
+}
+
+.editButton,
+.toggleButton,
+.deleteButton {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 4px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.editButton {
+  background: #007bff;
+  color: #fff;
+}
+
+.toggleButton {
+  background: #28a745;
+  color: #fff;
+}
+
+.deleteButton {
+  background: #dc3545;
+  color: #fff;
+}
+
+.editButton:hover,
+.toggleButton:hover,
+.deleteButton:hover {
+  opacity: 0.8;
+}
+
+/* モーダル */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+  padding: 20px;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.modalHeader h2 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  font-size: 2rem;
+  cursor: pointer;
+  color: #666;
+  line-height: 1;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+}
+
+.closeButton:hover {
+  color: #000;
+}
+
+.form {
+  padding: 20px;
+}
+
+.formGroup {
+  margin-bottom: 20px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: #333;
+}
+
+.formGroup input,
+.formGroup textarea,
+.formGroup select {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-family: inherit;
+}
+
+.formGroup input:focus,
+.formGroup textarea:focus,
+.formGroup select:focus {
+  outline: none;
+  border-color: #007bff;
+}
+
+.currentFile {
+  margin-top: 8px;
+  padding: 8px;
+  background: #f5f5f5;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.modalFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  padding: 20px;
+  border-top: 1px solid #eee;
+}
+
+.cancelButton,
+.saveButton {
+  padding: 10px 24px;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.cancelButton {
+  background: #6c757d;
+  color: #fff;
+}
+
+.saveButton {
+  background: #000;
+  color: #fff;
+}
+
+.cancelButton:hover,
+.saveButton:hover {
+  opacity: 0.8;
+}
+
+.saveButton:disabled {
+  background: #ccc;
+  cursor: not-allowed;
+}
+
+/* 新規作成フォーム用のスタイル */
+.section {
+  margin-bottom: 2rem;
+  padding-bottom: 2rem;
+  border-bottom: 1px solid #eee;
+}
+
+.section:last-of-type {
+  border-bottom: none;
+}
+
+.section h2 {
+  font-size: 1.3rem;
+  margin-bottom: 1rem;
+  color: #333;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.formGroup small {
+  display: block;
+  margin-top: 0.25rem;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.checkboxGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.checkboxGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.75rem;
+}
+
+.radioGroup {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.radioLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}
+
+.radioLabel input[type="radio"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.radioLabel span {
+  font-size: 0.95rem;
+}
+
+.subFields {
+  margin-top: 1rem;
+  margin-left: 2rem;
+  padding: 1rem;
+  background: #f8f8f8;
+  border-left: 3px solid #3182ce;
+}
+
+.checkbox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  transition: background-color 0.2s;
+}
+
+.checkbox:hover {
+  background: #f8f8f8;
+}
+
+.checkbox input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+  cursor: pointer;
+}
+
+.checkbox span {
+  font-size: 0.95rem;
+}
+
+.fileList {
+  margin-top: 1rem;
+  padding: 1rem;
+  background: #f8f8f8;
+}
+
+.fileList ul {
+  margin: 0.5rem 0 0 1.5rem;
+  padding: 0;
+}
+
+.fileList li {
+  margin: 0.25rem 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.note {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: 1rem;
+}
+
+.warning {
+  color: #e53e3e;
+  font-size: 0.95rem;
+  padding: 1rem;
+  background: #fed7d7;
+  margin-bottom: 1rem;
+}
+
+.teamSelection {
+  margin-top: 1rem;
+}
+
+.prefecture {
+  margin-bottom: 2rem;
+}
+
+.prefecture h3 {
+  font-size: 1.1rem;
+  margin-bottom: 0.75rem;
+  color: #2c5282;
+}
+
+.block {
+  margin-left: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.block h4 {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  color: #3182ce;
+}
+
+.branch {
+  margin-left: 1rem;
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  background: #f8f8f8;
+}
+
+.branchLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.branchLabel input[type="checkbox"] {
+  width: auto;
+  margin: 0;
+}
+
+.teams {
+  margin-left: 1.5rem;
+  margin-top: 0.5rem;
+}
+
+.selectedCount {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  background: #e6f2ff;
+  color: #2c5282;
+  font-weight: 600;
+}
+
+.formFooter {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #eee;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+
+  .table {
+    font-size: 0.85rem;
+  }
+
+  .table th,
+  .table td {
+    padding: 8px;
+  }
+
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+
+  .block,
+  .branch,
+  .teams {
+    margin-left: 0.5rem;
+  }
+}

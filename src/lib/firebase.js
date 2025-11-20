@@ -26,13 +26,13 @@ if (!getApps().length) {
 export const db = getFirestore(app);
 
 export const auth = getAuth(app);
-// Storage を初期化 - バケット名を明示的に指定しない
-export const storage = getStorage(app, "gs://jsbb-kurume.firebasestorage.app");
+// Storage を初期化 - バケット名を明示的に指定
+export const storage = getStorage(app, "gs://jsbb-fukuoka-hp.firebasestorage.app");
 
 // URL書き換え用のヘルパー関数を追加
 export function fixStorageUrl(url) {
  if (!url) return '';
- return url.replace('jsbb-kurume.appspot.com', 'jsbb-kurume.firebasestorage.app');
+ return url.replace('jsbb-fukuoka-hp.appspot.com', 'jsbb-fukuoka-hp.firebasestorage.app');
 }
 
 // Firebase SDKのXHRリクエストを書き換えるモンキーパッチ
@@ -41,16 +41,16 @@ if (typeof window !== 'undefined') {
  const originalOpen = XMLHttpRequest.prototype.open;
  XMLHttpRequest.prototype.open = function() {
    if (arguments[1] && typeof arguments[1] === 'string') {
-     arguments[1] = arguments[1].replace('jsbb-kurume.appspot.com', 'jsbb-kurume.firebasestorage.app');
+     arguments[1] = arguments[1].replace('jsbb-fukuoka-hp.appspot.com', 'jsbb-fukuoka-hp.firebasestorage.app');
    }
    return originalOpen.apply(this, arguments);
  };
- 
+
  // fetchのオーバーライド（モダンブラウザ対応）
  const originalFetch = window.fetch;
  window.fetch = function(url, options) {
    if (url && typeof url === 'string') {
-     url = url.replace('jsbb-kurume.appspot.com', 'jsbb-kurume.firebasestorage.app');
+     url = url.replace('jsbb-fukuoka-hp.appspot.com', 'jsbb-fukuoka-hp.firebasestorage.app');
    }
    return originalFetch.call(this, url, options);
  };
