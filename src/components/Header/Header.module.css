@@ -16,19 +16,27 @@
 
   .mainMenu {
     transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-    max-height: 100px;
+    max-height: 100px; /* デフォルトのmax-height */
     opacity: 1;
     overflow: visible;
   }
 
   .blockMenu {
     transition: max-height 0.3s ease, opacity 0.3s ease, padding 0.3s ease;
-    max-height: 100px;
+    max-height: 100px; /* デフォルトのmax-height */
     opacity: 1;
     overflow: visible;
   }
 
-  /* レベル1: 1段目のメニューを隠す */
+  /* レベル1: 1段目のコンテンツを隠す (topBarの高さは維持) */
+  .scrolledLevel1 .logoWrapper,
+  .scrolledLevel1 .registrationButtonWrapper {
+    opacity: 0;
+    visibility: hidden; /* 操作不可にするためvisibilityも設定 */
+    transition: opacity 0.3s ease, visibility 0s 0.3s;
+  }
+
+  /* レベル1: 2段目の1行目（mainMenu）を隠す */
   .scrolledLevel1 .mainMenu {
     max-height: 0;
     opacity: 0;
@@ -36,19 +44,140 @@
     padding: 0;
   }
 
-  /* レベル2: 両方のメニューを隠す */
-  .scrolledLevel2 .mainMenu {
+  /* ========================================================= */
+  /* 【レベル2（閉じた状態）のスタイル】 */
+  /* ========================================================= */
+
+  /* レベル2では、mainMenu/blockMenuを完全に非表示にする */
+  .scrolledLevel2 .mainMenu,
+  .scrolledLevel2 .blockMenu {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
     padding: 0;
   }
 
-  .scrolledLevel2 .blockMenu {
+  /* レベル2のときtopBarをご要望のスタイルで全幅Flexレイアウトに */
+  .scrolledLevel2 .topBar {
+    /* --- ご要望のスタイルを適用 --- */
+    font-family: "Noto Sans JP", "ヒラギノ角ゴ Pro W3", "Hiragino Kaku Gothic Pro", "メイリオ", "Meiryo", "MS Pゴシック", "MS PGothic", sans-serif;
+    box-sizing: border-box; /* 適用 */
+    margin: 0; /* 適用 */
+    background: #000; /* デフォルトの#000を適用 */
+    border-bottom: 1px solid #333; /* デフォルトの1px solid #333を適用 */
+    position: relative; /* デフォルトのposition: relativeを適用 */
+    
+    /* Flexbox設定（ロゴとコンパクトメニュー用） */
+    display: flex; 
+    align-items: center; 
+    gap: 20px;
+    max-width: 100%;
+
+    /* 上下のpaddingを7pxに設定 */
+    padding: 7px 20px 7px 20px; 
+    padding-top: 7px; 
+    padding-bottom: 7px;
+    
+    height: auto; 
+  }
+  
+  /* レベル2のときロゴを左寄せに */
+  .scrolledLevel2 .logoWrapper {
+    text-align: left;
+    flex: 0 0 auto;
+    animation: none; 
+    margin: 0;
+    min-width: 350px;
+    z-index: 2003;
+    position: relative;
+    opacity: 1; 
+    visibility: visible;
+  }
+  
+  /* レベル2でロゴの色を白に戻す */
+  .scrolledLevel2 .subtitle,
+  .scrolledLevel2 .logo a {
+    color: #fff;
+    /* ロゴ要素の垂直マージンを確実にリセット（中央揃えのため） */
+    margin: 0 !important; 
+  }
+  .scrolledLevel2 .logo {
+      margin: 0 !important; 
+      line-height: 1; 
+  }
+
+  /* コンパクトメニュー（レベル2で表示） */
+  .compactNav {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+    
+    /* 🌟 メニューを左に寄せるために右マージンを設定 */
+    margin-right: 220px;
+  }
+
+  .compactMenu {
+    display: flex;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .compactMenu li {
+    display: flex;
+  }
+
+  .compactMenu a {
+    color: #fff;
+    text-decoration: none;
+    padding: 12px 8px;
+    font-size: 0.7rem;
+    white-space: nowrap;
+    transition: background-color 0.3s ease;
+    display: block;
+  }
+
+  .compactMenu a:hover {
+    background: #333;
+  }
+
+  /* レベル2のとき登録ボタンを右端に配置 */
+  .scrolledLevel2 .registrationButtonWrapper {
+    /* 🌟 位置を固定（デフォルトと統一） */
+    position: absolute; 
+    right: 20px; 
+    top: calc(50% - 0.5px); 
+    transform: translateY(-50%);
+    
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+
+    opacity: 1; 
+    visibility: visible;
+    transition: opacity 0.3s ease; 
+  }
+
+  /* レベル2のときmenuBar (2段目全体) を非表示 */
+  .scrolledLevel2 .menuBar {
     max-height: 0;
     opacity: 0;
     overflow: hidden;
     padding: 0;
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
 
@@ -68,13 +197,16 @@
   gap: 0px;
   text-align: center;
   position: relative;
+  transition: opacity 0.3s ease; /* レベル1での非表示用 */
 }
 
 .registrationButtonWrapper {
+  /* 🌟 修正箇所: 開いた状態の位置を閉じた状態と統一（ボタン位置固定） */
   position: absolute;
-  right: 40px;
-  top: 50%;
+  right: 20px; /* 40pxから20pxに変更 */
+  top: calc(50% - 0.5px); /* 50%からcalc(50% - 0.5px)に変更 */
   transform: translateY(-50%);
+  transition: opacity 0.3s ease; /* レベル1での非表示用 */
 }
 
 .registrationButton {
@@ -123,7 +255,7 @@
   opacity: 0.7;
 }
 
-/* 2段目: メニューバー（黒背景） */
+/* 2段目: メニューバー */
 .menuBar {
   background: #1a1a1a;
   color: #fff;
@@ -191,10 +323,6 @@
   padding: 8px 0;
 }
 
-.blockMenu > li {
-  position: relative;
-}
-
 .blockMenu > li > span {
   color: #fff;
   padding: 8px 12px;
@@ -234,7 +362,7 @@
   margin-top: 0;
   padding: 8px 0;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  z-index: 1001;
+  z-index: 2002;
 }
 
 .hasSubmenu:hover .submenu {

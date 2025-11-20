@@ -1,7 +1,10 @@
+import React from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
 import styles from '../../styles/Page.module.css';
+import fs from 'fs';
+import path from 'path';
 
 export async function getServerSideProps() {
   try {
@@ -44,68 +47,44 @@ export async function getServerSideProps() {
       console.error('Tournament API Error:', error);
     }
 
+    // CSVファイルを読み込む
+    let historyData = [];
+    try {
+      const csvPath = path.join(process.cwd(), 'src', 'pages', 'history', 'fukuoka_renmei_history.csv');
+      const csvContent = fs.readFileSync(csvPath, 'utf-8');
+      const lines = csvContent.split('\n');
+
+      // ヘッダー行をスキップして、データ行をパース
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+          const [year, month, event] = line.split(',');
+          historyData.push({ year, month, event });
+        }
+      }
+      console.log('History CSV data loaded:', historyData.length, 'records');
+    } catch (error) {
+      console.error('History CSV Read Error:', error);
+    }
+
     return {
       props: {
-        tournaments: tournamentsData
+        tournaments: tournamentsData,
+        historyData: historyData
       }
     };
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       props: {
-        tournaments: []
+        tournaments: [],
+        historyData: []
       }
     };
   }
 }
 
-export default function History({ tournaments = [] }) {
-  const historyData = [
-    {
-      year: '平成7年度',
-      events: [
-        { description: '一般660チーム、学童300チームが登録' }
-      ]
-    },
-    {
-      year: '平成17年2月',
-      events: [
-        { description: '三潴支部、城島支部が市町村合併により、久留米支部に編入' }
-      ]
-    },
-    {
-      year: '平成17年度',
-      events: [
-        { description: '一般717チーム、少年(中学)105チーム、学童325チームが登録' },
-        { description: '登録審判員442人' }
-      ]
-    },
-    {
-      year: '平成18年2月',
-      events: [
-        { description: '朝倉支部、甘木市部が市町村合併により、新たに朝倉支部となる' }
-      ]
-    },
-    {
-      year: '平成19年2月',
-      events: [
-        { description: '小倉支部、八幡支部、戸畑支部、若松支部を統括し北九州支部となる' }
-      ]
-    },
-    {
-      year: '平成20年2月',
-      events: [
-        { description: '古賀支部より、糟屋支部が分離独立。県下24支部となる' }
-      ]
-    },
-    {
-      year: '平成26年度',
-      events: [
-        { description: '一般632チーム、少年233チーム、学童314チームが登録' }
-      ]
-    }
-  ];
-
+export default function History({ tournaments = [], historyData = [] }) {
   return (
     <div className={styles.container}>
       <Header />
@@ -117,86 +96,77 @@ export default function History({ tournaments = [] }) {
           </div>
 
           <div className={styles.content}>
-            <p style={{ margin: '0 0 32px', lineHeight: '1.8', color: '#666' }}>
-              福岡県軟式野球連盟の歩みをご紹介します。市町村合併に伴う支部再編や、
-              登録チーム数の推移など、当連盟の発展の歴史をご覧いただけます。
+            <p style={{ margin: '16px 0 32px', lineHeight: '1.8', color: '#666' }}>
+              福岡県軟式野球連盟の歩みをご紹介します。
             </p>
 
-            <div style={{ position: 'relative', paddingLeft: '40px' }}>
-              {/* タイムライン線 */}
-              <div style={{
-                position: 'absolute',
-                left: '15px',
-                top: '0',
-                bottom: '0',
-                width: '2px',
-                background: 'linear-gradient(to bottom, #3182ce, #e0e0e0)'
-              }} />
+            {historyData.length > 0 ? (
+              <>
+                {/* PC表示用テーブル */}
+                <div style={{ overflowX: 'auto', margin: '20px 0', display: 'none' }} className="pc-only">
+                  <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
+                    <thead>
+                      <tr style={{ background: '#4a4a4a', color: '#fff' }}>
+                        <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left', width: '120px' }}>年度</th>
+                        <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>出来事</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {historyData.map((record, index) => (
+                        <tr key={index} style={{ background: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                          <td style={{ padding: '10px', border: '1px solid #ddd', whiteSpace: 'nowrap' }}>
+                            {record.year && record.month ? `${record.year}年${record.month}月` : record.year ? `${record.year}年` : '年代不明'}
+                          </td>
+                          <td style={{ padding: '10px', border: '1px solid #ddd' }}>{record.event}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
 
-              {historyData.map((item, index) => (
-                <div key={index} style={{ position: 'relative', marginBottom: '40px' }}>
-                  {/* タイムラインドット */}
-                  <div style={{
-                    position: 'absolute',
-                    left: '-33px',
-                    top: '4px',
-                    width: '14px',
-                    height: '14px',
-                    borderRadius: '50%',
-                    background: '#3182ce',
-                    border: '3px solid #fff',
-                    boxShadow: '0 0 0 2px #3182ce'
-                  }} />
-
-                  {/* 年度 */}
-                  <h2 style={{
-                    fontSize: '20px',
-                    fontWeight: 600,
-                    color: '#333',
-                    marginBottom: '12px',
-                    display: 'inline-block',
-                    background: '#f0f7ff',
-                    padding: '4px 12px',
-                    borderRadius: '4px'
-                  }}>
-                    {item.year}
-                  </h2>
-
-                  {/* イベント */}
-                  <div style={{ marginTop: '12px' }}>
-                    {item.events.map((event, eventIndex) => (
-                      <div key={eventIndex} style={{
-                        background: '#fff',
-                        padding: '16px',
-                        marginBottom: '12px',
-                        borderLeft: '4px solid #3182ce',
-                        boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                        lineHeight: '1.8',
-                        color: '#555'
+                {/* SP表示用 */}
+                <div style={{ display: 'none', overflowX: 'auto' }} className="sp-only">
+                  <div style={{ border: '1px solid #ddd' }}>
+                    {historyData.map((record, index) => (
+                      <div key={index} style={{
+                        background: index % 2 === 0 ? '#fff' : '#f9f9f9',
+                        padding: '12px',
+                        borderBottom: index < historyData.length - 1 ? '1px solid #ddd' : 'none'
                       }}>
-                        {event.description}
+                        <div style={{ fontWeight: 600, color: '#3182ce', marginBottom: '8px', fontSize: '14px' }}>
+                          {record.year && record.month ? `${record.year}年${record.month}月` : record.year ? `${record.year}年` : '年代不明'}
+                        </div>
+                        <div style={{ fontSize: '13px', lineHeight: '1.6' }}>{record.event}</div>
                       </div>
                     ))}
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div style={{
-              marginTop: '48px',
-              padding: '24px',
-              background: '#f8f9fa',
-              borderLeft: '4px solid #3182ce',
-              borderRadius: '4px'
-            }}>
-              <h3 style={{ fontSize: '18px', fontWeight: 600, marginBottom: '12px', color: '#333' }}>
-                組織構成の変遷
-              </h3>
-              <p style={{ lineHeight: '1.8', color: '#666', margin: '0' }}>
-                市町村合併に伴い、福岡県内の支部編成も変化してきました。
-                現在は県下を8つのブロック、24支部で構成し、
-                各地域における軟式野球の普及と発展に努めています。
-              </p>
+                <style jsx>{`
+                  @media (min-width: 768px) {
+                    .pc-only {
+                      display: block !important;
+                    }
+                    .sp-only {
+                      display: none !important;
+                    }
+                  }
+                  @media (max-width: 767px) {
+                    .pc-only {
+                      display: none !important;
+                    }
+                    .sp-only {
+                      display: block !important;
+                    }
+                  }
+                `}</style>
+              </>
+            ) : (
+              <p style={{ margin: '16px 0' }}>データを読み込んでいます...</p>
+            )}
+
+            <div style={{ background: '#f8f9fa', padding: '20px', borderLeft: '4px solid #0066cc', margin: '24px 0' }}>
+              <p style={{ margin: 0 }}><strong>福岡県軟式野球連盟は昭和21年（1946年）の設立以来、福岡県の軟式野球の発展に尽力してまいりました。</strong></p>
             </div>
           </div>
         </div>

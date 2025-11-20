@@ -66,39 +66,88 @@ export default function Application({ tournaments = [] }) {
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>大会申込書</h1>
-            <span>TOURNAMENT APPLICATION</span>
+            <h1>福岡県連盟登録及び加入申込書</h1>
+            <span>REGISTRATION & APPLICATION FORMS</span>
           </div>
 
           <div className={styles.content}>
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>大会申込について</h2>
-            <p style={{ margin: '16px 0' }}>福岡県軟式野球連盟主催の大会に参加するには、事前の申込が必要です。</p>
-
             <div style={{ background: '#f8f9fa', padding: '20px', borderLeft: '4px solid #0066cc', margin: '24px 0' }}>
-              <p style={{ margin: 0 }}><strong>各大会の申込書は下記よりダウンロードしてください</strong></p>
+              <p style={{ margin: 0, fontWeight: 600 }}>全軟登録票　+　県連加入申込書（登録者の年齢によって）　+　県連登録名簿　を１セットにしてご提出ください。</p>
             </div>
-
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>申込手順</h2>
-            <ol style={{ margin: '16px 0', paddingLeft: '24px' }}>
-              <li style={{ margin: '8px 0' }}>該当する大会の申込書をダウンロード</li>
-              <li style={{ margin: '8px 0' }}>必要事項を記入</li>
-              <li style={{ margin: '8px 0' }}>所属支部へ提出</li>
-              <li style={{ margin: '8px 0' }}>参加費の納入</li>
-            </ol>
 
             <div style={{ background: '#fff3cd', padding: '20px', borderLeft: '4px solid #ffc107', margin: '24px 0' }}>
-              <p style={{ margin: 0 }}><strong>重要</strong></p>
-              <p style={{ margin: '8px 0 0' }}>申込締切日を過ぎた場合、参加できない可能性があります。余裕をもって申込手続きを行ってください。</p>
+              <p style={{ margin: 0, fontWeight: 600 }}>県連加入申込書該当する年齢</p>
+              <ul style={{ margin: '12px 0 0', paddingLeft: '24px' }}>
+                <li style={{ margin: '4px 0' }}><strong>還暦</strong>　60歳以上</li>
+                <li style={{ margin: '4px 0' }}><strong>成年</strong>　40歳以上</li>
+                <li style={{ margin: '4px 0' }}><strong>実年</strong>　50歳以上</li>
+              </ul>
             </div>
 
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>申込書一覧</h2>
-            <p style={{ margin: '16px 0' }}>現在、申込書の準備中です。各大会の詳細ページをご確認ください。</p>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>全軟登録票</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度【支部】チーム登録名簿
+              </a>
+            </div>
 
-            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>お問い合わせ</h2>
-            <p style={{ margin: '16px 0' }}>大会申込に関するご不明な点は、お問い合わせフォームよりご連絡ください。</p>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>県連加入申込書</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 学童
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 少年
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 一般
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 成年
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 実年
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 - 還暦
+              </a>
+            </div>
 
-            <div style={{ margin: '24px 0' }}>
-              <a href="/contact" style={{ display: 'inline-block', padding: '12px 24px', background: '#0066cc', color: '#fff', textDecoration: 'none', borderRadius: '4px' }}>お問い合わせ</a>
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>チームスポーツ保険</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_スポーツ保険　チーム用
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_スポーツ保険　役員・審判用
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_九連補償制度役員審判員名簿
+              </a>
+            </div>
+
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>県連登録名簿</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_個人登録名簿（少年）
+              </a>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_個人登録名簿（学童）
+              </a>
+            </div>
+
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>支部届</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度_支部届
+              </a>
+            </div>
+
+            <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>令和7年度 福岡県大会球場関係報告書</h2>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '16px', margin: '16px 0' }}>
+              <a href="#" style={{ display: 'block', padding: '12px 20px', background: '#6c757d', color: '#fff', textDecoration: 'none', textAlign: 'center' }}>
+                令和7年度 福岡県大会球場関係報告書
+              </a>
             </div>
           </div>
         </div>

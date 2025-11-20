@@ -1,3 +1,14 @@
+.cardLink {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: opacity 0.2s ease;
+}
+
+.cardLink:hover {
+  opacity: 0.85;
+}
+
 .registrationCard {
   background: #fff;
   width: 100%;
@@ -53,7 +64,42 @@
   background: #f8f8f8;
   padding: 12px 8px;
   text-align: center;
-  transition: all 0.3s ease;
+}
+
+.totalCard {
+  background: #f8f8f8;
+  padding: 16px 12px;
+  text-align: center;
+  grid-column: span 2;
+}
+
+.totalCard h3 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  margin-bottom: 8px;
+  color: #555;
+}
+
+.totalCount {
+  font-size: 20px;
+  font-weight: bold;
+  color: #3182ce;
+  margin: 0;
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 4px;
+}
+
+.totalNumber {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.totalUnit {
+  font-size: 16px;
+  font-weight: normal;
 }
 
 .teamCountCard h3 {
@@ -101,6 +147,24 @@
     padding: 20px;
   }
 
+  .totalCard {
+    grid-column: span 3;
+    padding: 20px 16px;
+  }
+
+  .totalCard h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+  }
+
+  .totalNumber {
+    font-size: 32px;
+  }
+
+  .totalUnit {
+    font-size: 18px;
+  }
+
   .teamCountCard {
     padding: 20px;
   }
@@ -127,6 +191,24 @@
     grid-template-columns: repeat(2, 1fr);
     gap: 12px;
     padding: 16px;
+  }
+
+  .totalCard {
+    grid-column: span 2;
+    padding: 16px 12px;
+  }
+
+  .totalCard h3 {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  .totalNumber {
+    font-size: 26px;
+  }
+
+  .totalUnit {
+    font-size: 15px;
   }
 
   .teamCountCard {

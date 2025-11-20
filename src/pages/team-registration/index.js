@@ -2,6 +2,7 @@ import { useState } from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
+import RotatingBanners from '../../components/RotatingBanners/RotatingBanners';
 import styles from '../../styles/Page.module.css';
 
 export async function getServerSideProps() {
@@ -79,6 +80,7 @@ export default function TeamRegistration({ tournaments = [] }) {
 
     // 北九州ブロック
     { block: '北九州ブロック', branch: '北九州', aClass: 10, bClass: 11, cClass: 21, adult: 1, senior: '', kanreki: 1, gakudo: 40, shonen: 50, isSubtotal: false },
+    { block: '北九州ブロック', branch: '小計', aClass: 10, bClass: 11, cClass: 21, adult: 1, senior: '', kanreki: 1, gakudo: 40, shonen: 50, isSubtotal: true },
 
     // 筑豊ブロック
     { block: '筑豊ブロック', branch: '中遠', aClass: 1, bClass: 3, cClass: 3, adult: 1, senior: '', kanreki: '', gakudo: 16, shonen: 9, isSubtotal: false },
@@ -101,6 +103,7 @@ export default function TeamRegistration({ tournaments = [] }) {
 
     // 久留米ブロック
     { block: '久留米ブロック', branch: '久留米', aClass: 9, bClass: 21, cClass: 26, adult: 1, senior: 1, kanreki: 1, gakudo: 33, shonen: 19, isSubtotal: false },
+    { block: '久留米ブロック', branch: '小計', aClass: 9, bClass: 21, cClass: 26, adult: 1, senior: 1, kanreki: 1, gakudo: 33, shonen: 19, isSubtotal: true },
 
     // 北筑後ブロック
     { block: '北筑後ブロック', branch: '朝倉', aClass: 1, bClass: 2, cClass: 4, adult: 1, senior: 1, kanreki: '', gakudo: 6, shonen: 2, isSubtotal: false },
@@ -153,114 +156,6 @@ export default function TeamRegistration({ tournaments = [] }) {
             <p style={{ margin: '0 0 32px', lineHeight: '1.8', color: '#666' }}>
               福岡県軟式野球連盟に登録されている各支部のチーム数をご覧いただけます。
             </p>
-
-            {/* サマリーカード */}
-            <div className="summary-cards" style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(2, 1fr)',
-              gap: '10px',
-              marginBottom: '40px',
-              padding: '12px',
-              background: '#fff',
-              border: '1px solid #eee'
-            }}>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>一般</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.general}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>成年</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.adult}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>実年</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.senior}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>還暦</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.kanreki}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>学童</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.gakudo}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-              <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
-                <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>少年</h3>
-                <p style={{
-                  fontSize: '16px',
-                  fontWeight: 'bold',
-                  color: '#3182ce',
-                  margin: 0,
-                  display: 'flex',
-                  alignItems: 'baseline',
-                  justifyContent: 'center',
-                  gap: '1px'
-                }}>
-                  <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.shonen}</span>
-                  <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
-                </p>
-              </div>
-            </div>
 
             {/* 詳細テーブル - PC表示 */}
             <div className="pc-table" style={{ overflowX: 'auto', marginTop: '40px' }}>
@@ -329,7 +224,7 @@ export default function TeamRegistration({ tournaments = [] }) {
               </table>
             </div>
 
-            {/* SP用アコーディオン表示 */}
+            {/* SP用テーブル表示 */}
             <div className="sp-accordion" style={{ marginTop: '40px' }}>
               {Object.entries(
                 registrationData.reduce((acc, row) => {
@@ -348,78 +243,71 @@ export default function TeamRegistration({ tournaments = [] }) {
                   border: '1px solid #ddd',
                   marginBottom: '8px',
                   background: '#fff',
-                  borderRadius: '4px',
                   overflow: 'hidden'
                 }}>
-                  {/* ブロックヘッダー（小計） */}
-                  <button
-                    onClick={() => toggleBlock(blockName)}
-                    style={{
-                      width: '100%',
-                      padding: '16px',
-                      background: '#f8f9fa',
-                      border: 'none',
-                      textAlign: 'left',
-                      cursor: 'pointer',
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      fontWeight: 600,
-                      fontSize: '14px'
-                    }}
-                  >
-                    <span>{blockName}</span>
-                    <span style={{ transform: openBlocks[blockName] ? 'rotate(180deg)' : 'rotate(0deg)', transition: 'transform 0.3s' }}>▼</span>
-                  </button>
+                  {/* ブロックヘッダー */}
+                  <div style={{
+                    width: '100%',
+                    padding: '12px 16px',
+                    background: '#f8f9fa',
+                    borderBottom: '1px solid #ddd',
+                    fontWeight: 600,
+                    fontSize: '14px'
+                  }}>
+                    {blockName}
+                  </div>
 
                   {/* 小計と支部詳細を表形式で */}
                   {blockData.subtotal && (
-                    <div style={{ overflowX: 'auto', borderTop: '1px solid #ddd' }}>
+                    <div style={{ overflowX: 'auto' }}>
                       <table style={{
                         width: '100%',
                         borderCollapse: 'collapse',
                         fontSize: '11px',
-                        minWidth: '600px'
+                        minWidth: '400px'
                       }}>
                         <thead>
                           <tr style={{ background: '#fafafa' }}>
                             <th style={{ padding: '8px 6px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '80px' }}>支部名</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>A級</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>B級</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>C級</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>成年</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>実年</th>
-                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>還暦</th>
                             <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>学童</th>
                             <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>少年</th>
+                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '60px' }}>社会人</th>
+                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '60px' }}>その他</th>
+                            <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>合計</th>
                           </tr>
                         </thead>
                         <tbody>
                           {/* 小計行 */}
                           <tr style={{ background: '#f0f0f0', fontWeight: 600 }}>
                             <td style={{ padding: '8px 6px', borderBottom: '1px solid #ddd' }}>小計</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.aClass || '-'}</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.bClass || '-'}</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.cClass || '-'}</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.adult || '-'}</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.senior || '-'}</td>
-                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.kanreki || '-'}</td>
                             <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.gakudo || '-'}</td>
                             <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>{blockData.subtotal.shonen || '-'}</td>
+                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>
+                              {(Number(blockData.subtotal.aClass) || 0) + (Number(blockData.subtotal.bClass) || 0) + (Number(blockData.subtotal.cClass) || 0) || '-'}
+                            </td>
+                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>
+                              {(Number(blockData.subtotal.adult) || 0) + (Number(blockData.subtotal.senior) || 0) + (Number(blockData.subtotal.kanreki) || 0) || '-'}
+                            </td>
+                            <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #ddd' }}>
+                              {(Number(blockData.subtotal.gakudo) || 0) + (Number(blockData.subtotal.shonen) || 0) + (Number(blockData.subtotal.aClass) || 0) + (Number(blockData.subtotal.bClass) || 0) + (Number(blockData.subtotal.cClass) || 0) + (Number(blockData.subtotal.adult) || 0) + (Number(blockData.subtotal.senior) || 0) + (Number(blockData.subtotal.kanreki) || 0)}
+                            </td>
                           </tr>
 
                           {/* 支部詳細 */}
-                          {openBlocks[blockName] && blockData.branches.map((branch, idx) => (
+                          {blockData.branches.map((branch, idx) => (
                             <tr key={idx} style={{ background: idx % 2 === 0 ? '#fff' : '#fafafa' }}>
                               <td style={{ padding: '8px 6px', borderBottom: '1px solid #eee' }}>{branch.branch}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.aClass || '-'}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.bClass || '-'}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.cClass || '-'}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.adult || '-'}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.senior || '-'}</td>
-                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.kanreki || '-'}</td>
                               <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.gakudo || '-'}</td>
                               <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>{branch.shonen || '-'}</td>
+                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
+                                {(Number(branch.aClass) || 0) + (Number(branch.bClass) || 0) + (Number(branch.cClass) || 0) || '-'}
+                              </td>
+                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
+                                {(Number(branch.adult) || 0) + (Number(branch.senior) || 0) + (Number(branch.kanreki) || 0) || '-'}
+                              </td>
+                              <td style={{ padding: '8px 4px', textAlign: 'center', borderBottom: '1px solid #eee' }}>
+                                {(Number(branch.gakudo) || 0) + (Number(branch.shonen) || 0) + (Number(branch.aClass) || 0) + (Number(branch.bClass) || 0) + (Number(branch.cClass) || 0) + (Number(branch.adult) || 0) + (Number(branch.senior) || 0) + (Number(branch.kanreki) || 0)}
+                              </td>
                             </tr>
                           ))}
                         </tbody>
@@ -431,48 +319,163 @@ export default function TeamRegistration({ tournaments = [] }) {
 
               {/* 合計 */}
               <div style={{
-                border: '2px solid #3182ce',
-                borderRadius: '4px',
+                border: '1px solid #ddd',
                 overflow: 'hidden',
-                marginTop: '16px'
+                marginTop: '8px',
+                background: '#fff'
               }}>
+                <div style={{
+                  width: '100%',
+                  padding: '12px 16px',
+                  background: '#3182ce',
+                  color: '#fff',
+                  fontWeight: 600,
+                  fontSize: '14px'
+                }}>
+                  合計
+                </div>
                 <div style={{ overflowX: 'auto' }}>
                   <table style={{
                     width: '100%',
                     borderCollapse: 'collapse',
                     fontSize: '11px',
-                    minWidth: '600px'
+                    minWidth: '400px'
                   }}>
                     <thead>
-                      <tr style={{ background: '#3182ce', color: '#fff' }}>
-                        <th style={{ padding: '10px 6px', textAlign: 'left', fontWeight: 600, minWidth: '80px' }}>合計</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>A級</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>B級</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>C級</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>成年</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>実年</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>還暦</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>学童</th>
-                        <th style={{ padding: '10px 4px', textAlign: 'center', fontWeight: 600, minWidth: '50px' }}>少年</th>
+                      <tr style={{ background: '#fafafa' }}>
+                        <th style={{ padding: '8px 6px', textAlign: 'left', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '80px' }}>カテゴリ</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>学童</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>少年</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '60px' }}>社会人</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '60px' }}>その他</th>
+                        <th style={{ padding: '8px 4px', textAlign: 'center', fontWeight: 600, borderBottom: '1px solid #ddd', minWidth: '50px' }}>合計</th>
                       </tr>
                     </thead>
                     <tbody>
-                      <tr style={{ background: '#fff', fontWeight: 600 }}>
-                        <td style={{ padding: '10px 6px' }}>総計</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.aClass}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.bClass}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.cClass}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.adult}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.senior}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.kanreki}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.gakudo}</td>
-                        <td style={{ padding: '10px 4px', textAlign: 'center', color: '#3182ce' }}>{totalData.shonen}</td>
+                      <tr style={{ background: '#f0f0f0', fontWeight: 600 }}>
+                        <td style={{ padding: '8px 6px' }}>総計</td>
+                        <td style={{ padding: '8px 4px', textAlign: 'center' }}>{totalData.gakudo}</td>
+                        <td style={{ padding: '8px 4px', textAlign: 'center' }}>{totalData.shonen}</td>
+                        <td style={{ padding: '8px 4px', textAlign: 'center' }}>{totalData.aClass + totalData.bClass + totalData.cClass}</td>
+                        <td style={{ padding: '8px 4px', textAlign: 'center' }}>{totalData.adult + totalData.senior + totalData.kanreki}</td>
+                        <td style={{ padding: '8px 4px', textAlign: 'center' }}>{totalData.gakudo + totalData.shonen + totalData.aClass + totalData.bClass + totalData.cClass + totalData.adult + totalData.senior + totalData.kanreki}</td>
                       </tr>
                     </tbody>
                   </table>
                 </div>
               </div>
+
+              {/* サマリーカード */}
+              <div className="summary-cards" style={{
+                display: 'grid',
+                gridTemplateColumns: 'repeat(2, 1fr)',
+                gap: '10px',
+                marginTop: '16px',
+                padding: '12px',
+                background: '#fff',
+                border: '1px solid #eee'
+              }}>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>一般</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.general}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>成年</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.adult}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>実年</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.senior}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>還暦</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.kanreki}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>学童</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.gakudo}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+                <div className="summary-card" style={{ background: '#f8f8f8', padding: '12px 8px', textAlign: 'center' }}>
+                  <h3 style={{ fontSize: '13px', fontWeight: 600, margin: '0 0 6px 0', color: '#555' }}>少年</h3>
+                  <p style={{
+                    fontSize: '16px',
+                    fontWeight: 'bold',
+                    color: '#3182ce',
+                    margin: 0,
+                    display: 'flex',
+                    alignItems: 'baseline',
+                    justifyContent: 'center',
+                    gap: '1px'
+                  }}>
+                    <span style={{ fontSize: '16px', fontWeight: 'bold' }}>{categoryTotals.shonen}</span>
+                    <span style={{ fontSize: '10px', fontWeight: 'normal', color: '#666' }}>チーム</span>
+                  </p>
+                </div>
+              </div>
             </div>
+
+            {/* 回転式バナー */}
+            <RotatingBanners />
 
             <style jsx>{`
               @media (min-width: 769px) {

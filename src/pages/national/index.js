@@ -1,9 +1,12 @@
+import React from 'react';
 import Header from '../../components/Header/Header';
 import Footer from '../../components/Footer/Footer';
 import BlockSidebar from '../../components/BlockSidebar/BlockSidebar';
 import styles from '../../styles/Page.module.css';
 import { signInWithRedirect } from 'firebase/auth';
 import { skeletonClasses } from '@mui/material';
+import fs from 'fs';
+import path from 'path';
 
 export async function getServerSideProps() {
   try {
@@ -57,22 +60,44 @@ export async function getServerSideProps() {
       console.error('Tournament API Error:', error);
     }
 
+    // CSVファイルを読み込む
+    let historyData = [];
+    try {
+      const csvPath = path.join(process.cwd(), 'src', 'pages', 'national', 'fukuoka_baseball_history.csv');
+      const csvContent = fs.readFileSync(csvPath, 'utf-8');
+      const lines = csvContent.split('\n');
+
+      // ヘッダー行をスキップして、データ行をパース
+      for (let i = 1; i < lines.length; i++) {
+        const line = lines[i].trim();
+        if (line) {
+          const [year, team, tournament, result] = line.split(',');
+          historyData.push({ year, team, tournament, result });
+        }
+      }
+      console.log('CSV data loaded:', historyData.length, 'records');
+    } catch (error) {
+      console.error('CSV Read Error:', error);
+    }
+
     return {
       props: {
-        tournaments: tournamentsData
+        tournaments: tournamentsData,
+        historyData: historyData
       }
     };
   } catch (error) {
     console.error('Error fetching data:', error);
     return {
       props: {
-        tournaments: []
+        tournaments: [],
+        historyData: []
       }
     };
   }
 }
 
-export default function National({ tournaments = [] }) {
+export default function National({ tournaments = [], historyData = [] }) {
   return (
     <div className={styles.container}>
       <Header />
@@ -87,25 +112,86 @@ export default function National({ tournaments = [] }) {
           <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>全国大会出場実績</h2>
           <p style={{ margin: '16px 0' }}>福岡県軟式野球連盟所属チームの全国大会での活躍をご紹介します。</p>
 
-          <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>天皇賜杯全日本軟式野球大会</h2>
-          <p style={{ margin: '16px 0' }}>軟式野球の最高峰である天皇賜杯全日本軟式野球大会において、福岡県代表チームが数々の実績を残しています。</p>
+          <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>歴代の主な成績</h2>
 
-          <h3 style={{ fontSize: '20px', fontWeight: 600, margin: '32px 0 12px' }}>主な成績</h3>
-          <ul style={{ margin: '16px 0', paddingLeft: '24px' }}>
-            <li style={{ margin: '8px 0' }}>優勝：○回</li>
-            <li style={{ margin: '8px 0' }}>準優勝：○回</li>
-            <li style={{ margin: '8px 0' }}>ベスト4：○回</li>
-            <li style={{ margin: '8px 0' }}>ベスト8：○回</li>
-          </ul>
+          {historyData.length > 0 ? (
+            <>
+              {/* PC表示用テーブル */}
+              <div style={{ overflowX: 'auto', margin: '20px 0', display: 'none' }} className="pc-only">
+                <table style={{ width: '100%', borderCollapse: 'collapse', border: '1px solid #ddd' }}>
+                  <thead>
+                    <tr style={{ background: '#f5f5f5' }}>
+                      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>年度</th>
+                      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>チーム名</th>
+                      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>大会名</th>
+                      <th style={{ padding: '12px', border: '1px solid #ddd', textAlign: 'left' }}>結果</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {historyData.map((record, index) => (
+                      <tr key={index} style={{ background: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                        <td style={{ padding: '10px', border: '1px solid #ddd' }}>{record.year}</td>
+                        <td style={{ padding: '10px', border: '1px solid #ddd' }}>{record.team}</td>
+                        <td style={{ padding: '10px', border: '1px solid #ddd' }}>{record.tournament}</td>
+                        <td style={{ padding: '10px', border: '1px solid #ddd', fontWeight: 600 }}>{record.result}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>国民体育大会</h2>
-          <p style={{ margin: '16px 0' }}>国民体育大会軟式野球競技においても、福岡県代表は好成績を収めています。</p>
+              {/* SP表示用テーブル */}
+              <div style={{ display: 'none', overflowX: 'auto' }} className="sp-only">
+                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                  <tbody>
+                    {historyData.map((record, index) => (
+                      <React.Fragment key={index}>
+                        {index > 0 && (
+                          <tr>
+                            <td colSpan="2" style={{ height: '8px', padding: 0, border: 'none' }}></td>
+                          </tr>
+                        )}
+                        <tr style={{ background: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                          <td colSpan="2" style={{ padding: '4px 10px', textAlign: 'left', whiteSpace: 'nowrap' }}>{record.year}</td>
+                        </tr>
+                        <tr style={{ background: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                          <td colSpan="2" style={{ padding: '4px 10px', textAlign: 'left' }}>{record.tournament}</td>
+                        </tr>
+                        <tr style={{ background: index % 2 === 0 ? '#fff' : '#f9f9f9' }}>
+                          <td style={{ padding: '4px 10px', fontWeight: 600, textAlign: 'left', whiteSpace: 'nowrap' }}>{record.result}</td>
+                          <td style={{ padding: '4px 10px', textAlign: 'left' }}>{record.team}</td>
+                        </tr>
+                      </React.Fragment>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
 
-          <h2 style={{ fontSize: '24px', fontWeight: 600, margin: '40px 0 16px', paddingBottom: '8px', borderBottom: '1px solid #eee' }}>全日本壮年軟式野球大会</h2>
-          <p style={{ margin: '16px 0' }}>壮年の部においても、福岡県代表チームが全国大会で活躍しています。</p>
+              <style jsx>{`
+                @media (min-width: 768px) {
+                  .pc-only {
+                    display: block !important;
+                  }
+                  .sp-only {
+                    display: none !important;
+                  }
+                }
+                @media (max-width: 767px) {
+                  .pc-only {
+                    display: none !important;
+                  }
+                  .sp-only {
+                    display: block !important;
+                  }
+                }
+              `}</style>
+            </>
+          ) : (
+            <p style={{ margin: '16px 0' }}>データを読み込んでいます...</p>
+          )}
 
           <div style={{ background: '#f8f9fa', padding: '20px', borderLeft: '4px solid #0066cc', margin: '24px 0' }}>
-            <p style={{ margin: 0 }}><strong>詳細な記録や写真は、随時更新予定です。</strong></p>
+            <p style={{ margin: 0 }}><strong>昭和37年（1962年）から平成25年（2013年）までの主要な全国大会成績を掲載しています。</strong></p>
           </div>
           </div>
         </div>

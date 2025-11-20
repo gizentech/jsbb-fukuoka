@@ -77,7 +77,7 @@ export default function Registration({ tournaments = [] }) {
       <main className={styles.mainWithSidebar}>
         <div className={styles.contentArea}>
           <div className={styles.pageHeader}>
-            <h1>選手登録申請</h1>
+            <h1>軟式野球をはじめる方へ</h1>
             <span>PLAYER REGISTRATION</span>
           </div>
 

@@ -59,9 +59,10 @@ export default function Footer() {
               <li><Link href="/application">大会申込書</Link></li>
               <li><Link href="/forms">申請様式</Link></li>
             </ul>
-            <p className={styles.copyright}>© 2025 一般社団法人福岡県軟式野球連盟 All Rights Reserved.</p>
           </div>
         </div>
+
+        <p className={styles.copyright}>© 2020-2025 Fukuoka Rubber Baseball Association All Rights Reserved.</p>
       </div>
     </footer>
   )

@@ -1,0 +1,121 @@
+.pageHeader {
+  text-align: center;
+  margin-bottom: 48px;
+  padding-bottom: 24px;
+  border-bottom: 3px solid #d4af37;
+}
+
+.subtitles {
+  margin-bottom: 16px;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #666;
+  margin: 4px 0;
+  letter-spacing: 1px;
+}
+
+.title {
+  font-size: 2rem;
+  color: #1a1a1a;
+  font-weight: bold;
+  margin: 0;
+}
+
+.imageContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.image {
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 800px;
+  width: 100%;
+  height: auto;
+}
+
+.paragraph {
+  margin-bottom: 24px;
+  text-align: justify;
+  font-size: 1.1rem;
+  text-indent: 1em;
+}
+
+.signature {
+  margin-top: 60px;
+  text-align: right;
+  font-size: 1.1rem;
+}
+
+.date {
+  margin-bottom: 10px;
+  color: #555;
+}
+
+.name {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #1a1a1a;
+}
+
+/* レスポンシブデザイン */
+@media (max-width: 768px) {
+  .pageHeader {
+    margin-bottom: 30px;
+    padding-bottom: 15px;
+  }
+
+  .subtitle {
+    font-size: 12px;
+  }
+
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .imageContainer {
+    margin-bottom: 30px;
+  }
+
+  .image {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 500px;
+  }
+
+  .paragraph {
+    font-size: 1rem;
+    margin-bottom: 20px;
+  }
+
+  .signature {
+    margin-top: 40px;
+    font-size: 1rem;
+  }
+
+  .name {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .pageHeader {
+    margin-bottom: 20px;
+  }
+
+  .subtitle {
+    font-size: 11px;
+  }
+
+  .title {
+    font-size: 1.3rem;
+  }
+
+  .paragraph {
+    font-size: 0.95rem;
+    line-height: 1.8;
+  }
+}

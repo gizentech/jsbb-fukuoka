@@ -1,0 +1,120 @@
+.container {
+  margin: 0;
+  overflow: hidden;
+  background: #363d8a;
+  padding: 40px 0 40px;
+}
+
+.title {
+  color: #fff;
+  font-size: 32px;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 32px;
+  letter-spacing: 0.1em;
+}
+
+/* PC表示: 3列×2行のグリッド表示 */
+.pcCarousel {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.pcCarouselTrack {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.pcCarouselItem {
+  width: 100%;
+}
+
+.bannerContent {
+  width: 100%;
+  padding-top: 56.25%; /* アスペクト比 16:9 */
+  position: relative;
+  background: #e0e0e0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0; /* 角を四角に */
+}
+
+.bannerContent span {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 16px;
+  font-weight: 600;
+  color: #666;
+}
+
+.bannerImage {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+/* SP表示: カルーセル */
+.spCarousel {
+  display: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.carouselTrack {
+  display: flex;
+}
+
+.carouselItem {
+  min-width: 100%;
+  padding: 0 10px;
+}
+
+.indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: #d0d0d0;
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s ease;
+}
+
+.indicator.active {
+  background: #3182ce;
+  width: 24px;
+  border-radius: 4px;
+}
+
+/* レスポンシブ */
+@media (max-width: 768px) {
+  .pcCarousel {
+    display: none;
+  }
+
+  .spCarousel {
+    display: block;
+  }
+}
+
+@media (max-width: 640px) {
+  .carouselItem {
+    padding: 0 5px;
+  }
+
+  .bannerContent span {
+    font-size: 14px;
+  }
+}

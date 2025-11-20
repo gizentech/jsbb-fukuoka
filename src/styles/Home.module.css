@@ -624,12 +624,12 @@
 
 /* お知らせ・登録状況セクション（2/3 + 1/3カラム） */
 .infoRegistrationSection {
-  margin: 64px 0;
+  margin: 64px 0 0 0;
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
   background: #e8e8e8;
-  padding: 40px 20px;
+  padding: 40px 20px 40px 20px;
   box-sizing: border-box;
 }
 
@@ -767,4 +767,19 @@
   text-align: center;
   color: #666;
   font-size: 14px;
+}
+
+/* バナーセクション */
+.bannersSection {
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  overflow: hidden; /* 4枚以外は見せない */
+}
+
+@media (max-width: 768px) {
+  .bannersSection {
+    margin: 0;
+  }
 }

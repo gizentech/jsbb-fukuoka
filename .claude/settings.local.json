@@ -1,35 +1,8 @@
 {
   "permissions": {
     "allow": [
-      "Bash(rm:*)",
-      "Bash(vercel:*)",
       "Bash(npm install:*)",
-      "Bash(npm run build:*)",
-      "Bash(npm run dev:*)",
-      "Bash(npm outdated:*)",
-      "Bash(mkdir -p src/components/TournamentBanner)",
-      "Bash(test -f .env.local)",
-      "Bash(for file in festival.js umpire.js announcer.js registration-system.js registration.js)",
-      "Bash(do)",
-      "Bash(done)",
-      "Bash(for file in national.js festival.js umpire.js announcer.js registration-system.js registration.js)",
-      "Bash(if [ -f \"$file\" ])",
-      "Bash(then)",
-      "Bash(fi)",
-      "Bash(echo:*)",
-      "Bash(for file in announcer festival national privacy registration registration-system terms umpire)",
-      "Bash(do if [ -f \"$file.js\" ])",
-      "Bash(then cp \"$file.js\" \"$file/index.js\")",
-      "Bash(for dir in announcer festival forms national privacy registration registration-system terms umpire)",
-      "Bash(do if [ -f \"$dir/index.js\" ])",
-      "Bash(then sed -i \"s|from ''../components/|from ''../../components/|g\" \"$dir/index.js\")",
-      "Bash(find:*)",
-      "Bash(grep:*)",
-      "Bash(mv:*)",
-      "Bash(git mv:*)",
-      "Bash(mkdir:*)",
-      "Bash(cp:*)",
-      "Bash(pgrep:*)"
+      "Bash(npm uninstall:*)"
     ],
     "deny": [],
     "ask": []

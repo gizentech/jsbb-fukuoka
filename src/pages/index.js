@@ -1,13 +1,18 @@
 // pages/index.js
 import React, { useState } from 'react'
+import dynamic from 'next/dynamic'
 import styles from '../styles/Home.module.css'
 import Header from '../components/Header/Header'
 import Footer from '../components/Footer/Footer'
-import TopView from '../components/TopView/TopView'
 import TournamentSection from '../components/TournamentSection/TournamentSection'
 import NewsSection from '../components/NewsSection/NewsSection'
 import RegistrationStatus from '../components/RegistrationStatus/RegistrationStatus'
+import RotatingBanners from '../components/RotatingBanners/RotatingBanners'
 import Analytics from '@vercel/analytics/react';
+
+const Background = dynamic(() => import('../components/Background/Background'), {
+  ssr: false,
+});
 
 // getServerSidePropsは既存のものをそのまま維持
 export async function getServerSideProps() {
@@ -152,12 +157,12 @@ export async function getServerSideProps() {
 }
 
 export default function Home({ news = [], tournaments = [], latestItems = [], error = null }) {
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0);
 
   return (
     <div className={styles.container}>
       <Header />
-      <TopView activeTab={activeTab} setActiveTab={setActiveTab} />
+      <Background activeTab={activeTab} setActiveTab={setActiveTab} />
       <main className={styles.main}>
         <TournamentSection tournaments={tournaments} error={error} activeTab={activeTab} setActiveTab={setActiveTab} />
 
@@ -176,6 +181,12 @@ export default function Home({ news = [], tournaments = [], latestItems = [], er
           </div>
         </section>
       </main>
+
+      {/* 回転式バナー（Footerの上） */}
+      <section className={styles.bannersSection}>
+        <RotatingBanners />
+      </section>
+
       <Footer />
     </div>
   );

@@ -93,6 +93,13 @@ export default function Header() {
       const position = window.scrollY;
       setScrollPosition(position);
 
+      // 🌟 修正箇所: 画面幅が769px未満 (SP) の場合は、scrollLevelを常に0に保つ
+      if (typeof window !== 'undefined' && window.innerWidth < 769) {
+        setScrollLevel(0);
+        return; 
+      }
+      
+      // PC環境 (min-width: 769px) の場合の処理
       // スクロール量に応じてレベルを設定
       if (position > 100) {
         setScrollLevel(2); // 両方隠す
@@ -151,6 +158,24 @@ export default function Header() {
           </h1>
         </div>
 
+        {/* レベル2のときに表示するメニュー (PCでのみレンダリングされる) */}
+        {scrollLevel === 2 && (
+          <nav className={styles.compactNav}>
+            <ul className={styles.compactMenu}>
+              <li><Link href="/tournaments">大会情報</Link></li>
+              <li><Link href="/application">大会申込書</Link></li>
+              <li><Link href="/umpire">審判員</Link></li>
+              <li><Link href="/announcer">アナウンス</Link></li>
+              <li><Link href="/news">お知らせ</Link></li>
+              <li><Link href="/registration">軟式野球をはじめる方へ</Link></li>
+              <li><Link href="/about">連盟概要</Link></li>
+              <li><Link href="/national">全国大会での活躍</Link></li>
+              <li><Link href="/festival">野球感謝祭</Link></li>
+              <li><Link href="/contact">お問い合わせ</Link></li>
+            </ul>
+          </nav>
+        )}
+
         {/* 野球競技者登録システムボタン */}
         <div className={styles.registrationButtonWrapper}>
           <Link href="https://yakyu-net.jp/" className={styles.registrationButton}>
@@ -201,7 +226,7 @@ export default function Header() {
                 <Link href="/news">お知らせ</Link>
               </li>
               <li>
-                <Link href="/registration">選手登録申請</Link>
+                <Link href="/registration">軟式野球をはじめる方へ</Link>
               </li>
               <li>
                 <Link href="/about">連盟概要</Link>

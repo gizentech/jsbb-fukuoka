@@ -100,9 +100,9 @@ export default function Officers({ tournaments = [] }) {
   const prefectureOfficersGrouped = {
     '顧問': ['古賀 正弘', '野村 天朗'],
     '参与': ['川嶋 隆', '村下 和之'],
-    '会長': ['石原 廣士'],
+    '会長': [{ name: '石原 廣士', role: '全日本軟式野球連盟 相談役' }],
     '副会長': ['石川 浩二朗', '宮田 義髙', '吉田 茂'],
-    '理事長': ['中村 敏治'],
+    '理事長': [{ name: '中村 敏治', role: '全日本軟式野球連盟 顧問' }],
     '副理事長': ['片山 芳幸', '森本 浩', '和佐野 一文'],
     '常務理事': [
       { name: '杉山 憲二', role: '京築ブロック長' },
@@ -115,7 +115,7 @@ export default function Officers({ tournaments = [] }) {
       { name: '野田 幹雄', role: '南筑後ブロック長' },
       { name: '古賀 正治', role: '事務局長' },
       { name: '穴井 政美', role: '渉外担当' },
-      { name: '菰田 浩', role: '審判長' }
+      { name: '菰田 浩', role: '審判長・全日本軟式野球連盟 評議員' }
     ],
     '理事': [
       '山内 淳史', '栁川 尚孝', '福山 康憲', '中村 希', '山内 直人',
@@ -185,7 +185,7 @@ export default function Officers({ tournaments = [] }) {
                         {isObject ? (
                           <>
                             <div>{member.name}</div>
-                            <div style={{ fontSize: '12px', color: '#999', marginTop: '2px' }}>
+                            <div style={{ fontSize: '12px', color: '#999', marginTop: '2px', whiteSpace: 'nowrap' }}>
                               （{member.role}）
                             </div>
                           </>

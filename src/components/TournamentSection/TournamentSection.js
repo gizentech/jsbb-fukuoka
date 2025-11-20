@@ -136,14 +136,9 @@ export default function TournamentSection({ tournaments = [], error = null, acti
               ) : tournaments.length === 0 ? (
                 <p className={styles.noData}>大会情報はありません</p>
               ) : (
-                tournaments.slice(0, 5).map((item) => {
+                tournaments.slice(0, 8).map((item) => {
                   // 表示する大会名（略称があれば略称、なければフルネーム）
                   let displayName = item.nameRyaku || item.title;
-
-                  // 13文字以内に制限
-                  if (displayName.length > 13) {
-                    displayName = displayName.substring(0, 13) + '...';
-                  }
 
                   // 日付を「YYYY/M/D~」形式で表示
                   let displayDate = '';
@@ -160,12 +155,13 @@ export default function TournamentSection({ tournaments = [], error = null, acti
                       key={item.id}
                       className={styles.newsItem}
                     >
-                      <div className={styles.itemContent}>
-                        <span className={styles.itemDate}>
-                          {displayDate}
-                        </span>
-                        <span className={styles.itemTitle}>{displayName}</span>
-                      </div>
+                      <span
+                        className={styles.categoryTitle}
+                        data-long={displayName.length > 18 ? 'true' : 'false'}
+                      >
+                        {displayName}
+                      </span>
+                      <span className={styles.arrow}>→</span>
                     </div>
                   );
                 })

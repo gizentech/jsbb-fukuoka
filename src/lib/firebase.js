@@ -2,7 +2,7 @@
 import { initializeApp, getApps } from 'firebase/app';
 import { getAuth } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
-import { getStorage } from 'firebase/storage';
+import { getStorage, ref, getDownloadURL } from 'firebase/storage';
 
 const firebaseConfig = {
  apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -54,4 +54,16 @@ if (typeof window !== 'undefined') {
    }
    return originalFetch.call(this, url, options);
  };
+}
+
+// 画像URLを取得するヘルパー関数
+export async function getImageUrl(path) {
+  try {
+    const storageRef = ref(storage, path);
+    const url = await getDownloadURL(storageRef);
+    return fixStorageUrl(url);
+  } catch (error) {
+    console.error(`Error getting image URL for ${path}:`, error);
+    throw error;
+  }
 }
